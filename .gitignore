@@ -1,0 +1,51 @@
+# Mac ugly stuff
+*.DS_Store
+
+# Stuff
+**/*~
+**/.nfs*
+*.swp
+
+# I/O
+**/in*
+!**/in*.*
+**/*.in
+**/out*
+!**/out*.*
+**/*.out
+**/err*
+!**/err*.*
+**/test*
+!**/test*.*
+**/sol*
+!**/sol*.*
+**/*.sol
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
