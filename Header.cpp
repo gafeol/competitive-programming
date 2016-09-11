@@ -1,4 +1,3 @@
-
 #include <bits/stdc++.h>
 using namespace std;
 #define fst first
@@ -11,3 +10,14 @@ typedef pair<int, int> pii;
 template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
+
+const int MAXN = 212345;
+
+int n, m, k;
+
+int main (){
+	scanf("%d", &n);
+	for(int a=0;a<n;a++){
+
+	}
+}
