@@ -25,29 +25,25 @@ ll f(int i){
 
 int main (){
 	scanf("%d%d%d%d", &n, &m, &k, &t);
-	int men = n - m + Z - 2*k -1;
-	int max = n - m + Z + 2*k +1;
 	dp[n - m + Z][0] = 1;
 	for(int i = 1;i <= t;i++){
 		int ii = i&1;
-		for(int a=men;a<=max;a++){
-			if(a != men) s[a] = s[a-1];
+		for(int a=0;a<MAXN;a++){
+			if(a != 0) s[a] = s[a-1];
 			else s[a] = 0;
 			s[a] = mod(s[a] + dp[a][1-ii]);
 			dp[a][ii] = 0;
 		}
 		ll sum = 0;
 
-		//for(int a=1;a<=4*k+1;a++){
-		//	sum = mod(sum + f(a)*dp[a][1-ii]);
-		//}
-		men -= 2*k;
-		max += 2*k;
-		for(int a=men;a<=max;a++){
+		for(int a=1;a<=4*k+1;a++){
+			sum = mod(sum + f(a)*dp[a][1-ii]);
+		}
+		for(int a=2*k+1;a<MAXN - 2*k-1;a++){
 			dp[a][ii] = sum;
 			if(sum != 0 && sum < 1000){
-				//printf("dp[%d][%d] = %lld\n", a, ii, dp[a][ii]);
-				
+				printf("dp[%d][%d] = %lld\n", a, ii, dp[a][ii]);
+
 			}
 			sum = mod(sum - (s[a] - s[a - 2*k - 1]));
 			sum = mod(sum + (s[a + 2*k + 1] - s[a]));
