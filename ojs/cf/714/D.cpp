@@ -33,7 +33,7 @@ int test(int a, int b, int c, int d){
 }
 
 bool valid(int x, int y, int xx, int yy){
-	return (xx - x > 0 && yy - y > 0 && x > 0 && xx > 0 && y > 0 && yy > 0 && x <= n && xx <= n && y <= n && yy <= n) ;
+	return (xx - x >= 0 && yy - y >= 0 && x > 0 && xx > 0 && y > 0 && yy > 0 && x <= n && xx <= n && y <= n && yy <= n) ;
 }
 
 int main (){
@@ -52,7 +52,7 @@ int main (){
 			r = m - 1;
 	}
 	i = l;
-//	printf("achei i %d\n", i);
+	//printf("achei i %d\n", i);
 	l = i;
 	r = ii;
 	while(l < r){
@@ -64,7 +64,7 @@ int main (){
 			l = m+1;
 	}
 	ii = l;
-//	printf("achei ii %d\n", ii);
+	//printf("achei ii %d\n", ii);
 	l = j;
 	r = jj;
 	while(l < r){
@@ -76,7 +76,7 @@ int main (){
 			r = m - 1;
 	}
 	j = l;
-//	printf("achei j %d\n", j);
+	//printf("achei j %d\n", j);
 	l = j;
 	r = jj;
 	while(l < r){
@@ -88,8 +88,8 @@ int main (){
 			l = m + 1;
 	}
 	jj = l;
-//	printf("achei jj %d\n", jj);
-//	printf("%d %d %d %d\n", j, i, jj, ii);
+	//printf("achei jj %d\n", jj);
+	//printf("%d %d %d %d\n", j, i, jj, ii);
 	int j2 = j, i2 = i, jj2 = jj, ii2 = ii;
 	j = 1; jj = n;
 	i = 1; ii = n;
@@ -113,7 +113,7 @@ int main (){
 			r = m - 1;
 	}
 	i = l;
-//	printf("achei i %d\n", i);
+	//printf("achei i %d\n", i);
 	l = i;
 	r = ii;
 	while(l < r){
@@ -125,7 +125,7 @@ int main (){
 			l = m+1;
 	}
 	ii = l;
-//	printf("achei ii %d\n", ii);
+	//printf("achei ii %d\n", ii);
 	l = j;
 	r = jj;
 	while(l < r){
@@ -137,7 +137,7 @@ int main (){
 			r = m - 1;
 	}
 	j = l;
-//	printf("achei j %d\n", j);
+	//printf("achei j %d\n", j);
 	l = j;
 	r = jj;
 	while(l < r){
@@ -149,7 +149,7 @@ int main (){
 			l = m + 1;
 	}
 	jj = l;
-//	printf("achei jj %d\n", jj);
+	//printf("achei jj %d\n", jj);
 	printf("! %d %d %d %d %d %d %d %d\n", j, i, jj, ii, j2, i2, jj2, ii2);
 	fflush(stdout);
 }
