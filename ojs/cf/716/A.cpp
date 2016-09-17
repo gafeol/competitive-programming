@@ -1,4 +1,5 @@
 
+
 #include <bits/stdc++.h>
 using namespace std;
 #define fst first
@@ -18,8 +19,15 @@ int n, m, k;
 int s[MAXN];
 
 int main (){
-	scanf("%d", &n);
+	scanf("%d%d", &n, &m);
+	int res = 0;
 	for(int a=0;a<n;a++){
-
+		scanf("%d", &s[a]);
+		if(a != 0){
+			if(s[a] - s[a-1] > m)
+				res = 0;
+		}
+		res++;
 	}
+	printf("%d\n", res);
 }

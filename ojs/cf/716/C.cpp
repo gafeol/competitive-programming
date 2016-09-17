@@ -1,4 +1,5 @@
 
+
 #include <bits/stdc++.h>
 using namespace std;
 #define fst first
@@ -17,9 +18,22 @@ const int MAXN = 212345;
 int n, m, k;
 int s[MAXN];
 
+ll mdc(ll a, ll b){
+	if(b == 0)
+		return a;
+	return mdc(b, a%b);
+}
+
+ll mmc(ll a, ll b){
+	return (a/mdc(a, b))*b; 
+}
+
 int main (){
 	scanf("%d", &n);
-	for(int a=0;a<n;a++){
-
+	ll x = 2;
+	for(ll a=1;a<=n;a++){
+		ll ans = mmc(a, a+1);
+		printf("%lld\n", (ans/a)*ans - (x/a));
+		x = ans;
 	}
 }

@@ -1,4 +1,6 @@
 
+
+
 #include <bits/stdc++.h>
 using namespace std;
 #define fst first
@@ -17,9 +19,26 @@ const int MAXN = 212345;
 int n, m, k;
 int s[MAXN];
 
-int main (){
-	scanf("%d", &n);
-	for(int a=0;a<n;a++){
+ll mdc(ll a, ll b){
+	if(b == 0)
+		return a;
+	return mdc(b, a%b);
+}
 
+ll mmc(ll a, ll b){
+	return (a/mdc(a, b))*b; 
+}
+
+int main (){
+	ll mx = 0, im;
+	for(ll a=1;a<=100000;a++){
+		ll ans = mmc(a, a+1);
+		ans = (ans/a)*ans;
+		printf("%lld %lld\n", a, ans);
+		if(ans > mx){
+			mx = ans;
+			im = a;
+		}
 	}
+	printf("MAX %lld %lld\n", mx, im);
 }
