@@ -16,30 +16,42 @@ const int MAXN = 112345;
 int n, m, k;
 int c[MAXN], ind[MAXN], deg;
 
-set<pii> fq[MAXN];
-
 vector<int> adj[MAXN];
 
-map<int, int> fc[MAXN];
+map<int, int> fc[MAXN], fq[MAXN];
 
-void go(int v){
+int res[MAXN];
+
+void go(int v, int p){
+	ind[v] = deg++;
+	fc[ind[v]][c[v]] = 1;
+	fq[ind[v]][1] = c[v];
+	int mx = 1;
 	for(int nxt: adj[v]){
-		go(nxt);
-		if(ind[v] == -1)
-			ind[v] = ind[nxt];
-		else{
-			if(fc[ind[nxt]].size() > fc[ind[v]].size())
-				swap(ind[nxt], ind[v]);
-
-			for(auto& x: fc[ind[nxt]]){
-				if(fc[ind[v]].find(x.fst) != fc[ind[v]].end() && fc[ind[v]][x.fst] != 0)
-					fq[ind[v]].erase(pii(x.fst, x.snd));
-
-				fc[ind[v]][x.fst] += x.snd;
-				fq[ind[v]].insert(pii(x.fst, fc[ind[v]][x.fst]);
-			}
+		if(nxt == p) continue;
+		go(nxt, v);
+		if(fc[ind[nxt]].size() > fc[ind[v]].size())
+			swap(ind[nxt], ind[v]);
+	//	printf("junta de %d para %d\n", ind[nxt], ind[v]);
+		for(auto& x: fc[ind[nxt]]){
+			if(x.snd == 0) continue;
+			int cor = x.fst;
+			int qtd = x.snd;
+	//		printf("junto cor %d em qtd %d\n", cor, qtd);
+			if(fc[ind[v]].find(cor) != fc[ind[v]].end() && fc[ind[v]][cor] != 0)
+				fq[ind[v]][fc[ind[v]][cor]] -= cor;
+			fc[ind[v]][cor] += x.snd;
+	//		printf("fc[%d][%d] = %d\n", ind[v], cor, fc[ind[v]][cor]);
+			fq[ind[v]][fc[ind[v]][cor]] += cor;
+	//		printf("fq[%d][%d] %d\n", ind[v], fc[ind[v]][cor], fq[ind[v]][fc[ind[v]][cor]]);
+			mx = max(mx, fc[ind[v]][cor]);
 		}
 	}
+	//printf("junto cor %d em qtd %d\n", c[v], 1);
+//	printf("fc[%d][%d] = %d\n", ind[v], c[v], fc[ind[v]][c[v]]);
+//	printf("fq[%d][%d] %d\n", ind[v], fc[ind[v]][c[v]], fq[ind[v]][fc[ind[v]][c[v]]]);
+
+	res[v] = fq[ind[v]][mx];
 }
 
 int main (){
@@ -53,5 +65,8 @@ int main (){
 		adj[u].pb(v);
 		adj[v].pb(u);
 	}
-	go(1);
+	go(1, -1);
+	for(int a=1;a<=n;a++){
+		printf("%d ", res[a]);
+	}
 }
