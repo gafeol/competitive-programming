@@ -11,18 +11,23 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 500009;
+const int MAXN = 512345;
 
 int n, m, k;
-int ind[MAXN], deg;
+int s[MAXN], ind[MAXN], deg;
 
 ll res;
 
 map<int, ll> dc[MAXN];
 map<int, ll>::reverse_iterator rit;
-map<int, ll>::iterator it;
 
 vector<pii> adj[MAXN];
+
+void printm(int u){
+//	for(auto& x: dc[ind[u]]){
+//		printf("%d: %lld\n", x.fst, x.snd);
+//	}
+}
 
 void go(int v){
 	ind[v] = deg++;
@@ -31,18 +36,29 @@ void go(int v){
 		int u = nxt.fst;
 		ll c = nxt.snd;
 		go(u);
+		//printf("test\n");
+		printm(u);
 		for(rit = dc[ind[u]].rbegin(); rit != dc[ind[u]].rend(); ++rit){
+		//	printf("de %d %lld vira %d %lld\n", rit->fst, rit->snd, rit->fst +1, rit->snd + c);
 			dc[ind[u]][rit->fst + 1] = rit->snd + c; 
 		}
+//		printf("virou\n");
+		printm(u);
+		//printf("fui pra %d\n", u);
 		if(dc[ind[u]].size() > dc[ind[v]].size())
 			swap(ind[u], ind[v]);
-		for(it = dc[ind[u]].begin();it != dc[ind[u]].end();++it){
-			pii x = *it;
+//		printf("\nV dc[%d]:\n", v);
+		printm(v);
+//		printf("U dc[%d]:\n", u);
+		printm(u);
+		for(auto& x: dc[ind[u]]){
 			int d = x.fst;
 			ll cus = x.snd;
 			if(d > k) break;
+//			printf("procuro em %d %d e em %d %d\n", v, k-d, u, d);
 			if(dc[ind[v]].find(k - d) != dc[ind[v]].end()){
 				res = min(res, cus + dc[ind[v]][k - d]);
+//				printf("res = %lld  tentei %lld +  dc[%d][%d] %lld\n", res, cus, v, k-d, dc[ind[v]][k-d]);
 			}
 		}
 		if(dc[ind[v]].find(1) != dc[ind[v]].end())
