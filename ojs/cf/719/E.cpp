@@ -1,5 +1,6 @@
 
 
+
 #include <bits/stdc++.h>
 using namespace std;
 #define fst first
@@ -19,45 +20,41 @@ int n, m, k;
 ll s[MAXN];
 ll f[MAXN], fm[MAXN];
 
-int M[2][2], ini[2][3]; 
+ll M[2][2], ini[2][3], aux[2][2]; 
 
 
 struct arv{
 	ll sum, summ, lz;
+	arv(int s, int ss, int ll): sum(s), summ(ss), lz(ll) {}
+	arv(){}
+	arv operator+ (arv o) const{
+		return arv(sum + o.sum, summ + o.summ, lz); 
+	}
 	
 } tree[4*MAXN];
 
-void zera(){
-	M[0][0] = M[0][1] = M[1][0] = 1;
-	M[1][1] = 0;
-	ini[0][0] = ini[0][1] = ini[1][0] = 1;
-	ini[1][1] = 0;
-}
-
-void build(int idx, int i, int j){
-	if(i == j){
-		tree[idx].sum = 0;
-		tree[idx].summ = 0;
-		tree[idx].lz = 0;
-		return ;
+void printm(){
+	for(int a=0;a<2;a++){
+		for(int b=0;b<2;b++){
+			printf("%lld ", M[a][b]);
+		}
+		printf("\n");
 	}
-	int m = (i+j)/2;
-	build(idx*2, i, m);
-	build(idx*2+1, m+1, j);
 }
 
 void quad(){
 	for(int a=0;a<2;a++){
 		for(int b=0;b<2;b++){
-			ini[a][b] = 0;
+			aux[a][b] = 0;
 			for(int c=0;c<2;c++){
-				ini[a][b] += M[c][b]*M[b][c];
+				aux[a][b] += M[c][b]*M[a][c];
 			}
 		}
 	}
 	for(int a=0;a<2;a++){
 		for(int b=0;b<2;b++){
-			M[a][b] = ini[a][b];
+			M[a][b] = aux[a][b];
+			aux[a][b] = 0;
 		}
 	}
 }
@@ -65,21 +62,39 @@ void quad(){
 void mult(){
 	for(int a=0;a<2;a++){
 		for(int b=0;b<2;b++){
-			ini[a][b] = 0;
+			aux[a][b] = 0;
 			for(int c=0;c<2;c++){
-				ini[a][b] += M[c][b]*ini[b][c];
+				aux[a][b] += M[c][b]*ini[a][c];
 			}
 		}
 	}
 	for(int a=0;a<2;a++){
 		for(int b=0;b<2;b++){
-			M[a][b] = ini[a][b];
+			M[a][b] = aux[a][b];
+			aux[a][b] = 0;
+		}
+	}
+}
+
+void zera(){
+	M[0][0] = M[0][1] = M[1][0] = 1;
+	M[1][1] = 0;
+	ini[0][0] = ini[0][1] = ini[1][0] = 1;
+	ini[1][1] = 0;
+	for(int a=0;a<2;a++){
+		for(int b=0;b<2;b++){
+			aux[a][b] = 0;
 		}
 	}
 }
 
 void expo(ll i){
-	if(i == 0ll){
+	if(i == 0){
+		M[1][1] = M[0][0] = 1;
+		M[0][1] = M[1][0] = 0;
+		return ;
+	}
+	if(i == 1ll){
 		zera();
 		return;
 	}
@@ -89,37 +104,63 @@ void expo(ll i){
 		mult();
 }
 
+
 ll fib(ll i){
+	i--;
+	if(i == -1)
+		return 0;
+	if(i == 0 || i == 1)
+		return 1;
+	zera();
 	expo(i);
+	printf("\nM:\n");
+	printm();
+	printf("fib %lld dando %lld\n", i+1, M[0][0] + M[0][1]);
 	return M[0][0] + M[0][1];
+}
+
+
+void build(int idx, int i, int j){
+	if(i == j){
+		tree[idx].sum = fib(s[i]);
+		tree[idx].summ = fib(s[i]-1);
+		tree[idx].lz = 0;
+		return ;
+	}
+	int m = (i+j)/2;
+	build(idx*2, i, m);
+	build(idx*2+1, m+1, j);
+	tree[idx] = tree[idx*2] + tree[idx*2+1]; 
 }
 
 void upd(int idx, int i, int j, int l, int r, ll x){
 	if(i > r || j < l)
 		return ;
 	if(tree[idx].lz != 0){
-		ll x = tree[idx].lz;
+		ll val = tree[idx].lz;
 		tree[idx].lz = 0;
 			if(i != j){
 			int m = (i+j)/2;
-			expo(x);
+			zera();
+			expo(val);
 			ll ns=0, nss=0;
 			ns = mod(mod(tree[idx*2].sum*M[0][0]) + mod(tree[idx*2].summ*M[0][1]));
 			nss = mod(mod(tree[idx*2].sum*M[1][0]) + mod(tree[idx*2].summ*M[1][1]));
 			tree[idx*2].sum = ns;
 			tree[idx*2].summ = nss;
-			tree[idx*2].lz += x;
+			tree[idx*2].lz += val;
 
 			ns = mod(mod(tree[idx*2+1].sum*M[0][0]) + mod(tree[idx*2+1].summ*M[0][1]));
 			nss = tree[idx*2+1].sum*M[1][0] + tree[idx*2+1].summ*M[1][1];
 			tree[idx*2+1].sum = ns;
 			tree[idx*2+1].summ = nss;
-			tree[idx*2+1].lz += x;
+			tree[idx*2+1].lz += val;
 		}
 
 	}
 	if(i >= l && j <= r){
 		tree[idx].lz += x;
+		zera();
 		expo(x);
 		ll ns=0, nss=0;
 		ns = mod(mod(tree[idx].sum*M[0][0]) + mod(tree[idx].summ*M[0][1]));
@@ -131,37 +172,49 @@ void upd(int idx, int i, int j, int l, int r, ll x){
 	int m = (i+j)/2;
 	upd(idx*2, i, m, l, r, x);
 	upd(idx*2+1, m+1, j, l, r, x);
+	tree[idx] = tree[idx*2] + tree[idx*2+1];
 }
 
 ll qry(int idx, int i, int j, int l, int r){
 	if(i > r || j < l)
 		return 0ll;
 	if(tree[idx].lz != 0){
-		ll x = tree[idx].lz;
+		ll val = tree[idx].lz;
 		tree[idx].lz = 0;
 		if(i != j){
 			int m = (i+j)/2;
-			expo(x);
+			zera();
+			expo(val);
 			ll ns=0, nss=0;
 			ns = mod(mod(tree[idx*2].sum*M[0][0]) + mod(tree[idx*2].summ*M[0][1]));
 			nss = mod(mod(tree[idx*2].sum*M[1][0]) + mod(tree[idx*2].summ*M[1][1]));
 			tree[idx*2].sum = ns;
 			tree[idx*2].summ = nss;
-			tree[idx*2].lz += x;
+			tree[idx*2].lz += val;
 
 			ns = mod(mod(tree[idx*2+1].sum*M[0][0]) + mod(tree[idx*2+1].summ*M[0][1]));
 			nss = tree[idx*2+1].sum*M[1][0] + tree[idx*2+1].summ*M[1][1];
 			tree[idx*2+1].sum = ns;
 			tree[idx*2+1].summ = nss;
-			tree[idx*2+1].lz += x;
+			tree[idx*2+1].lz += val;
 		}
 	}
 	if(i >= l && j <= r){
 		return tree[idx].sum;
 	}
 	int m = (i+j)/2;
-	return mod(qry(idx*2, i, m, l, r) + 
-		qry(idx*2+1, m+1, j, l, r));
+	return mod(qry(idx*2, i, m, l, r) +
+			qry(idx*2+1, m+1, j, l, r));
+}
+
+void printt(int idx, int i, int j){
+	printf("%d %d-%d:\n", idx, i, j);
+	printf("	%lld %lld %lld\n", tree[idx].sum, tree[idx].summ, tree[idx].lz);
+	if(i == j)
+		return;
+	int m = (i + j)/2;
+	printt(idx*2, i, m);
+	printt(idx*2+1, m+1, j);
 }
 
 int main (){
@@ -171,13 +224,19 @@ int main (){
 		f[a] = fib(s[a]);
 		fm[a] = fib(s[a]-1);
 	}
+	build(1, 0, n-1);
+	printt(1, 0, n-1);
 	for(int a=0;a<m;a++){
 		int t, i, j;
 		scanf("%d%d%d", &t, &i, &j); 
+		i--;
+		j--;
 		if(t == 1){
 			ll x;
 			scanf("%lld", &x);
 			upd(1, 0, n-1, i, j, x);
+			printf("\nUPD +%lld de %d a %d\n", x, i, j);
+			printt(1, 0, n-1);
 		}
 		else{
 			printf("%lld\n", qry(1, 0, n-1, i, j));
