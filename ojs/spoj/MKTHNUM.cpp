@@ -11,7 +11,7 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 112345, NNODE = 7*MAXN;;
+const int MAXN = 112345, NNODE = 11234567;
 
 int n, m;
 int s[MAXN];
@@ -41,7 +41,7 @@ void cpy(int idx){
 
 int upd(int idx, int i, int j, int l){
 	if(i == j){
-		tree[idx] = 1;
+		tree[idx]++;
 //		printf("\n%d - %d  tree[%d] %d\n", i, j, idx, tree[idx]);
 		return idx;
 	}
