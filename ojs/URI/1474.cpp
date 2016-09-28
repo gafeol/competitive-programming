@@ -25,7 +25,19 @@ void cpy(ll u[2][2], ll v[2][2]){
 	}
 }
 
+void print(ll A[2][2]){
+//	for(int a=0;a<2;a++){
+///		for(int b=0;b<2;b++){
+//			printf("%lld ", A[a][b]);
+//		}
+//		putchar('\n');
+//	}
+}
+
 void mulm(ll u[2][2], ll v[2][2]){
+//	printf("mult\n");
+	print(u);
+	print(v);
 	for(int a=0;a<2;a++){
 		for(int b=0;b<2;b++){
 			aux[a][b] = 0;
@@ -35,42 +47,68 @@ void mulm(ll u[2][2], ll v[2][2]){
 		}
 	}
 	cpy(u, aux);
+	print(u);
 }
 
-void print(ll A[2][2]){
-	for(int a=0;a<2;a++){
-		for(int b=0;b<2;b++){
-			printf("%lld ", A[a][b]);
-		}
-		putchar('\n');
-	}
-}
 
 void expo(ll e){
+	if(e == 0){
+		for(int a=0;a<2;a++){
+			for(int b=0;b<2;b++){
+				M[a][b] = (a == b);
+			}
+		}
+		return ;
+	}
+	expo(e/2ll);
+	mulm(M, M);
+	if(e&1ll)
+		mulm(M, ini);
+}
+
+void expoi(ll e){
 	for(int a=0;a<2;a++){
 		for(int b=0;b<2;b++){
-			M[a][b] = (a==b);
+			M[a][b] = ini[a][b];
 		}
 	}
-	while(e > 0){
+	if(e == 0){
+		for(int a=0;a<2;a++){
+			for(int b=0;b<2;b++){
+				M[a][b] = (a == b);
+			}
+		}
+	}
+	for(int a=0;a<2;a++){
+		for(int b=0;b<2;b++){
+			ini[a][b] = (a == b);
+		}
+	}
+	while(e > 1ll){
+		if(e&1ll)
+			mulm(ini, M);
 		mulm(M, M);
-		if(e&1)
-			mulm(M, ini);
-		e <<= 1;
+		e /= 2ll;
 	}
 	print(M);
+	mulm(M, ini);
 }
 
 int main (){
-	scanf("%lld%lld%lld", &n, &l, &k);
-	ll ml = mod(l), mk = mod(k);
-	M[0][0] = mk;
-	M[0][1] = ml;
-	M[1][0] = 1;
-	M[1][1] = 0;
-	cpy(ini, M);
-	expo((n/5ll)-1);
-	ll ans = mod(mod(M[0][0]*mod(ml + mk*mk)) + mod(M[0][1]*mk));
-	printf("%.6lld\n", ans);
+	while(scanf("%lld%lld%lld", &n, &k, &l)!= EOF){
+		ll ml = mod(l), mk = mod(k);
+		M[0][0] = mk;
+		M[0][1] = ml;
+		M[1][0] = 1;
+		M[1][1] = 0;
+		cpy(ini, M);
+		if(n == 5){
+			printf("%.6lld\n", mk);
+			continue;
+		}
+		expo((n/5ll)-2);
+		ll ans = mod(mod(M[0][0]*mod(ml + mk*mk)) + mod(M[0][1]*mk));
+		printf("%.6lld\n", ans);
+	}
 
 }
