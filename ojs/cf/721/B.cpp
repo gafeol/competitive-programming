@@ -39,5 +39,5 @@ int main (){
 	for(int a = 0;a<t[ip];a++){
 		sum += cnt[a];
 	}
-	printf("%d %d\n", sum+1+f(sum), sum+cnt[t[ip]] + f(cnt[t[ip]]-1));
+	printf("%d %d\n", sum+1+f(sum), sum+cnt[t[ip]] + f(sum + cnt[t[ip]]-1));
 }
