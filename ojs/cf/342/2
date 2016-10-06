@@ -23,9 +23,10 @@ vector<int> adj[MAXN];
 
 void dfs(int u, int p){
 	sz[u] = 1;
-	mx[u] = 0;
+	mx[u] = 1;
 	imx[u] = -1;
-	for(int nxt: adj[u]){
+	for(int nxt:adj[u]){
+		printf("%d tenta %d, porem %d != -1 || %d == p %d\n", u, nxt, h[nxt], nxt, p); 
 		if(nxt == p || h[nxt] != -1)
 			continue;
 		dfs(nxt, u);
@@ -34,68 +35,70 @@ void dfs(int u, int p){
 		if(mx[u] == sz[nxt])
 			imx[u] = nxt;
 	}
-//	printf("	DFS %d mx %d imx %d sz %d\n", u, mx[u], imx[u], sz[u]);
+	printf("%d mx %d imx %d sz %d\n", u, mx[u], imx[u], sz[u]);
 }
 
 void idfs(int u, int p){
 	sz[u] = 1;
+	mx[u] = 1;
+	imx[u] = -1;
 	pai[u][0] = p;
-	for(int a=1;a<LOGN;a++){
+	for(int a=1;a<LOGN-1;a++){
 		pai[u][a] = pai[pai[u][a-1]][a-1];
 	}
-	for(int nxt: adj[u]){
+	for(int nxt:adj[u]){
 		if(nxt == p)
 			continue;
 		hi[nxt] = hi[u] + 1;
 		idfs(nxt, u);
 		sz[u] += sz[nxt];
+		mx[u] = max(mx[u], sz[nxt]);
+		if(mx[u] == sz[nxt])
+			imx[u] = nxt;
 	}
 }
 
 void build(int u, int p, int niv){
-//	printf("BUILD %d %d %d\n", u, p, niv);
+	printf("%d %d %d\n", u, p, niv);
 	dfs(u, u);
+	printf("%d %d %d\n", u, p, niv);
 	int tot = sz[u];
-	while(imx[u] != -1 && mx[u] > tot/2){
+	while(mx[u] > tot/2){
+		printf("u %d mx[u] %d tot %d\n", u, mx[u], tot);
 		u = imx[u];
 	}
-//	printf("	u: %d\n\n", u); 
 	h[u] = niv;
 	pc[u] = p;
-//	printf("pc[%d] =  %d\n", u, p);
+	printf("pc[%d] =  %d\n", u, p);
 	for(int nxt: adj[u]){
-//		printf("%d ta ligado com %d %d\n", u, nxt, h[nxt]);
+		printf("ta ligado com %d %d\n", nxt, h[nxt]);
 		if(h[nxt]== -1)
 			build(nxt, u, niv+1);
 	}
-//	printf("\n\n");
+
 }
 
 int lca(int u, int v){
-//	printf("LCA %d %d\n", u, v);
 	if(u == v) return u;
 	if(hi[u] < hi[v])
 		swap(u, v);
 	for(int a=LOGN-1;a>=0;a--){
-		if(hi[pai[u][a]] >= hi[v])
+		if(hi[pai[u][a]] < hi[v])
 			u = pai[u][a];
 	}
-	if(u == v){
-//		printf("	RETORN1 %d\n", u);
+	u = pai[u][0];
+	if(u == v)
 		return u;
-	}
 	for(int a=LOGN-1;a>=0;a--){
 		if(pai[u][a] != pai[v][a]){
 			u = pai[u][a];
 			v = pai[v][a];
 		}
 	}
-//	printf("	RETORN2 %d\n", pai[u][0]);
 	return pai[u][0];
 }
 
 int dist(int u, int v){
-//	printf("dist (%d %d) = %d\n", u, v, hi[u] + hi[v] -2*hi[lca(u, v)]);
 	return hi[u] + hi[v] - 2*hi[lca(u, v)];	
 }
 
@@ -103,16 +106,16 @@ void upd(int u){
 	int uu = u;
 	while(uu != -1){
 		ans[uu] = min(ans[uu], dist(u, uu));
-//		printf("upd %d ans[%d] eh %d\n", u, uu, ans[uu]);
+		//printf("upd %d ans[%d] eh %d\n", u, uu, ans[uu]);
 		uu = pc[uu];
 	}
+	//printf("upd %d ans[%d] eh %d\n", u, uu, ans[uu]);
 }
 
 void qry(int u){
 	int res = INT_MAX;
 	int uu = u;
 	while(uu != -1){
-//		printf("para u %d uu %d res = %d ou %d + %d\n", u, uu, res, dist(u, uu), ans[uu]); 
 		res = min(res, dist(u, uu) + ans[uu]);
 		uu = pc[uu];
 	}
@@ -122,9 +125,10 @@ void qry(int u){
 int main ()	{
 	scanf("%d%d", &n, &m);
 	for(int a=0;a<=n;a++){
+		d[a] = INT_MAX;
 		pc[a] = -1;
 		h[a] = -1;
-		ans[a] = 1000000;
+		ans[a] = INT_MAX;
 	}
 	for(int a=0;a<n-1;a++){
 		int i, j;
@@ -134,11 +138,11 @@ int main ()	{
 	}
 	hi[1] = 1;
 	idfs(1, 1);
-//	printf("fim\n");
+	printf("fim\n");
 	build(1, -1, 1);
-//	printf("fim\n");
+	printf("fim\n");
 	upd(1);
-//	printf("fim\n");
+	printf("fim\n");
 	for(int a=0;a<m;a++){
 		int t, u;
 		scanf("%d%d", &t, &u);
