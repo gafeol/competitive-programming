@@ -11,7 +11,7 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 212345;
+const int MAXN = 212345, LOGN = 30;
 
 int n, m, k;
 int s[MAXN];
@@ -21,6 +21,7 @@ vector<pii> adj[MAXN];
 int p[MAXN][LOGN], pc[MAXN], d[MAXN], h[MAXN], sz[MAXN], mx[MAXN], imx[MAXN];
 
 int hc[MAXN], cor[MAXN];
+int best[MAXN];
 
 multiset<int> s[MAXN];
 
@@ -96,7 +97,9 @@ void build(int u, int rc, int niv){
 
 void upd(int u){
 	while(u != -1){
-		if(cor[u])
+		if(!cor[u]){
+
+		}
 	}
 }
 
