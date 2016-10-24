@@ -63,7 +63,7 @@ void go(int i, int j, int opti, int optj, int k){
 			opt = a;
 		}
 	}
-//	printf("go %lld %lld m %lld dp[%lld][%lld] %lld\n", i, j, m, m, k, dp[m][k]);
+	printf("go %lld %lld m %lld dp[%lld][%lld] %lld\n", i, j, m, m, k, dp[m][k]);
 	go(i, m-1, opti, opt, k);
 	go(m+1, j, opt, optj, k);
 }
