@@ -99,9 +99,11 @@ main (){
 	}
 	for(ll a=1;a<=b;a++){
 		s[a] = d[a] + d2[a];
+	}
+	sort(s+1, s+b+1);
+	for(ll a=1;a<=b;a++){
 		sum[a] = sum[a-1] + s[a];
 	}
-	sort(s, s+b);
 	k--;
 	for(ll a=1;a<=b;a++){
 		dp[a][0] = cus(1, a);
