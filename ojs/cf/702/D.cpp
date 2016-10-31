@@ -1,4 +1,3 @@
-
 #include <bits/stdc++.h>
 using namespace std;
 #define fst first
@@ -19,12 +18,26 @@ inline ll mod(ll x) { return x % modn; }
 
 const int MAXN = 212345;
 
-int n, m, k;
-int s[MAXN];
+ll n, m, k, tc, tw, tr, td, d;
+ll res;
+
+void fim(){
+	printf("%lld\n", res);
+	exit(0);
+}
 
 int main (){
-	scanf("%d", &n);
-	for(int a=0;a<n;a++){
-
+	scanf("%lld %lld %lld %lld %lld", &d, &k, &td, &tw, &tr);
+	res = LLONG_MAX;
+	if(k >= d){
+		res = d*td;
+		fim();
 	}
+	res = min(res, d*tw);
+	res = min(res, td*k - k*tw + d*tw);
+	res = min(res, (td*k + tr - k*tw)*(d/k) -tr + d*tw);
+	if(d%k != 0)
+		res = min(res, d*td + tr*(d/k));
+	printf("%lld\n", res);
+	
 }

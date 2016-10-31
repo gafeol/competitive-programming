@@ -1,4 +1,3 @@
-
 #include <bits/stdc++.h>
 using namespace std;
 #define fst first
@@ -22,9 +21,34 @@ const int MAXN = 212345;
 int n, m, k;
 int s[MAXN];
 
+map<int, ll> ind;
+
+map<pii, int> mrk;
+
+
+ll res;
+
 int main (){
 	scanf("%d", &n);
 	for(int a=0;a<n;a++){
-
+		scanf("%d", &s[a]);
+		ind[s[a]]++;
 	}
+	for(int a=0;a<n;a++){
+		for(int d=1;d<=30;d++){
+			if((1<<d) - s[a] > 0){
+				if(mrk.find(pii(s[a], (1<<d)-s[a])) != mrk.end())
+					continue;
+				mrk[pii(s[a], (1<<d)-s[a])] = 1;
+				mrk[pii((1<<d)-s[a], s[a])] = 1;
+				if((1<<d) == s[a]*2){
+					res += (ind[s[a]]*(ind[s[a]]-1))/2ll;
+				}
+				else{
+					res += ind[s[a]]*ind[(1<<d)-s[a]];
+				}
+			}
+		}
+	}
+	printf("%lld\n", res);
 }

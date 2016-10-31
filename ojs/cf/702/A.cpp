@@ -1,4 +1,3 @@
-
 #include <bits/stdc++.h>
 using namespace std;
 #define fst first
@@ -24,7 +23,16 @@ int s[MAXN];
 
 int main (){
 	scanf("%d", &n);
-	for(int a=0;a<n;a++){
-
+	s[0] = INT_MIN;
+	int res = 0;
+	int cnt = 0;
+	for(int a=1;a<=n;a++){
+		scanf("%d", &s[a]);
+		if(s[a] > s[a-1])
+			cnt++;
+		else
+			cnt=1;
+		res = max(res, cnt);
 	}
+	printf("%d\n", res);
 }
