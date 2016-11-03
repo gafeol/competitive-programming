@@ -21,30 +21,14 @@ const int MAXN = 212345;
 ll n, m, k;
 ll res;
 
-int main (){
-	scanf("%lld%lld%lld", &n, &m, &k);
-	clock_t clk = clock();
-	res = n*m;
-	ll nn = n;
-	ll cus = 0;
-	for(ll add = 0;((double)(clock() - clk))/CLOCKS_PER_SEC <= 1.8;add++){
-		nn = n + add;
-		cus = 0;
-		for(ll a=0;nn >= 1;a++){
-			res = min(res, a*k + nn*m + cus*m + add*m);
-			cus += (nn&1);		
-			nn /=2;
-		}
-		nn = n - add;
-		if(nn <= 0)
-			continue;
-		cus = 0;
-		for(ll a=0;nn >= 1;a++){
-			res = min(res, a*k + nn*m + cus*m + add*m);
-			cus += (nn&1);		
-			nn /=2;
-		}
+ll dp[10000005];
 
-	}
+void solve(ll x){
+}
+
+int main (){
+	memset(dp, -1, sizeof(dp));
+	scanf("%lld%lld%lld", &n, &m, &k);
+	solve(1);
 	printf("%lld\n", res);
 }
