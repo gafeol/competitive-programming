@@ -32,19 +32,17 @@ int main (){
 //		debug("dp[%lld] %lld\n", a, dp[a]);
 		ll nxt = a*2ll;
 		if(nxt <= n){
-			assert(nxt > MAXN);
 			dp[nxt] = min((nxt - a)*m + dp[a], dp[nxt]);
 			dp[nxt] = min(dp[nxt], dp[a] + k);
 		}
 		nxt++;
-		assert(nxt < MAXN);
 		if(nxt <= n){
+			dp[nxt] = min((nxt - a)*m + dp[a], dp[nxt]);
 			dp[nxt] = min((nxt - a)*m + dp[a], dp[nxt]);
 			dp[nxt] = min(dp[nxt], dp[a] + k + m);
 		}
 		nxt-=2;
-		assert(nxt < MAXN);
-		if(nxt > a){
+		if(nxt > a && nxt < MAXN){
 			dp[nxt] = min((nxt - a)*m + dp[a], dp[nxt]);
 			dp[nxt] = min(dp[nxt], dp[a] + k + m);
 		}
