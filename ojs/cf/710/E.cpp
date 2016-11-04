@@ -16,19 +16,38 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 212345;
+const int MAXN = 10000005;
 
 ll n, m, k;
-ll res;
 
-ll dp[10000005];
-
-void solve(ll x){
-}
+ll dp[MAXN];
 
 int main (){
-	memset(dp, -1, sizeof(dp));
+	for(int a=0;a<MAXN;a++){
+		dp[a] = LLONG_MAX;
+	}
 	scanf("%lld%lld%lld", &n, &m, &k);
-	solve(1);
-	printf("%lld\n", res);
+	dp[0] = 0;
+	for(ll a=0;a<=n;a++){
+//		debug("dp[%lld] %lld\n", a, dp[a]);
+		ll nxt = a*2ll;
+		if(nxt <= n){
+			assert(nxt > MAXN);
+			dp[nxt] = min((nxt - a)*m + dp[a], dp[nxt]);
+			dp[nxt] = min(dp[nxt], dp[a] + k);
+		}
+		nxt++;
+		assert(nxt < MAXN);
+		if(nxt <= n){
+			dp[nxt] = min((nxt - a)*m + dp[a], dp[nxt]);
+			dp[nxt] = min(dp[nxt], dp[a] + k + m);
+		}
+		nxt-=2;
+		assert(nxt < MAXN);
+		if(nxt > a){
+			dp[nxt] = min((nxt - a)*m + dp[a], dp[nxt]);
+			dp[nxt] = min(dp[nxt], dp[a] + k + m);
+		}
+	}
+	printf("%lld\n", dp[n]);
 }
