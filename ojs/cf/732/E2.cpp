@@ -19,26 +19,69 @@ inline ll mod(ll x) { return x % modn; }
 const int MAXN = 212345;
 
 int n, m, k;
-ll s[MAXN], v[MAXN], ind[MAXN];
+int na[MAXN], cs[MAXN];
+ll s[MAXN], c[MAXN], ind[MAXN];
+int adap, comp;
+
+map<int, stack<int> > mrk;
 
 bool cmp(int a, int b){
 	return s[a] < s[b];
 }
 
+bool cmp2(int a, int b){
+	return a<b;
+}
+
 int main (){
 	scanf("%d%d", &n, &m);
-	for(int a=0;a<n;a++){
+	for(int a=1;a<=n;a++){
+		cs[a] = 0;
 		scanf("%lld", &c[a]);
+		mrk[c[a]].push(a);
 	}
-	for(int a=0;a<m;a++){
+	for(int a=1;a<=m;a++){
 		ind[a] = a;
 		scanf("%lld", &s[a]);
+		na[a] = -1;
 	}
-	sort(ind, ind+m, cmp);
-	sort(s, s+m);
-	sort(c, c+n);
-	for(int a=0;a<n;a++){
-		 
+	sort(ind+1, ind+m+1, cmp);
+	sort(s+1, s+m+1, cmp2);
+	for(int a=1;a<=m;a++){
+		int cnt = 0;
+		while(s[a] > 1){
+			if(mrk.find(s[a]) != mrk.end() && mrk[s[a]].size() != 0){
+				int t = mrk[s[a]].top();
+				mrk[s[a]].pop();
+				cs[t] = ind[a];
+				na[ind[a]] = cnt;
+				comp++;
+				adap+=cnt;
+				break;
+			}
+			cnt++;
+			s[a] = (s[a]+1)/2;
+		}
+		if(na[ind[a]] == -1){
+			if(mrk.find(s[a]) != mrk.end() && mrk[s[a]].size() != 0){
+				int t = mrk[s[a]].top();
+				mrk[s[a]].pop();
+				cs[t] = ind[a];
+				na[ind[a]] = cnt;
+				comp++;
+				adap+=cnt;
+			}
+		}
+		if(na[ind[a]] == -1)
+			na[ind[a]] = 0;
+	}
+	printf("%d %d\n", comp, adap);
+	for(int a=1;a<=m;a++){
+		printf("%d ", na[a]);
+	}
+	putchar('\n');
+	for(int a=1;a<=n;a++){
+		printf("%d ", cs[a]);
 	}
 
 }

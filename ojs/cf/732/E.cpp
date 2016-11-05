@@ -96,11 +96,11 @@ void go(int v){
 			if(to[a] == t || to[a] == S || to[a+1] == t || to[a+1] == S)
 				continue;
 			if(to[a] <= m){
-				mrk[to[a+1]-m] = 1;
+				mrk[to[a+1]-m] = to[a];
 				nso[to[a]] = cs[a];
 			}
 			else{
-				mrk[to[a]-m] = 1;
+				mrk[to[a]-m] = to[a+1];
 				nso[to[a+1]] = cs[a+1];
 			}
 		}
@@ -147,7 +147,7 @@ main (){
 	int c = 1;
 	for(int a=1;a<=n;a++){
 		if(mrk[a])
-			printf("%lld ", c++);
+			printf("%lld ", mrk[a]);
 		else
 			printf("0 ");
 	}
