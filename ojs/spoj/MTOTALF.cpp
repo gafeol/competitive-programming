@@ -7,11 +7,7 @@ typedef long long ll;
 typedef pair<int, int> pii;
 #define pb push_back
 #define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
-#ifndef ONLINE_JUDGE
-#define debug(args...) fprintf(stderr,args)
-#else
-#define debug(args...)
-#endif //ONLINE_JUDGE
+#define debug(args...) //fprintf(stderr,args)
 template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
@@ -49,7 +45,7 @@ int num(char c){
 	if(ind.find(c) == ind.end()){
 		ind[c] = deg++;
 	}
-	printf("num %c  %d\n", c, ind[c]);
+	debug("num %c  %d\n", c, ind[c]);
 	return ind[c];
 }
 
@@ -65,17 +61,22 @@ int dfs(int u, int fl, int t){
 		int nxt = eds[i].v;
 		int cp = eds[i].cp;
 		int f = eds[i].f;
-		if(mrk[nxt] != tempo && f < cp){
-			ans = max(ans, dfs(nxt, min(fl, (cp-f)), t));
-			eds[i].f += ans;
-			eds[i^1].f -= ans;
+		if(mrk[nxt] < tempo && f < cp){
+			ans = dfs(nxt, min(fl, (cp-f)), t);
+			if(ans != 0){
+				eds[i].f += ans;
+				eds[i^1].f -= ans;
+				return ans;
+			}
 		}
 	}
+	debug("retorna %d\n", ans);
 	return ans;
 }
 
 int max_flow(int s, int t){
-	while(flow += dfs(s, INT_MAX, t)){
+	while(int f = dfs(s, INT_MAX, t)){
+		flow += f;
 		tempo++;
 	}
 	return flow;
