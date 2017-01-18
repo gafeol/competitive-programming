@@ -16,29 +16,17 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 512345;
+const int MAXN = 212345;
 
 int n, m, k;
 int s[MAXN];
 
 int main (){
-	scanf("%d%d", &n, &k);
-	ll sum = 0;
-	for(int a=0;a<n;a++){
-		scanf("%d", &s[a]);
+	int i = 1, sum = 0;
+	while(1){
+		if(sum > 75) break;
+		sum += (1 + (int)log2(i));
+		i++;
 	}
-	if(n == 1){
-		puts("0");
-		return 0;
-	}
-	sort(s, s+n);
-	int i = 0, j = n-1;
-	while(i < j){
-		while(s[i+1] == s[i] && i < j)
-			i++;
-		while(s[j-1] == s[j] && i < j)
-			j--;
-
-	}
-
+	printf("i %d\n", i);
 }

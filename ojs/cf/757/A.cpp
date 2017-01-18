@@ -16,29 +16,30 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 512345;
+const int MAXN = 212345;
 
-int n, m, k;
-int s[MAXN];
+int n, m, k, i;
+char s[MAXN], b[MAXN];
+
+map<char, int> ind;
 
 int main (){
-	scanf("%d%d", &n, &k);
-	ll sum = 0;
-	for(int a=0;a<n;a++){
-		scanf("%d", &s[a]);
+	b[0] = 'B';
+	b[1] = 'u';
+	b[2] = 'l';
+	b[3] = 'b';
+	b[4] = 'a';
+	b[5] = 's';
+	b[6] = 'a';
+	b[7] = 'u';
+	b[8] = 'r';
+	scanf(" %s", s);
+	int tam = strlen(s);
+	int res;
+	i = 0;
+	for(int a=0;a<tam;a++){
+		ind[s[a]]++;
 	}
-	if(n == 1){
-		puts("0");
-		return 0;
-	}
-	sort(s, s+n);
-	int i = 0, j = n-1;
-	while(i < j){
-		while(s[i+1] == s[i] && i < j)
-			i++;
-		while(s[j-1] == s[j] && i < j)
-			j--;
-
-	}
-
+	res = min(ind['B'], min(ind['a']/2, min(ind['u']/2, min(ind['s'], min(ind['l'], min(ind['b'], ind['r']))))));
+	printf("%d\n", res);
 }
