@@ -5,7 +5,6 @@ using namespace std;
 typedef unsigned long long ull;
 typedef long long ll;
 typedef pair<int, int> pii;
-typedef pair<int, pii> ppi;
 #define pb push_back
 #define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
 #ifndef ONLINE_JUDGE
@@ -20,15 +19,25 @@ inline ll mod(ll x) { return x % modn; }
 const int MAXN = 212345;
 
 int n, m, k;
-int M[100][100];
-set<ppi> s;
+int s[MAXN], p[2];
 
 int main (){
-	scanf("%d%d", &n, &m);
+	scanf("%d", &n);
 	for(int a=0;a<n;a++){
-		for(int b=0;b<m;b++){
-			scanf("%d", &M[a][b]);
-		}
+		scanf("%d", &s[a]);
 	}
-	s.insert(ppi(0, pii(0, 0));
+	int i = 0, j = n - 1;
+	int cnt = 0;
+	while(i <= j){
+		if(s[i] > s[j]){
+			p[cnt] += s[i];
+			i++;
+		}
+		else{
+			p[cnt] += s[j];
+			j--;
+		}
+		cnt ^= 1;
+	}
+	printf("%d %d\n", p[0], p[1]);
 }
