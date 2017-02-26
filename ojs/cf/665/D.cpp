@@ -26,9 +26,9 @@ int adj[1003][1003];
 
 int main (){
 	memset(c, 0, sizeof(c));
-	for(int a=2;a<1005;a++){
+	for(int a=2;a<10000;a++){
 		if(c[a]) continue;
-		for(int b=a;b*a < MAXN;b++){
+		for(int b=a;b*a<MAXN;b++){
 			c[a*b] = 1;
 		}
 	}
@@ -38,8 +38,11 @@ int main (){
 		cnt[s[a]]++;
 	}
 	int res = 1;
+	int um = 0;
 	int x, y, z;
 	for(int a=0;a<n;a++){
+		if(c[s[a] + 1] == 0 && s[a] != 1)
+			um = s[a];
 		for(int b=a+1;b<n;b++){
 			if(c[s[a] + s[b]]) continue;
 			adj[a][b] = 1;
@@ -57,12 +60,12 @@ int main (){
 
 		}
 	}
-	if(cnt[1] + (cnt[2] != 0) > res){
-		printf("%d\n", cnt[1] + (cnt[2] != 0));
+	if(cnt[1] + (um != 0) > res){
+		printf("%d\n", cnt[1] + (um != 0));
 		for(int a=0;a<cnt[1];a++)
 			printf("1 ");
-		if(cnt[2] != 0)
-			printf("2\n");
+		if(um != 0)
+			printf("%d\n", um);
 		return 0;
 	}
 	if(res == 1)
