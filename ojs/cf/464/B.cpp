@@ -7,11 +7,7 @@ typedef long long ll;
 typedef pair<int, int> pii;
 #define pb push_back
 #define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
-#ifndef ONLINE_JUDGE
-#define debug(args...) fprintf(stderr,args)
-#else
-#define debug(args...)
-#endif //ONLINE_JUDGE
+#define debug(args...) //printf(args)
 template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
@@ -39,8 +35,8 @@ ll dist(int i, int j){
 int main (){
 	for(int a=0;a<8;a++){
 		scanf("%lld%lld%lld", &s[a][0], &s[a][1], &s[a][2]);
+		sort(s[a], s[a]+3);
 	}
-	int res = 0;
 	do{
 		do{
 			do{
@@ -70,7 +66,6 @@ int main (){
 									sort(ds.begin(), ds.end());
 									if(ds.size() == 3 && cnt[ds[0]] == 24 && cnt[ds[1]] == 24 && cnt[ds[2]] == 8 && ds[1] == 2ll*ds[0] && ds[2] == 3ll*ds[0]){
 										puts("YES");
-										debug("deg %d\n", deg);
 										for(int a=0;a<8;a++){
 											for(int b=0;b<3;b++){
 												printf("%lld ", s[a][b]);
@@ -79,8 +74,6 @@ int main (){
 										}
 										return 0;
 									}
-									debug("passed\n");
-
 								}while(next_permutation(s[0], s[0]+3));
 							}while(next_permutation(s[1], s[1]+3));
 						}while(next_permutation(s[2], s[2]+3));
@@ -89,6 +82,5 @@ int main (){
 			}while(next_permutation(s[5], s[5]+3));
 		}while(next_permutation(s[6], s[6]+3));
 	}while(next_permutation(s[7], s[7]+3));
-	debug("deg %d\n", deg);
 	puts("NO");
 }
