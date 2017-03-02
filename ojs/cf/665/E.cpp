@@ -80,11 +80,11 @@ int main (){
 		x[a] ^= s[a];
 	}
 	v.pb(node(-1, -1, 0));
-	add(0, 0, 30);
+	add(0, 0, 29);
 	ll res = 0;
 	for(int a=0;a<n;a++){
-		res += qry(0, x[a], 30, 0); 
-		add(0, x[a], 30);
+		res += qry(0, x[a], 29, 0); 
+		add(0, x[a], 29);
 	}
 	printf("%lld\n", res);
 }
