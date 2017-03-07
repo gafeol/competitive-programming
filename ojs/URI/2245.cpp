@@ -46,6 +46,11 @@ ll cross(pii A, pii B){
 	return A.fst*B.snd - A.snd*B.fst;
 }
 
+ll ab(ll x){
+	if(x < 0) return -x;
+	return x;
+}
+
 ll area(int i, int mi, int j, int mj, int k, int mk){
 	pii ii = mv(i, mi);
 	pii jj = mv(j, mj);
@@ -54,7 +59,7 @@ ll area(int i, int mi, int j, int mj, int k, int mk){
 	pii A = ii - jj;
 	pii B = kk - jj;
 
-	return abs(cross(A, B));
+	return ab(cross(A, B));
 }
 
 bool valid(int i, int mi, int j, int mj, int k, int mk){
