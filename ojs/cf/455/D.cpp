@@ -1,4 +1,3 @@
-
 #include <bits/stdc++.h>
 using namespace std;
 #define fst first
@@ -48,7 +47,7 @@ int main (){
 		if(i > j) swap(i, j);
 
 		if(t == 1){
-			
+						
 		}
 		else{
 
