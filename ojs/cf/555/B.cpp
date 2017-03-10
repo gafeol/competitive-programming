@@ -74,6 +74,16 @@ int main (){
 		res[u] = s[a].snd;
 		q.erase(top);
 	}
+	for(pii x: cnd[m]){
+		if(!x.snd)
+			q.insert(pii(p[x.fst].snd, x.fst));
+		else{
+			if(res[x.fst] == -1){
+				puts("No");
+				return 0;
+			}
+		}
+	}
 	puts("Yes");
 	for(int a=0;a<n;a++){
 		printf("%d ", res[a]+1);
