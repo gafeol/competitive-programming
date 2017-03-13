@@ -62,8 +62,8 @@ int main (){
 			ind[cm[a]] = a;
 		}
 		for(int a=0;a<n;a++){
-//			assert(ind.find(d[a].fst) != ind.end());
-//			assert(ind.find(d[a].snd) != ind.end());
+			//	assert(ind.find(d[a].fst) != ind.end());
+			//	assert(ind.find(d[a].snd) != ind.end());
 			s[ind[d[a].fst]].pb(pii(a, 0));
 			s[ind[d[a].snd]].pb(pii(a, 1));
 		}
