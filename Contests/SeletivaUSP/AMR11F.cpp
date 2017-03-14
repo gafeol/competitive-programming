@@ -1,12 +1,13 @@
 #include <bits/stdc++.h>
 using namespace std;
+#define int ll
 #define fst first
 #define snd second
 typedef unsigned long long ull;
 typedef long long ll;
 typedef pair<int, int> pii;
 #define pb push_back
-#define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
+#define for_tests(t, tt) int t; scanf("%lld", &t); for(int tt = 1; tt <= t; tt++)
 #ifndef ONLINE_JUDGE
 #define debug(args...) fprintf(stderr,args)
 #else
@@ -16,7 +17,7 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 212345;
+const int MAXN = 3123, INF = 0x3f3f3f3f;
 
 int n, m, k;
 int s[MAXN];
@@ -25,59 +26,121 @@ map<pii, int> ind;
 pii pos[MAXN];
 int deg;
 
-vector<pii> adj[MAXN];
+int adj[MAXN][MAXN];
 
-inline int dist(int a, int b){
-	if(pos[a].fst > pos[b].fst)
-		swap(a, b);
-	int i = pos[a].fst;
-	int j = pos[a].snd;
-	int ii = pos[b].fst;
-	int jj = pos[b].snd;
+vector<int> tow[MAXN];
 
-	return min(ii - i, n-ii + i) + abs(jj-j); 
+void build(int i, int j){
+	if(ind.find(pii(i, j)) != ind.end())
+		return;
+
+	tow[i].pb(j);
+	pos[deg] = pii(i, j);
+	ind[pii(i, j)] = deg++;
 }
 
-int main (){
-	for_tests(t, tt){
+main (){
+	int ti;
+	scanf("%lld", &ti);
+	deg = 1000;
+	while(ti--){
+		for(int a=0;a<deg;a++){
+			for(int b=0;b<deg;b++){
+				adj[a][b] = 1e9;
+			}
+		}
+		deg = 0;
+		ind.clear();
 		int f;
-		scanf("%d %d %d", &n, &f, &m);
+		scanf("%lld %lld %lld", &n, &f, &m);
+		for(int a=1;a<=n;a++)
+			tow[a].clear();
+		for(int a=1;a<=n;a++)
+			build(a, 1);
+
+		for(int a=1;a<=n;a++){
+			int u = ind[pii(a, 1)];
+			int v = ind[pii((a+1)%(n+1) + 1, 1)];
+			adj[u][v] = 1;
+			adj[v][u] = 1;
+		}
 		for(int a=0;a<m;a++){
 			int i, j, ii, jj, t;
-			scanf("%d %d %d %d %d %d", &i, &j, &ii, &jj, &t); 
+			scanf("%lld %lld %lld %lld %lld", &i, &j, &ii, &jj, &t); 
 			if(ind.find(pii(i, j)) == ind.end()){
 				ind[pii(i, j)] = deg++;
-				pos[deg-1] = pii(i, j):
+				pos[deg-1] = pii(i, j);
+				tow[i].pb(j);
 			}
 			if(ind.find(pii(ii, jj)) == ind.end()){
 				ind[pii(ii, jj)] = deg++;
 				pos[deg-1] = pii(ii, jj);
+				tow[ii].pb(jj);
 			}
 			int u = ind[pii(i, j)];
 			int v = ind[pii(ii, jj)];
-			adj[u].pb(pii(v, t));
-			adj[v].pb(pii(u, t));
+			adj[u][v] = min(adj[u][v], t);
+			adj[v][u] = min(adj[v][u], t);
 		}
-		for(int a=0;a<deg;a++){
-			for(int b=0;b<deg;b++){
-				if(a == b) continue;
-				adj[a].pb(pii(b, dist(a, b)));
+		for(int i=1;i<=n;i++){
+			sort(tow[i].begin(), tow[i].end());
+			for(int a = 1;a<tow[i].size();a++){
+				int u = ind[pii(i, tow[i][a-1])];
+				int v = ind[pii(i, tow[i][a])];
+				adj[u][v] = min(adj[u][v], tow[i][a] - tow[i][a-1]);
+				adj[v][u] = min(adj[v][u], tow[i][a] - tow[i][a-1]);
 			}
 		}
-		scanf("%d", &q);
-		for(int a=0;a<q;a++){
-			int i, j, ii, jj;
-			scanf("%d %d %d %d", &i, &j, &ii, &jj);
-			int cnt = 0;
-			if(ind.find(pii(i, j)) == ind.end()){
-				cnt++;
-				ind[pii(i, j)] = deg++;	
-				pos[deg-1] = pii(i, j);
-				for(int a=0;a<deg-1;a++){
-					adj[a].pb(pii(deg-1, dist(a, deg-1)));
-					adj[deg-1].pb(pii(a, dist(a, deg-1)));
+
+		for(int k = 0;k < deg;k++){
+			for(int i = 0;i < deg;i++){
+				for(int j = 0;j < deg;j++){
+					adj[i][j] = min(adj[i][j], adj[i][k] + adj[k][j]);
 				}
 			}
+		}
+		pii ini[2];
+		pii fim[2];
+		int q;
+		scanf("%lld", &q);
+		for(int a=0;a<q;a++){
+			int i, j, ii, jj;
+			scanf("%lld %lld %lld %lld", &i, &j, &ii, &jj);
+			int cnt = 0;
+			if(ind.find(pii(i, j)) == ind.end()){
+				auto it = lower_bound(tow[i].begin(), tow[i].end(), j);
+				ini[0] = ini[1] = pii(i, 1);
+				if(it != tow[i].end())
+					ini[0] = pii(i, *it);
+				if(it != tow[i].begin())
+					ini[1] = pii(i, *(--it));
+			}
+			else{
+				ini[0] = ini[1] = pii(i, j);
+			}
+
+			if(ind.find(pii(ii, jj)) == ind.end()){
+				auto it = lower_bound(tow[ii].begin(), tow[ii].end(), jj);
+				fim[0] = fim[1] = pii(ii, 1);
+				if(it != tow[ii].end())
+					fim[0] = pii(ii, *it);
+				if(it != tow[ii].begin())
+					fim[1] = pii(ii, *(--it));
+			}
+			else{
+				fim[0] = fim[1] = pii(ii, jj);
+			}
+			
+			int res = LLONG_MAX;
+			for(int x=0;x<2;x++){
+				for(int y=0;y<2;y++){
+					res = min(res, adj[ind[ini[x]]][ind[fim[y]]] + abs(j - ini[x].snd) + abs(jj - fim[x].snd));
+				}
+			}
+
+			if(i == ii)
+				res = min(res, abs(j - jj));
+			printf("%lld\n", res);
 		}
 	}
 }
