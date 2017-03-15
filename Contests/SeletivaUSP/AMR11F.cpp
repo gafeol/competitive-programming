@@ -36,6 +36,7 @@ void build(int i, int j){
 
 	tow[i].pb(j);
 	pos[deg] = pii(i, j);
+	adj[deg][deg] = 0;
 	ind[pii(i, j)] = deg++;
 }
 
@@ -67,16 +68,8 @@ main (){
 		for(int a=0;a<m;a++){
 			int i, j, ii, jj, t;
 			scanf("%lld %lld %lld %lld %lld", &i, &j, &ii, &jj, &t); 
-			if(ind.find(pii(i, j)) == ind.end()){
-				ind[pii(i, j)] = deg++;
-				pos[deg-1] = pii(i, j);
-				tow[i].pb(j);
-			}
-			if(ind.find(pii(ii, jj)) == ind.end()){
-				ind[pii(ii, jj)] = deg++;
-				pos[deg-1] = pii(ii, jj);
-				tow[ii].pb(jj);
-			}
+			build(i, j);
+			build(ii, jj);
 			int u = ind[pii(i, j)];
 			int v = ind[pii(ii, jj)];
 			adj[u][v] = min(adj[u][v], t);
@@ -130,6 +123,7 @@ main (){
 			else{
 				fim[0] = fim[1] = pii(ii, jj);
 			}
+			debug("ini:\n	ini[0] %d %d\n	ini[1] %d %d\nfim:\n	fim[0], %d %d\n	fim[1] %d %d\n", ini[0].
 			
 			int res = LLONG_MAX;
 			for(int x=0;x<2;x++){
