@@ -47,8 +47,9 @@ main (){
 	while(ti--){
 		for(int a=0;a<deg;a++){
 			for(int b=0;b<deg;b++){
-				adj[a][b] = 1e9;
+				adj[a][b] = 1e8;
 			}
+			adj[a][a] = 0;
 		}
 		deg = 0;
 		ind.clear();
@@ -62,8 +63,8 @@ main (){
 		for(int a=1;a<=n;a++){
 			int u = ind[pii(a, 1)];
 			int v = ind[pii((a+1)%(n+1) + 1, 1)];
-			adj[u][v] = 1;
-			adj[v][u] = 1;
+			adj[u][v] = min(adj[u][v], 1ll);
+			adj[v][u] = min(adj[v][u], 1ll);
 		}
 		for(int a=0;a<m;a++){
 			int i, j, ii, jj, t;
@@ -123,7 +124,7 @@ main (){
 			else{
 				fim[0] = fim[1] = pii(ii, jj);
 			}
-			debug("ini:\n	ini[0] %d %d\n	ini[1] %d %d\nfim:\n	fim[0], %d %d\n	fim[1] %d %d\n", ini[0].
+			debug("ini:\n	ini[0] %lld %lld\n	ini[1] %lld %lld\nfim:\n	fim[0], %lld %lld\n	fim[1] %lld %lld\n", ini[0].fst, ini[0].snd, ini[1].fst, ini[1].snd, fim[0].fst, fim[0].snd, fim[1].fst, fim[1].snd);
 			
 			int res = LLONG_MAX;
 			for(int x=0;x<2;x++){
