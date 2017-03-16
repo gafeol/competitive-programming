@@ -40,6 +40,11 @@ void build(int i, int j){
 	ind[pii(i, j)] = deg++;
 }
 
+void add(int i, int j, int d){
+	adj[i][j] = min(adj[i][j], d);
+	adj[j][i] = min(adj[j][i], d);
+}
+
 main (){
 	int ti;
 	scanf("%lld", &ti);
@@ -63,8 +68,7 @@ main (){
 		for(int a=1;a<=n;a++){
 			int u = ind[pii(a, 1)];
 			int v = ind[pii((a+1)%(n+1) + 1, 1)];
-			adj[u][v] = min(adj[u][v], 1ll);
-			adj[v][u] = min(adj[v][u], 1ll);
+			add(u, v, 1);
 		}
 		for(int a=0;a<m;a++){
 			int i, j, ii, jj, t;
@@ -73,24 +77,29 @@ main (){
 			build(ii, jj);
 			int u = ind[pii(i, j)];
 			int v = ind[pii(ii, jj)];
-			adj[u][v] = min(adj[u][v], t);
-			adj[v][u] = min(adj[v][u], t);
+			add(u, v, t);
 		}
 		for(int i=1;i<=n;i++){
 			sort(tow[i].begin(), tow[i].end());
 			for(int a = 1;a<tow[i].size();a++){
 				int u = ind[pii(i, tow[i][a-1])];
 				int v = ind[pii(i, tow[i][a])];
-				adj[u][v] = min(adj[u][v], abs(tow[i][a] - tow[i][a-1]));
-				adj[v][u] = min(adj[v][u], abs(tow[i][a] - tow[i][a-1]));
+				debug("liga (%lld %lld) (%lld %lld) com dist %lld\n", i, tow[i][a-1], i, tow[i][a], tow[i][a]-tow[i][a-1]);
+				add(u, v, abs(tow[i][a] - tow[i][a-1]));
 			}
 		}
 
 		for(int k = 0;k < deg;k++){
 			for(int i = 0;i < deg;i++){
 				for(int j = 0;j < deg;j++){
-					adj[i][j] = min(adj[i][j], adj[i][k] + adj[k][j]);
+					add(i, j, adj[i][k] + adj[k][j]);
 				}
+			}
+		}
+
+		for(int i=0;i<deg;i++){
+			for(int j=0;j<deg;j++){
+				debug("(%lld, %lld) -> (%lld, %lld) costs %lld\n", pos[i].fst, pos[i].snd, pos[j].fst, pos[j].snd, adj[i][j]);
 			}
 		}
 
