@@ -68,25 +68,8 @@ int main (){
 			s[ind[d[a].snd]].pb(pii(a, 1));
 		}
 		//s fst-a snd-t
-		for(int a=0;a<MAXN*4;a++){
-			for(int i = 0;i < s[a].size();i++){
-				pii rq = s[a][i];
-				int u = rq.fst;
-				if(rq.snd == 0){
-					q.insert(pii(-gen[u], u));	
-				}
-			}
-			int mxg = 0;
-			if(!q.empty())
-				mxg = -((*q.begin()).fst);
-			for(int i = 0;i < s[a].size();i++){
-				pii rq = s[a][i];
-				int u = rq.fst;
-				if(rq.snd == 1){
-					res[u] = mxg - gen[u];
-					q.erase(pii(-gen[u], u));
-				}
-			}
+		for(int a=0;a<cm.size();a++){
+				
 		}
 		for(int a=0;a<MAXN*4;a++)
 			s[a].clear();
