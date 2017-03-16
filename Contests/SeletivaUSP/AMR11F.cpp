@@ -81,8 +81,8 @@ main (){
 			for(int a = 1;a<tow[i].size();a++){
 				int u = ind[pii(i, tow[i][a-1])];
 				int v = ind[pii(i, tow[i][a])];
-				adj[u][v] = min(adj[u][v], tow[i][a] - tow[i][a-1]);
-				adj[v][u] = min(adj[v][u], tow[i][a] - tow[i][a-1]);
+				adj[u][v] = min(adj[u][v], abs(tow[i][a] - tow[i][a-1]));
+				adj[v][u] = min(adj[v][u], abs(tow[i][a] - tow[i][a-1]));
 			}
 		}
 
@@ -93,6 +93,7 @@ main (){
 				}
 			}
 		}
+
 		pii ini[2];
 		pii fim[2];
 		int q;
@@ -129,7 +130,8 @@ main (){
 			int res = LLONG_MAX;
 			for(int x=0;x<2;x++){
 				for(int y=0;y<2;y++){
-					res = min(res, adj[ind[ini[x]]][ind[fim[y]]] + abs(j - ini[x].snd) + abs(jj - fim[x].snd));
+					res = min(res, adj[ind[ini[x]]][ind[fim[y]]] + abs(j - ini[x].snd) + abs(jj - fim[y].snd));
+					debug("res = min( %lld + %lld + %lld)\n", adj[ind[ini[x]]][ind[fim[y]]], abs(j - ini[x].snd), abs(jj - fim[y].snd));
 				}
 			}
 
