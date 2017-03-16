@@ -67,7 +67,11 @@ main (){
 
 		for(int a=1;a<=n;a++){
 			int u = ind[pii(a, 1)];
-			int v = ind[pii((a+1)%(n+1) + 1, 1)];
+			int v;
+			if(a == n)
+				v = ind[pii(1, 1)];
+			else
+				v = ind[pii(a+1, 1)];
 			add(u, v, 1);
 		}
 		for(int a=0;a<m;a++){
