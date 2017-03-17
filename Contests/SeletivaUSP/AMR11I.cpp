@@ -17,7 +17,7 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 71234;
+const int MAXN = 312345;
 
 int n, m, k;
 int gen[MAXN], res[MAXN];
@@ -31,14 +31,48 @@ pll d[MAXN];
 
 set<pii> q;
 
+vector<int> adj[MAXN];
+
+int L[MAXN], R[MAXN], deg, tree[MAXN*4];
+
+void go(int u){
+	L[u] = deg;
+	for(int nxt: adj[u]){
+		go(nxt);
+	}
+	R[u] = deg++;
+}
+
+void upd(int idx, int i, int j, int l, int val){
+	if(i > l || j < l) return;
+	if(i >= l && j <= l){
+		tree[idx] = max(val, tree[idx]);
+		return ;
+	}
+	int m = (i+j)>>1;
+	upd(idx*2, i, m, l, val);
+	upd(idx*2+1, m+1, j, l, val);
+	tree[idx] = max(tree[idx*2], tree[idx*2+1]);
+}
+
+int qry(int idx, int i, int j, int l, int r){
+	if(i > r || j < l) return 0;
+	if(i >= l && j <= r)
+		return tree[idx];
+	int m = (i+j)>>1;
+	return max(qry(idx*2, i, m, l, r), qry(idx*2+1, m+1, j, l, r));
+}
+
 int main (){
 	for_tests(t, tt){
 		q.clear();
 		ind.clear();
 		cm.clear();
 		mrk.clear();
+		memset(tree, 0, sizeof(tree));
 		scanf("%d", &n);
 		for(int a=0;a<n;a++){
+			adj[a].clear();
 			int p;
 			ll i, j;
 			scanf("%d %lld %lld", &p, &i, &j);
@@ -54,9 +88,13 @@ int main (){
 				cm.pb(j);
 				mrk[j] = 1;
 			}
-			if(p != -1) gen[a] = gen[p]+1;
+			if(p != -1){ 
+				gen[a] = gen[p]+1;
+				adj[p].pb(a);
+			}
 
 		}
+		go(0);
 		sort(cm.begin(), cm.end());
 		for(int a=0;a<cm.size();a++){
 			ind[cm[a]] = a;
@@ -69,18 +107,18 @@ int main (){
 		}
 		//s fst-a snd-t
 		for(int a=0;a<cm.size();a++){
-				
-		}
-		for(int a=0;a<MAXN*4;a++)
+			for(pii ev: s[a]){
+				int u = ev.fst;
+				if(!ev.snd)
+					upd(1, 0, deg-1, R[u], gen[u]);
+				else
+					res[u] =  qry(1, 0, deg-1, L[u], R[u]) - gen[u];
+			}
 			s[a].clear();
-		for(int a=0;a<n;a++){
-			if(a != n-1)
-				printf("%d ", res[a]);
-			else
-				printf("%d", res[a]);
-			assert(res[a] >= 0);
 		}
-		if(tt != t)
-			printf("\n");
+		for(int a=0;a<n;a++){
+			printf("%d ", res[a]);
+		}
+		printf("\n");
 	}
 }
