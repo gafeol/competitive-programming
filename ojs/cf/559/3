@@ -1,0 +1,81 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define fst first
+#define snd second
+typedef unsigned long long ull;
+typedef long long ll;
+typedef pair<int, int> pii;
+#define pb push_back
+#define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
+#ifndef ONLINE_JUDGE
+#define debug(args...) fprintf(stderr,args)
+#else
+#define debug(args...)
+#endif //ONLINE_JUDGE
+template<typename T> inline T abs(T t) { return t < 0? -t : t; }
+const ll modn = 1000000007;
+inline ll mod(ll x) { return x % modn; }
+
+const int MAXN = 212345;
+
+int n, m, k;
+char s1[MAXN], s2[MAXN];
+int cnt[MAXN];
+
+bool eq(int i, int j, int ii, int jj){
+	for(int a=i;a<=j;a++){
+		if(s1[a] != s2[a-i+ii])
+			return false;
+	}
+	return true;
+}
+
+bool conta(int i, int j, int ii, int jj){
+	int m = (i+j)/2;
+	for(int a=i;a<=m;a++){
+		cnt[s1[a]]++;
+		cnt[s2[a-i+ii]]--;
+	}
+	bool ans = true;
+	for(int a='a';a<='z';a++){
+		if(cnt[a] != 0)
+			ans = false;
+		cnt[a] = 0;
+	}
+	for(int a=m+1;a<=j;a++){
+		cnt[s1[a]]++;
+		cnt[s2[a-i+ii]]--;
+
+	}
+	return ans;
+}
+
+bool go(int i, int j, int ii, int jj){
+	debug("go(%d %d)\n", i, j);
+	if(eq(i, j, ii, jj)){
+		debug("	go(%d %d) true\n", i, j);
+		return true;
+	}
+
+	if((j - i + 1)&1) {
+		return false;
+		debug("	go(%d %d) fals\n", i, j);
+	}
+	int m=(i+j)/2;
+	int mm = (ii+jj)/2;
+	if(conta(i, j, ii, jj)){
+		debug("	go(%d %d) go(%d, %d) && go(%d %d)\n", i, j, i, m, m+1, j);
+		return (go(i, m) && go(m+1, j));
+	}
+	debug("	go(%d %d) fals\n", i, j);
+	return false;
+}
+
+int main (){
+	scanf(" %s \n %s", s1, s2);
+	int tam = strlen(s1);
+	if(go(0, tam-1))
+		puts("YES");
+	else
+		puts("NO");
+}
