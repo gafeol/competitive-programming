@@ -16,10 +16,10 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 212345;
+const int MAXN = 55;
 
 int n, m, k;
-int s[MAXN];
+int s[MAXN], w[MAXN];
 
 bool cmp(int a, int b){
 	return a > b;
@@ -28,16 +28,27 @@ bool cmp(int a, int b){
 int main (){
 	for_tests(t, tt){
 		scanf("%d", &n);
-		int sum = 0;
 		for(int a=0;a<n;a++){
 			scanf("%d", &s[a]);
-			sum += s[a];
+			w[a] = 0;
 		}
-		int mx = n-1;
 		sort(s, s+n, cmp);
-		for(int i = 0;i < n;i++){
-			
-			s[a] = max(s[a], 
+		int res = 0;
+		for(int a=0;a<n;a++){
+			int i = a+1, j = n-1;
+			while(i <= j){
+				if(w[a] < s[a]){
+					w[a]++;
+					j--;
+				}
+				else{
+					w[i]++;
+					i++;
+				}
+			}
+			res += abs(s[a] - w[a]);
+
 		}
+		printf("%d\n", res);
 	}
 }
