@@ -84,33 +84,36 @@ namespace f {
 	}
 }
 
+int ind(int x){
+	return n*n + x;
+}
+
 
 int main (){
 	for_tests(t, tt){
 		scanf("%d", &n);
-		f::init(n*2 + 6);
+		f::init(n*(n+1) + 6);
 		for(int a=0;a<n;a++){
 			scanf("%d", &s[a]);
 		}
 		sort(s, s+n, cmp);
 		int s1, s2, t1, t2;
-		s1 = 2*n+1;
-		s2 = 2*n+2;
-		t1 = 2*n+3;
-		t2 = 2*n+4;
+		s1 = n*n+n+1;
+		s2 = n*n+n+2;
+		t2 = n*n+n+3;
 		f::add_edge(s1, s2, (n*(n-1))/2, 0);
-		f::add_edge(t2, t1, (n*(n-1))/2, 0);
 		for(int a=0;a<n;a++){
-			f::add_edge(s2, a+1, s[a], 0);
-			f::add_edge(s2, a+1, n - 1, 1);
-			f::add_edge(n+a+1, t2, n-1 - s[a], 0);
-			f::add_edge(n+a+1, t2, n-1, 1);
-		}
-		for(int a=0;a<n;a++){
-			for(int b=1+a;b<n;b++){
-				f:: add_edge(a+1, n+b+1, 1, 0); 
+			for(int b=0;b<n;b++){
+				if(a == b) continue;
+				f::add_edge(s2, a*n+b, 1, 0);
+				f::add_edge(a*n + b, ind(a), 1, 0);
+				f::add_edge(a*n + b, ind(b), 1, 0);
 			}
 		}
-		printf("%d\n", f::mncost(s1, t1));
+		for(int a=0;a<n;a++){
+			f::add_edge(ind(a), t1, s[a], 0);
+			f::add_edge(ind(a), t1, n - 1 -s[a], 0);
+		}
+		printf("%d\n", f::mncost(s1, t2));
 	}
 }
