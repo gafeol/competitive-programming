@@ -113,13 +113,13 @@ int main (){
 			}
 		}
 		for(int a=0;a<n;a++){
-			f::add_edge(ind[a], t2, max(0, n - 1 - s[a]), 1);
 			f::add_edge(ind[a], t2, min(n-1, s[a]), 0);
+			f::add_edge(ind[a], t2, max(0, n - 1 - s[a]), 1);
 		}
 		int res = f::mncost(s1, t2);
 		for(int a=0;a<n;a++){
-			debug("flow %d - cp %d fl %d\n", a, f::cp[f::mrk[ind[a]][t2]], f::fl[f::mrk[ind[a]][t2]]);
-			res += s[a] -   f::fl[f::mrk[ind[a]][t2]];
+			debug("flow %d - %d\n", a, f::fl[f::mrk[ind[a]][2]]);
+			res += f::cp[f::mrk[ind[a]][2]] -   f::fl[f::mrk[ind[a]][2]];
 		}
 		printf("%d\n", res);
 	}

@@ -21,14 +21,12 @@ const int MAXN = 55;
 int n, m, k;
 int s[MAXN], ind[MAXN];
 
-
 bool cmp(int a, int b){
 	return a > b;
 }
 
 namespace f {
 	const int N = 3000, M = 50*50*3*2;
-	int mrk[N][N];
 	typedef int val;
 	typedef int num;
 	int es[N], to[M], nx[M], en, pai[N];
@@ -80,7 +78,6 @@ namespace f {
 	}
 
 	void add_edge(int u, int v, val c, num s) {
-		mrk[u][v] = en;
 		fl[en] = 0; cp[en] = c; to[en] = v; nx[en] = es[u]; cs[en] =  s; es[u] = en++;
 		fl[en] = 0; cp[en] = 0; to[en] = u; nx[en] = es[v]; cs[en] = -s; es[v] = en++;
 	}
@@ -94,7 +91,6 @@ int main (){
 		for(int a=0;a<n;a++){
 			scanf("%d", &s[a]);
 			sum += s[a];
-			ind[a] = 0;
 		}
 		int s1, s2, t1, t2;
 		int deg = 1;
@@ -113,14 +109,9 @@ int main (){
 			}
 		}
 		for(int a=0;a<n;a++){
-			f::add_edge(ind[a], t2, max(0, n - 1 - s[a]), 1);
-			f::add_edge(ind[a], t2, min(n-1, s[a]), 0);
+			f::add_edge(ind[a], t2, s[a], 0);
+			f::add_edge(ind[a], t2, n-1, 1);
 		}
-		int res = f::mncost(s1, t2);
-		for(int a=0;a<n;a++){
-			debug("flow %d - cp %d fl %d\n", a, f::cp[f::mrk[ind[a]][t2]], f::fl[f::mrk[ind[a]][t2]]);
-			res += s[a] -   f::fl[f::mrk[ind[a]][t2]];
-		}
-		printf("%d\n", res);
+		printf("%d\n", f::mncost(s1, t2));
 	}
 }
