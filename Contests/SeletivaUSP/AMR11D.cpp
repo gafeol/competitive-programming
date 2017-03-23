@@ -21,7 +21,6 @@ const int MAXN = 55;
 int n, m, k;
 int s[MAXN], ind[MAXN];
 
-
 bool cmp(int a, int b){
 	return a > b;
 }
