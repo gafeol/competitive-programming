@@ -24,39 +24,56 @@ int s[MAXN];
 ll dp[31][BM][BM];
 ll res = 0;
 
-ll go(int bit, int lox, int lo){
-	debug("go(%d %d %d):\n", bit, bm, w);
-	if(bit == -1)
-		return (lo == (1<<(n-1))-1 && lo == lox);
+int bv(int x, int i){
+	return ((x>>i)&1);
+}
 
-	ll &r = dp[bit][bm][w];
+ll go(int bit, int lox, int lo){
+	debug("go(%d %d %d):\n", bit, lox, lo);
+	int loxx = lox, loo = lo;
+	if(bit == -1)
+		return 1;
+
+	ll &r = dp[bit][lox][lo];
 
 	if(r != -1)
 		return r;
 
+	r = 0;
+
 	for(int a=0;a<(1<<n);a++){
 		int fodeu = 0;
-		int bm = 0;
+		lox = loxx;
+		lo = loo;
 		for(int i=0;i<n-1;i++){
-			if(lo|(1<<i) && lox|(1<<i)) continue;
-
-			int b = ((a&(1<<i))>>i);
-			int b1 = ((a&(1<<(i+1)))>>(1+i));
-			if((s[i]>>bit)^b > (s[i+1]>>bit)^b1 || b > b1){
-				fodeu = 1;
-				break;
+			int b = bv(a, i);
+			int b1 = bv(a, i+1);
+			
+			if(!bv(lo, i)){
+				if(b > b1){
+					fodeu = 1;
+					break;
+				}
+				else if(b < b1)
+					lo |= (1<<i);
 			}
-			else if((s[i]>>bit)^b < (s[i+1]>>bit)^b1){
-				bm |= (1<<i);
 
+			if(!bv(lox, i)){
+				if(bv(s[i],bit)^b > bv(s[i+1], bit)^b1){
+					fodeu = 1;
+					break;
+				}
+				else if(bv(s[i], bit)^b < bv(s[i+1], bit)^b1)
+					lox |= (1<<i);
 			}
 		}
 		if(!fodeu){
-			debug("	go(%d %d %d) -> go(%d %d %d)\n", bit, bm, w, bit-1, bm, a);
-			r = mod(r + go(bit-1, bm, a)); 
+			debug("	go(%d %d %d) -> go(%d %d %d)\n", bit, loxx, loo, bit-1, lox, lo);
+			r = mod(r + go(bit-1, lox, lo)); 
 		}
 	}
-
+	debug("dp[%d][%d][%d] %lld\n", bit, loxx, loo, r); 
+	return r;
 }
 
 int main (){
@@ -69,21 +86,28 @@ int main (){
 		res = 0;
 		for(int a=0;a<(1<<n);a++){
 			int fodeu = 0;
-			int bm = 0;
+			int bit = 30, lo = 0, lox = 0;
 			for(int i=0;i<n-1;i++){
-				int b = ((a&(1<<i))>>i);
-				int b1 = ((a&(1<<(i+1)))>>(1+i));
-				if((s[i]>>30)^b > (s[i+1]>>30)^b1){
+				int b = bv(a, i);
+				int b1 = bv(a, i+1);
+
+				if(b > b1){
 					fodeu = 1;
 					break;
 				}
-				else if((s[i]>>30)^b < (s[i+1]>>30)^b1){
-					bm |= (1<<i);
+				else if(b < b1)
+					lo |= (1<<i);
 
+				if(bv(s[i],bit)^b > bv(s[i+1], bit)^b1){
+					fodeu = 1;
+					break;
 				}
+				else if(bv(s[i], bit)^b < bv(s[i+1], bit)^b1)
+					lox |= (1<<i);
 			}
-			if(!fodeu)
-				res = mod(res + go(29, bm, a)); 
+			if(!fodeu){
+				res = mod(res + go(bit-1, lox, lo)); 
+			}
 		}
 		printf("%lld\n", res);
 	}
