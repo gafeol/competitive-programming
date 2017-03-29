@@ -21,26 +21,41 @@ const int MAXN = (1<<20)+10;
 int n, m, k;
 int s[MAXN];
 
-ll dp[MAXN];
+ll dp[MAXN][22];
+
+ll expo(ll x){
+	if(x == 0) return 1;
+
+	ll ans = expo(x/2);
+	ans = mod(ans*ans);
+
+	if(x&1)
+		ans = mod(ans*2);
+
+	return ans;
+}
 
 int main (){
 	scanf("%d", &n);
 	for(int a=0;a<n;a++){
 		scanf("%d", &s[a]);
-		dp[s[a]]++;
+		dp[s[a]][0]++;
 	}
 	for(int a=(1<<20)-1;a>=0;a--){
 		for(int i = 0;i < 20;i++){
-			if(!(a&(1<<i)))
-				dp[a] = mod(dp[a] + dp[a|(1<<i)]);
+			dp[a][i+1] = dp[a][i];
+			if(!(a&(1<<i))){
+				dp[a][i+1] = mod(dp[a][i+1] + dp[a|(1<<i)][i]);
+			}
+			if(dp[a][i+1] != 0){
+				debug("dp[%d][%d] %lld\n", a, i+1, dp[a][i+1]);
+			}
 		}
 	}
 	ll res = 0;
 	for(int a=0;a<(1<<20);a++){
-		if(dp[a]){
-			res = mod(res + ((__builtin_popcount(a)&1) ? -1:1)*(1<<(dp[a]-1)));
-			debug("a %d soma %d\n", a, ((__builtin_popcount(a)&1) ? -1:1)*(1<<(dp[a]-1)));
-		}
+			res = mod(modn+mod(res + ((__builtin_popcount(a)&1) ? -1:1)*expo(dp[a][20])));
+			//debug("a %d soma %lld\n", a, ((__builtin_popcount(a)&1) ? -1:1)*(1ll<<(dp[a][20])));
 	}
-	printf("%lld\n", res);
+	printf("%lld\n", mod(modn + res));
 }
