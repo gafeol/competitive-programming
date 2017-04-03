@@ -85,6 +85,10 @@ int main (){
 		memset(mrk2, 0, sizeof(mrk2));
 		memset(snk, 0, sizeof(snk));
 		scanf("%d%d%d", &n, &m, &k);
+		for(int a=0;a<=n;a++){
+			adj[a].clear();
+			deg[a] = 0;
+		}
 		for(int a=0;a<m;a++){
 			int i, j;
 			scanf("%d %d", &i, &j);
@@ -143,3 +147,4 @@ int main (){
 		printf("%d\n", n-res);
 	}
 }
+

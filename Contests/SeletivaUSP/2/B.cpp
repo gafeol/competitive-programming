@@ -27,7 +27,7 @@ void cmp(int u, int nxt){
 		nxt = HORA-1;
 	if(nxt < 0)
 		nxt = 0;
-	
+
 	if(dp[nxt] > dp[u] + 1){
 		dp[nxt] = dp[u] + 1;
 		q.push(nxt);
