@@ -117,6 +117,7 @@ int main (){
 				}
 			}
 		}
+		int res2 = res;
 		memset(dp, INF, sizeof(dp));
 		dp[0] = 0;
 		for(int a=0;a<v.size();a++){
@@ -132,7 +133,13 @@ int main (){
 				break;
 			}
 		}
+		sort(v.begin(), v.end());
+		reverse(v.begin(), v.end());
+		res2 += accumulate(v.begin(), v.begin() + min<int>(k, v.size()), 0); 
+		for(int i = 0; i < v.size(); i++)
+			debug("%d%c", v[i], " \n"[i==v.size()-1]);
+		debug("[%d] %d vs %d\n", k, res, res2);
+		assert(res == res2);
 		printf("%d\n", n-res);
 	}
 }
-
