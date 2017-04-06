@@ -6,7 +6,6 @@ typedef unsigned long long ull;
 typedef long long ll;
 typedef pair<int, int> pii;
 #define pb push_back
-#define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
 #ifndef ONLINE_JUDGE
 #define debug(args...) fprintf(stderr,args)
 #else
@@ -20,21 +19,28 @@ const int MAXN = 212345;
 
 int n, m, k;
 pii s[MAXN];
+map<pii, int>  mrk;
+vector<pii> v;
 
-int cross(pii a, pii b){
-	return abs(a.x*b.y - a.y*b.x);
+pii operator-(const pii & l,const pii & r) {   
+	return {l.fst-r.fst,l.snd-r.snd};
 }
 
-int area(int i, int c, int j){
-	pii va = s[i]-s[c];
-	pii vb = s[j]-s[c];
-
-	return cross(va, vb);
+ll cross(pii a, pii b){
+	return (ll)a.snd*b.fst - (ll)a.fst*b.snd;
 }
+
+ll area(int i, int c, int j){
+	pii va = v[i]-v[c];
+	pii vb = v[j]-v[c];
+
+	return abs(cross(va, vb));
+}
+
 
 inline int ts(int i, int j){
 	int ii = i - 1, jj = j + 1;
-	while(j - i + 1 > 2){
+	while(j - i + 1 > 3){
 		int l = i + (j - i + 1)/3;
 		int r = j - (j - i + 1)/3;
 		if(area(ii, l, jj) >= area(ii, r, jj))
@@ -42,40 +48,89 @@ inline int ts(int i, int j){
 		else 
 			i = l;
 	}
-	if(area(ii, i, jj) < area(ii, j, jj))
-		swap(i, j);
-	return i;
+	int ir = i;
+	for(int a=i+1;a<=j;a++){
+		if(area(ii, ir, jj) < area(ii, a, jj))
+			ir = a;
+	}
+	return ir;
 }
 
-int deg;
+pii cv[2][MAXN];
+int deg[2];
 
-pii cv[MAXN];
 
-bool convex(int i){
-	if(cross(cv[deg-2], cv[deg-1], s[i] >= 0);
+bool convex(int i, int t){
+	pii va = cv[t][deg[t]-2] - cv[t][deg[t]-1];
+	pii vb = s[i] - cv[t][deg[t]-1];
+
+	return (cross(va, vb) <= 0);
 }
 
-int main{
-	for_tests(t, tt){
+int main() {
+	int t;
+	scanf("%d", &t);
+	while(t--){	
+		v.clear();
+		mrk.clear();
+		deg[0] = deg[1] = 0;
 		scanf("%d", &n);
 		for(int a=0;a<n;a++){
 			scanf("%d %d", &s[a].fst, &s[a].snd);
 		}
 		sort(s, s+n);
-		cv[deg++] = s[0];
-		cv[deg++] = s[1];
-		for(int a=2;a<n;a++){
-			while(deg > 2 && !convex(a))
-				deg--;
-
-			if(convex(a))
-				cv[deg++] = a;
+		for(int a=0;a<n;a++){
+			while(deg[0] > 1 && !convex(a, 0))
+				deg[0]--;
+			debug("upp bota (%d, %d) em %d\n", s[a].fst, s[a].snd, deg[0]);
+			cv[0][deg[0]++] = s[a];
 		}
-		for(int i=0;i<n;i++){
-			for(int j = i+2;j < n;j++){
-				int l = ts(i+1, j-1);
-				int r = ts(j+1, i+n-1);
+		for(int a=n-1;a>=0;a--){
+			while(deg[1] > 1 && !convex(a, 1))
+				deg[1]--;
+			debug("lwr bota (%d, %d) em %d\n", s[a].fst, s[a].snd, deg[1]);
+			cv[1][deg[1]++] = s[a];
+		}
+		for(int a=0;a<deg[0];a++){
+			v.pb(cv[0][a]);
+			debug("upp cvx (%d, %d)\n", cv[0][a].fst, cv[0][a].snd);
+			mrk[cv[0][a]] = 1;
+		}
+		for(int a=0;a<deg[1];a++){
+			if(mrk.find(cv[1][a]) == mrk.end()){
+				v.pb(cv[1][a]);
+				debug("lwr cvx (%d, %d)\n", cv[1][a].fst, cv[1][a].snd);
+				mrk[cv[1][a]] = 1;
 			}
 		}
+		int tam = v.size();
+		ll res = 0;
+		if(tam < 3){
+			puts("0");
+			continue;
+		}
+		if(tam == 3){
+			res = area(0, 1, 2);
+			printf("%lld", res/2);
+			if(res&1)
+				printf(".5");
+			putchar('\n');
+			continue;
+		}
+		for(int i=0;i<tam;i++){
+			v.pb(v[i]);
+		}
+
+		for(int i=0;i<tam;i++){
+			for(int j = i+2;j < tam;j++){
+				int l = ts(i+1, j-1);
+				int r = ts(j+1, i+tam-1);
+				res = max(res, area(i, l, j) + area(i, r, j));
+			}
+		}
+		printf("%lld", res/2);
+		if(res&1)
+			printf(".5");
+		putchar('\n');
 	}
 }
