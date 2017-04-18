@@ -6,6 +6,7 @@ typedef unsigned long long ull;
 typedef long long ll;
 typedef pair<int, int> pii;
 typedef pair<int, pii> pip;
+
 #define pb push_back
 #define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
 #ifndef ONLINE_JUDGE
@@ -17,74 +18,124 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 2123, INF = 0x3f3f3f3f;
+const int MAXN = 1123, MAXP = 153, INF = (1<<29);
 
-int n, m, k, cp;
-int s[MAXN], p[MAXN], c[MAXN], ind[MAXN], dp[MAXN][123];
+int n, m, p, t;
 
 vector<pii> adj[MAXN];
-set<pip> q;
+vector<int> ps;
 
-inline pip mk(int x, int i, int j){
-	return pip(x, pii(i, j));
+int s[MAXN], ind[MAXN], deg;
+
+int d[MAXP][MAXP], dind[MAXN];
+
+set<pii> q2;
+set<pip> q;
+map<pii, int> cus;
+
+pip mk(int i, int j, int l){
+	return pip(i, pii(j, l));
+}
+
+void dijks(int st){
+	for(int a=0;a<=n;a++){
+		dind[a] = INF;
+	}
+	q2.insert(pii(0, st));
+	dind[st] = 0;
+	while(!q2.empty()){
+		pii top = *q2.begin();
+		q2.erase(top);
+		int u = top.snd;
+		for(pii nxt: adj[u]){
+			int v = nxt.fst;
+			int c = nxt.snd;
+			if(dind[v] > dind[u] + c){
+				if(dind[v] != INF)
+					q2.erase(pii(dind[v], v));
+				dind[v] = dind[u] + c;
+				q2.insert(pii(dind[v], v));
+			}
+		}
+	}
+
+	for(int a=0;a<deg;a++)
+		d[ind[st]][a] = INF;
+
+	for(int a=1;a<=n;a++){
+		if(ind[a] != 0)
+			d[ind[st]][ind[a]] = dind[a];
+	}
+}
+
+void cmp(int u, int g, int v, int g2, int c){
+	if(c < 0 || g2 < 0) return ;
+	if(cus.find(pii(v, g2)) != cus.end()){
+		if(cus[pii(v, g2)] > cus[pii(u, g)] + c){
+			q.erase(mk(cus[pii(v, g2)], g2, v));
+			cus[pii(v, g2)] = cus[pii(u, g)] + c;
+			q.insert(mk(cus[pii(v, g2)], g2, v));
+		}
+	}
+	else{
+		cus[pii(v, g2)] = cus[pii(u, g)] + c;
+		q.insert(mk(cus[pii(v, g2)], g2, v));
+		
+	}
 }
 
 int main (){
-	for_tests(t, tt){
-		scanf("%d%d%d", &n, &m, &k);
-		for(int a=0;a<=n;a++){
+	int t2;
+	scanf("%d", &t2);
+	while(t2--){
+		scanf("%d%d%d", &n, &m, &p);
+		scanf("%d", &t);
+		for(int a=1;a<=n;a++){
 			adj[a].clear();
+			ind[a] = 0;
 		}
-		scanf("%d", &cp);
 		for(int a=0;a<m;a++){
-			int i, j, cus;
-			scanf("%d%d%d", &i, &j, &cus);
-			adj[i].pb(pii(j, cus));
-			adj[j].pb(pii(i, cus));
+			int i, j, c;
+			scanf("%d %d %d", &i, &j, &c);
+			adj[i].pb(pii(j, c));
+			adj[j].pb(pii(i, c));
 		}
-		memset(c, INF, sizeof(c));
-		memset(ind, -1, sizeof(ind));
-		for(int a=0;a<k;a++){
-			scanf("%d %d", &p[a], &c[a]);
-			ind[p[a]] = a;
+		deg = 1;
+		ps.clear();
+		for(int a=0;a<p;a++){
+			int u,c;
+			scanf("%d %d", &u, &c); 
+			ps.pb(u);
+			ind[u] = deg++;
+			s[ind[u]] = c;
 		}
-		int beg, end;
-		scanf("%d%d", &beg, &end);
-		memset(dp, INF, sizeof(dp));
-		dp[beg][ind[beg]] = 0;
-		q.insert(mk(0, beg, ind[beg]));
-		int res = INT_MAX;
+		int ini, fim;
+		scanf("%d %d", &ini, &fim);
+		ind[fim] = deg++;
+		dijks(ini);
+		for(int u: ps){
+			dijks(u);
+		}
+		dijks(fim);
+		s[ind[fim]] = 0;
+
+		q.insert(mk(0, 0, ind[ini]));	
+		cus.clear();
+		cus[pii(ind[ini], 0)] = 0;
 		while(!q.empty()){
 			pip top = *q.begin();
 			q.erase(top);
-			int u = top.snd.fst;
-			int lst = top.snd.snd;
-			debug("d[%d][%d (= %d)] -> %d\n", u, lst, p[lst], dp[u][lst]);
-			if(u == end){
-				res = min(res, dp[u][lst]);
-			}
-			if(ind[u] != -1 && ind[u] != lst && dp[u][ind[u]] > dp[u][lst]){
-				if(dp[u][ind[u]] != INF)
-					q.erase(mk(dp[u][ind[u]], u, ind[u]));
-				dp[u][ind[u]] = dp[u][lst];
-				q.insert(mk(dp[u][ind[u]], u, ind[u]));
-			}
-			for(pii ar: adj[u]){
-				int nxt = ar.fst;
-				int cus = ar.snd;
-				if(cus + (dp[u][lst] - dp[p[lst]][lst])/c[lst] > cp){
-					debug("nao deu a gas pra fazer (%d, %d) -> (%d, %d) -> (%d %d)\n", p[lst], lst, u, lst, nxt, lst);
-					continue;
-				}
-				if(dp[nxt][lst] > dp[u][lst] + cus*c[lst]){
-					if(dp[nxt][lst] != INF)
-						q.erase(mk(dp[nxt][lst], nxt, lst));
-					dp[nxt][lst] = dp[u][lst] + cus*c[lst];
-					q.insert(mk(dp[nxt][lst], nxt, lst));
-					debug("u %d %d -> %d %d cus %d dp[%d][%d] %d\n", u, lst, nxt, lst, cus*c[lst], nxt, lst, dp[nxt][lst]);
+			int u = top.snd.snd;
+			int gas = top.snd.fst;
+		//	debug("to em %d com %d cus %d\n", u, gas, cus[pii(u, gas)]);
+			for(int v = 1;v<deg;v++){
+				if(s[v] > s[u])
+					cmp(u, gas, v, t-d[u][v], s[u]*(t-gas));
+				else{
+					if(d[u][v] <= t) cmp(u, gas, v, 0, s[u]*(d[u][v] - gas));
 				}
 			}
 		}
-		printf("%d\n", res);
+		printf("%d\n", cus[pii(deg-1, 0)]);
 	}
 }
