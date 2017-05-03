@@ -27,7 +27,6 @@ int go(int i, int base, int t){
 		return 0;
 	if(dp[i][base][t] != -1)
 		return dp[i][base][t];
-
 	int &r = dp[i][base][t];
 
 	int cus = 0;
@@ -45,13 +44,13 @@ int go2(int i, int base, int t){
 		return 0;
 	if(dp2[i][base][t] != -1)
 		return dp2[i][base][t];
-
 	int &r = dp2[i][base][t];
 
 	int cus = 0;
 	for(int a=0;a<n;a++){
 		cus += (M[a][i] != (M[a][base]^t));	
-		//	debug("M[%d][%d](%d) != M[%d][%d](%d)^%d eh %d\n", i, a, M[i][a], base, a, M[base][a], t, (M[i][a] != (M[base][a]^t)));
+	//	debug("M[%d][%d](%d) != M[%d][%d](%d)^%d eh %d\n", i, a, M[i][a], base, a, M[base][a], t, (M[i][a] != (M[base][a]^t)));
+
 	}
 	r = cus + min(go2(i+1, base, 0), go2(i+1, base, 1));	
 	//debug("dp[%d][%d][%d] = %d (cus %d)\n", i, base, t, r, cus);
@@ -85,6 +84,7 @@ int main (){
 	}
 	memset(dp, -1, sizeof(dp));
 	memset(dp2, -1, sizeof(dp2));
+	int res = INT_MAX;
 	for(int a=0;a<n;a++){
 		for(int b=0;b<2;b++)
 			res = min(res, go(0, a, b));
