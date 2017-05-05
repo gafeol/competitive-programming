@@ -8,7 +8,7 @@ typedef pair<int, int> pii;
 #define pb push_back
 #define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
 #ifndef ONLINE_JUDGE
-#define debug(args...) fprintf(stderr,args)
+#define debug(args...) //fprintf(stderr,args)
 #else
 #define debug(args...)
 #endif //ONLINE_JUDGE
@@ -59,37 +59,59 @@ inline ll peri(int u){
 	return 2ll*(d(u, adj[u][0]) + d(u, adj[u][1]));
 }
 
+int sx[MAXC], sy[MAXC];
+
 int main (){
 	scanf("%d", &n);
 	for(int a=0;a<n;a++){
 		scanf("%d %d", &s[a].fst, &s[a].snd);
+		sx[s[a].fst]++;
+		sy[s[a].snd]++;
+	}
+	for(int a=0;a<n;a++){
+		if(sx[s[a].fst]&1)
+			fail();
+		if(sy[s[a].snd]&1)
+			fail();
 	}
 	sort(s, s+n);
+
 	memset(xx, -1, sizeof(xx));
 	memset(yy, -1, sizeof(yy));
+
 	for(int a=0;a<n;a++){
 		int x = s[a].fst;
 		int y = s[a].snd;
-	
 		if(xx[x] != -1){
+			debug("mesmo x liga (%d %d) e (%d %d)\n", s[a].fst, s[a].snd, s[xx[x]].fst, s[xx[x]].snd);
 			adj[a].pb(xx[x]);
 			adj[xx[x]].pb(a);
 			xx[x] = -1;
 		}
-		else{
+		else
 			xx[x] = a;
-		}
+		
 		if(yy[y] != -1){
+			debug("mesmo y liga (%d %d) e (%d %d)\n", s[a].fst, s[a].snd, s[yy[y]].fst, s[yy[y]].snd);
 			adj[a].pb(yy[y]);
 			adj[yy[y]].pb(a);
 			yy[y] = -1;
 		}
-		else{
+		else
 			yy[y] = a;
-		}
+		
 	}
 	ll resa = 0;
 	ll resp = 0;
+	/*for(int a=0;a<n;a++){
+		debug("cara (%d, %d):\n",s[a].fst, s[a].snd);
+		for(int nxt: adj[a]){
+			debug("(%d, %d) ", s[nxt].fst, s[nxt].snd);
+		}
+		debug("\n");
+
+	}
+*/
 	for(int a=0;a<n;a++){
 		if(mrk[a]) continue;
 		go(a, a, 0);
