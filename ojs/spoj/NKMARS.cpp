@@ -17,7 +17,7 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 212345;
+const int MAXN = 31234;
 
 int n, m, k;
 pii s[MAXN];
@@ -28,8 +28,35 @@ ppi mk(int a, int b, int c){
 	return ppi(pii(a, b), c);
 }
 
-void upd(int idx, int i, int j, int l, int r){
-	
+struct arv{
+	int nr, sum;
+} tree[MAXN*4];
+
+void upd(int idx, int i, int j, int l, int r, int t){
+	if(i > r || j < l)
+		return ;
+	if(i >= l && j <= r){
+		if(!t){
+			tree[idx].nr++;
+			tree[idx].sum = j-i+1;
+		}
+		else{
+			tree[idx].nr--;
+			if(tree[idx].nr == 0){
+				tree[idx].sum = 0;
+				if(i != j)
+					tree[idx].sum = tree[idx*2].sum + tree[idx*2+1].sum;
+			}
+		}
+		return ;
+	}
+
+	int m = (i+j)>>1;
+	upd(idx*2, i, m, l, r, t);
+	upd(idx*2+1, m+1, j, l, r, t);
+	tree[idx].sum = tree[idx*2].sum + tree[idx*2+1].sum;
+	if(tree[idx].nr != 0)
+		tree[idx].sum = j - i + 1;
 }
 
 int main (){
@@ -37,6 +64,8 @@ int main (){
 	for(int a=0;a<n;a++){
 		int x, xx, y, yy;
 		scanf("%d %d %d %d", &x, &y, &xx, &yy);
+		//seg nao represnta pontos, mas sim quads
+		yy--;
 		ind[x].pb(mk(y, yy, 0));
 		ind[xx].pb(mk(y, yy, 1));
 	}
@@ -47,7 +76,8 @@ int main (){
 	for(auto& it: ind){
 		int x = it.fst;
 		if(xx != -1){
-			res += (x - xx)*tree[1].res;
+			debug("res += (%d - %d) * %d\n", x, xx, tree[1].sum);
+			res += (x - xx)*tree[1].sum;
 		}
 		ev = it.snd;
 		for(ppi e: ev){
@@ -56,4 +86,5 @@ int main (){
 		}
 		xx = x;
 	}
+	printf("%lld\n", res);
 }
