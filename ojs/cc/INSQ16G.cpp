@@ -8,7 +8,7 @@ typedef pair<int, int> pii;
 #define pb push_back
 #define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
 #ifndef ONLINE_JUDGE
-#define debug(args...) fprintf(stderr,args)
+#define debug(args...) //fprintf(stderr,args)
 #else
 #define debug(args...)
 #endif //ONLINE_JUDGE
@@ -30,10 +30,20 @@ void fail(){
 	exit(0);	
 }
 
+int sx[MAXC], sy[MAXC];
+
 int main (){
 	scanf("%d", &n);
 	for(int a=0;a<n;a++){
 		scanf("%d %d", &s[a].fst, &s[a].snd);
+		sx[s[a].fst]++;
+		sy[s[a].snd]++;
+	}
+	for(int a=0;a<n;a++){
+		if(sx[s[a].fst]&1)
+			fail();
+		if(sy[s[a].snd]&1)
+			fail();
 	}
 	sort(s, s+n);
 	for(int a=0;a<n;a++){
