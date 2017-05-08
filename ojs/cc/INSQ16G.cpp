@@ -16,47 +16,18 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 212, MAXC = 1123456;
+const int MAXN = 212;
 
 int n, m, k;
 pii s[MAXN];
-int xx[MAXC], yy[MAXC];
-int mrk[MAXN];
+ll resa, resp;
 
-vector<int> adj[MAXN];
+map<int, vector<int> > pts;
+map<int, int> has;
 
 void fail(){
 	puts("Impossible");
-	exit(0);
-}
-
-void go(int u, int ini, int d){
-	mrk[u] = 1;
-	if(d >= 4 || adj[u].size() != 2)
-		fail();
-
-	int ok = 0;
-	for(int nxt: adj[u]){
-		if(mrk[nxt]) continue;
-		go(nxt, ini, d+1);
-		ok = 1;
-	}
-
-	if(!ok && d != 3)
-		fail();
-}
-
-
-inline ll d(int u, int v){
-	return abs((ll)s[u].fst - (ll)s[v].fst) +abs((ll)s[u].snd - s[v].snd);
-}
-
-inline ll area(int u){
-	return (d(u, adj[u][0])*d(u, adj[u][1]));
-}
-
-inline ll peri(int u){
-	return 2ll*(d(u, adj[u][0]) + d(u, adj[u][1]));
+	exit(0);	
 }
 
 int main (){
@@ -65,36 +36,69 @@ int main (){
 		scanf("%d %d", &s[a].fst, &s[a].snd);
 	}
 	sort(s, s+n);
-	memset(xx, -1, sizeof(xx));
-	memset(yy, -1, sizeof(yy));
 	for(int a=0;a<n;a++){
-		int x = s[a].fst;
-		int y = s[a].snd;
+		pts[s[a].fst].pb(s[a].snd);
+	}
+
+	vector<int> v;
+	int xx = -1;
+	ll nl, sl;
+	nl = sl = 0;
+	for(auto& it : pts){
+		int x = it.fst;
+		debug("\nanalisando x %d\n", x);
+		debug("resp %lld\n", resp);
+		debug("resa %lld\n", resa);
 	
-		if(xx[x] != -1){
-			adj[a].pb(xx[x]);
-			adj[xx[x]].pb(a);
-			xx[x] = -1;
+		if(xx != -1){
+			debug("adiciona resp %lld * (%d - %d)\n", nl, x, xx);
+			resp += nl * (x - xx);
+			debug("adiciona resa %lld * (%d - %d)\n", sl, x, xx);
+			resa += sl * (x - xx);
 		}
-		else{
-			xx[x] = a;
+			
+		v = it.snd;	
+		if(v.size()&1)
+			fail();
+
+		int yy = -1;
+		for(int y: v){
+			if(yy != -1){
+				resp += y - yy;
+				yy = -1;			
+			}
+			else
+				yy = y;
+			debug("pontos em %d\n", y);
+			if(has.find(y) != has.end()){
+				has.erase(y);
+				debug("ja tinha entao apago\n");
+			}
+			else{
+				has[y] = 1;
+				debug("nao tinha entao adiciono\n");
+			}
 		}
-		if(yy[y] != -1){
-			adj[a].pb(yy[y]);
-			adj[yy[y]].pb(a);
-			yy[y] = -1;
+		
+		if(has.size()&1)
+			fail();
+		
+		sl = 0;
+		nl = 0;
+		for(auto i = has.begin();i != has.end(); ++i){
+			auto j = i;
+			++j;
+			int y = i->fst;
+			int yy = j->fst;
+
+			sl +=  yy-y;
+			nl += 2;
+			++i;
 		}
-		else{
-			yy[y] = a;
-		}
+		xx = x;
 	}
-	ll resa = 0;
-	ll resp = 0;
-	for(int a=0;a<n;a++){
-		if(mrk[a]) continue;
-		go(a, a, 0);
-		resa += area(a);
-		resp += peri(a);
-	}
+	if(!has.empty())
+		fail();
+
 	printf("%lld %lld\n", resa, resp);
 }
