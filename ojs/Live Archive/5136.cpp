@@ -79,11 +79,11 @@ bool go(int t){
 	build(1, -t, t);
 	ind.clear();
 	for(int a=0;a<n;a++){
-		ind[(s[a].fst - t)*2].pb(mk(s[a].snd-t, s[a].snd+t, 0));
-		ind[(s[a].fst + t)*2 + 1].pb(mk(s[a].snd-t, s[a].snd+t, 1));
+		ind[(s[a].fst - t)].pb(mk(s[a].snd-t, s[a].snd+t, 0));
+		ind[(s[a].fst + t) + 1].pb(mk(s[a].snd-t, s[a].snd+t, 1));
 	}
-	ind[(-t)*2].pb(mk(-t, t, 2));
-	ind[t*2 +1].pb(mk(-t, t, 3));
+	ind[(-t)].pb(mk(-t, t, 2));
+	ind[t+1].pb(mk(-t, t, 3));
 
 	vector<ppi> ev;
 	int in = 0;
@@ -101,7 +101,7 @@ bool go(int t){
 			else if(e.snd == 2)
 				in = 1;
 			else
-				in = 0;
+				return false;
 
 		}
 		debug("mn %d\n", tree[1].mn);
@@ -109,7 +109,6 @@ bool go(int t){
 			return true;
 	}
 	return false;
-
 }
 
 int main (){
@@ -135,6 +134,6 @@ int main (){
 		if(i >= 3000010)
 			puts("never");
 		else
-			printf("%d\n", i);
+			printf("%d\n", i+1);
 	}
 }
