@@ -9,7 +9,7 @@ typedef pair<pii, int> ppi;
 #define pb push_back
 #define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
 #ifndef ONLINE_JUDGE
-#define debug(args...) fprintf(stderr,args)
+#define debug(args...) //fprintf(stderr,args)
 #else
 #define debug(args...)
 #endif //ONLINE_JUDGE
@@ -17,7 +17,7 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 112345;
+const int MAXN = 8000026;
 
 int n, m, k;
 pii s[MAXN];
@@ -33,6 +33,17 @@ struct arv{
 
 } tree[4*MAXN];
 
+
+void build(int idx, int i, int j){
+	tree[idx].mn = 0;
+	tree[idx].lz = 0;
+	if(i == j)
+		return ;
+	int m = (i + j)>>1;
+	build(idx*2, i, m);
+	build(idx*2+1, m+1, j);
+}
+
 void upd(int idx, int i, int j, int l, int r, int t){
 	if(i > r || j < l) return ;
 	if(tree[idx].lz != 0){
@@ -40,8 +51,8 @@ void upd(int idx, int i, int j, int l, int r, int t){
 		tree[idx].lz = 0;
 		if(i != j){
 			tree[idx*2].lz += aux;
-			tree[idx*2].mn += aux;
 			tree[idx*2+1].lz += aux;
+			tree[idx*2].mn += aux;
 			tree[idx*2+1].mn += aux;
 		}
 	}
@@ -65,9 +76,8 @@ ppi mk(int a, int b, int c){
 
 bool go(int t){
 	debug("go %d\n", t);
-	for(int a=0;a<MAXN*4-1;a++){
-		tree[a] = arv(0, 0);
-	}
+	build(1, -t, t);
+	ind.clear();
 	for(int a=0;a<n;a++){
 		ind[(s[a].fst - t)*2].pb(mk(s[a].snd-t, s[a].snd+t, 0));
 		ind[(s[a].fst + t)*2 + 1].pb(mk(s[a].snd-t, s[a].snd+t, 1));
@@ -94,6 +104,7 @@ bool go(int t){
 				in = 0;
 
 		}
+		debug("mn %d\n", tree[1].mn);
 		if(in && tree[1].mn == 0)
 			return true;
 	}
@@ -110,18 +121,18 @@ int main (){
 			debug("%d %d\n", s[a].fst, s[a].snd);
 		}
 		sort(s, s+n);
-		int i = 0, j = 2000100;
+		int i = 0, j = 3000010;
 		debug("i %d j %d\n", i, j);
 		while(i < j){
 			int m = (i + j + 1)>>1;
-			debug("i %d j %d m %d\n", i, j, m);
+			debug("\ni %d j %d m %d\n", i, j, m);
 			if(go(m))
 				i = m;
 			else
 				j = m - 1;
 		}
 		printf("Case %d: ", tt);
-		if(i == 2000100)
+		if(i >= 3000010)
 			puts("never");
 		else
 			printf("%d\n", i);
