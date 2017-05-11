@@ -1,59 +1,65 @@
-#include <message.h>
-#include <stdio.h>
-#include "again.h"
-#include <algorithm>
+#include <bits/stdc++.h>
 using namespace std;
+#define fst first
+#define snd second
+typedef unsigned long long ull;
+typedef long long ll;
+typedef pair<int, int> pii;
+#define pb push_back
+#define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
+template<typename T> inline T abs(T t) { return t < 0? -t : t; }
+
+
+#include <message.h>
+#include "again.h"
 
 #define MASTER_NODE 0
 #define SENDING_DONE -1
 #define LARGE_PRIME 1000000007
+typedef long long ll;
 
+inline ll mod(ll x){
+	while(x < 0)
+		x += LARGE_PRIME;
+	return (x%LARGE_PRIME);
+}
+
+long long sa[30], sb[30];
 int main() {
-	if (MyNodeId() == MASTER_NODE) {
-		long long soma = 0, somb = 0;
-		long long sa[110], sb[110];
-		for (int node = 1; node < NumberOfNodes(); ++node) {
-			Receive(node);
-			long long vala = GetLL(node);
-			Receive(node);
-			long long valb = GetLL(node);
-			soma = (soma + vala) % LARGE_PRIME;
-			somb = (somb + valb) % LARGE_PRIME;
-			for(int pc = 0;pc < NumberOfNodes();pc++){
-				Receive(node);
-				sa[pc] = (sa[pc] + GetLL(node)) % LARGE_PRIME;
-				Receive(node);
-				sb[pc] = (sb[pc] + GetLL(node)) % LARGE_PRIME;
-			}
-		}
+	ll soma = 0, somb = 0;
+	ll no = NumberOfNodes();
+	ll id = MyNodeId();
+	ll N = GetN();
 
-		long long res = (soma*somb)%LARGE_PRIME;
-		for(int pc = 0;pc < NumberOfNodes();pc++){
-			result = (result - sa[pc] * sb[(NumberOfNodes() - pc)%NumberOfNodes()]);
+	for (long long i = id; i < N; i+=no) {
+		soma = soma + GetA(i);
+		somb = somb + GetB(i);
+	}
+	soma = mod(soma);
+	somb = mod(somb);
+	PutLL(MASTER_NODE, soma);
+	PutLL(MASTER_NODE, somb);
+	Send(MASTER_NODE);
+
+	if (id == MASTER_NODE) {
+		soma = 0;
+		somb = 0;
+		for (ll node = 0; node < no; ++node) {
+			Receive(node);
+			ll vala = GetLL(node);
+			ll valb = GetLL(node);
+			soma = soma + vala;
+			somb = somb + valb;
+			sa[node] = vala;
+			sb[node] = valb;
+		}
+		soma = mod(soma);
+		somb = mod(somb);
+		long long res = mod(soma*somb);
+		for(ll pc = 0;pc < no;pc++){
+			ll j = (no - pc)%no;
+			res = mod(res - mod(sa[pc]*sb[j]));
 		}
 		printf("%lld\n", res);
-		return 0;
-	} else {
-		long long soma = 0, somb = 0;
-		long long no = NumberOfNodes() - 1;
-		for (long long i = (MyNodeId()-1)*2000000ll; i < min((long long)GetN(), MyNodeId()*2000000ll); ++i) {
-			soma = (soma + GetA(i))%LARGE_PRIME;
-			somb = (somb + GetB(i))%LARGE_PRIME;
-			sa[i%NumberOfNodes()] = (sa[i%NumberOfNodes()] + GetA(i))%LARGE_PRIME;
-			sb[i%NumberOfNodes()] = (sb[i%NumberOfNodes()] + GetB(i))%LARGE_PRIME;
-			printf("%lld  %lld %lld %lld %lld\n", i, GetA(i), soma, GetB(i), somb);
-		}
-		printf("%d %lld %lld\n", MyNodeId(), soma, somb);
-		PutLL(MASTER_NODE, soma);
-		Send(MASTER_NODE);
-		PutLL(MASTER_NODE, somb);
-		Send(MASTER_NODE);
-		for(long long i = 0;i < NumberOfNodes();i++){
-			PutLL(MASTER_NODE, sa[i]);
-			Send(MASTER_NODE);
-			PutLL(MASTER_NODE, sb[i]);
-			Send(MASTER_NODE);
-		}
-	}
-	return 0;
+	} 
 }
