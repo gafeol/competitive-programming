@@ -5,6 +5,7 @@ using namespace std;
 typedef unsigned long long ull;
 typedef long long ll;
 typedef pair<int, int> pii;
+typedef pair<pii, int> ppi;
 #define pb push_back
 #define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
 #ifndef ONLINE_JUDGE
@@ -16,98 +17,110 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 212345;
-int FLOW;
+const int MAXN = 31, INF = 0x3f3f3f3f;
 
-namespace f {
+#define G 0
+#define L 1
 
-	const int N = 3000, M = 3000*8 * 2;
-	typedef int val;
-	typedef int num;
-	int es[N], to[M], nx[M], en, pai[N];
-	val fl[M], cp[M];
-	num cs[M], d[N];
-	const num inf = 1e8, eps = 0;
-	const val infv = INT_MAX;
-	int seen[N], tempo;
-	int qu[N];
+int n, M;
+int s[MAXN], w[MAXN], d[MAXN];
+int cnt[MAXN];
 
-	num tot;
-	bool spfa(int s, int t) {
-		tempo++;
-		int a = 0, b = 0;
-		for(int i = 0; i < N; i++) d[i] = inf;
-		d[s] = 0;
-		qu[b++] = s;
-		seen[s] = tempo;
-		while(a != b) {
-			int u = qu[a++]; if(a == N) a = 0;
-			seen[u] = 0;
-			for(int e = es[u]; e != -1; e = nx[e])
-				if(cp[e] - fl[e] > val(0) && d[u] + cs[e] < d[to[e]] - eps) {
-					d[to[e]] = d[u] + cs[e]; pai[to[e]] = e ^ 1;
-					if(seen[to[e]] < tempo) { seen[to[e]] = tempo; qu[b++] = to[e]; if(b == N) b = 0; }
-				}
+vector<ppi> ares;
+
+ppi mk(int a, int b, int c){
+	return ppi(pii(a, b), c);
+}
+
+void add(int i, int j, int t, int val){
+	if(!t)
+		ares.pb(mk(j, i, -val));	
+	else
+		ares.pb(mk(i, j, val));
+}
+
+bool bellman(){
+	memset(d, INF, sizeof(d));
+	d[0] = 0;
+	for(int it=0;it < 30;it++){
+		for(ppi r : ares){
+			int i = r.fst.fst;
+			int j = r.fst.snd;
+			int c = r.snd;
+			if(d[j] > d[i] + c){
+				d[j] = d[i] + c;
+			}
 		}
-		if(d[t] == inf) return false;
-		val mx = infv;
-		for(int u = t; u != s; u = to[pai[u]])
-			mx = min(mx, cp[pai[u] ^ 1] - fl[pai[u] ^ 1]);
-		tot += d[t] * val(mx);
-		for(int u = t; u != s; u = to[pai[u]])
-			fl[pai[u]] -= mx, fl[pai[u] ^ 1] += mx;
-		return mx;
 	}
 
-	void init(int n) {
-		en = 0;
-		memset(es, -1, sizeof(int) * n);
+	for(ppi r : ares){
+		int i = r.fst.fst;
+		int j = r.fst.snd;
+		int c = r.snd;
+		if(d[j] > d[i] + c){
+			d[j] = d[i] + c;
+			return false;
+		}
 	}
+	return true;
+}
 
-	val flow;
-	num mncost(int s, int t) {
-		tot = 0; flow = 0;
-		while(val a = spfa(s, t)) flow += a;
-		if(flow != FLOW)
-			return -1;
-		return tot;
+bool go(int k){
+	add(0, 24, G, k);
+	add(0, 24, L, k);
+	for(int a=1;a<=24;a++){
+		if(a < 8)
+			add(16+a, a, G, -k + s[a]);
+		else
+			add(a-8, a, G, s[a]);
 	}
+	bool ans = bellman();
+	ares.pop_back();
+	ares.pop_back();
+	for(int a=1;a<=24;a++){
+		ares.pop_back();
+	}
+	return ans;
+}
 
-	void add_edge(int u, int v, val c, num s) {
-		fl[en] = 0; cp[en] = c; to[en] = v; nx[en] = es[u]; cs[en] =  s; es[u] = en++;
-		fl[en] = 0; cp[en] = 0; to[en] = u; nx[en] = es[v]; cs[en] = -s; es[v] = en++;
+void prep(){
+	for(int i = 1;i <= 24;i++){
+		add(i-1, i, L, cnt[i]);
+		add(i-1, i, G, 0);
 	}
 }
 
-int n, m, k;
-int s[MAXN], v[MAXN];
-
 int main (){
 	for_tests(t, tt){
-		int deg = 24;
-		for(int a=0;a<24;a++){
-			scanf("%d", &s[a]);
-			FLOW += s[a];
+		ares.clear();
+		for(int a=0;a<=24;a++){
+			cnt[a] = 0;
+			w[a] = 0;
+			s[a] = 0;
 		}
-		scanf("%d", &n);
-		f::init(n+30);
-		int ini = deg++;
-		int fim = deg++;
-		for(int a=0;a<n;a++){
-			scanf("%d", &v[a]);
-			f::add_edge(ini, deg, 8, 1);
-			for(int b=0;b<8;b++){
-				f::add_edge(deg, (v[a]+b)%24, 1, 0);
-			}
-			deg++;
+		for(int a=1;a<=24;a++){
+			scanf("%d", s+a);
 		}
-		for(int a=0;a<24;a++){
-			f::add_edge(a, fim, s[a], 0);
+		scanf("%d", &M);
+		for(int a=0;a<M;a++){
+			scanf("%d", &w[a]);
+			w[a]++;
+			cnt[w[a]]++;
 		}
-		int res = f::mncost(ini, fim);
-		if(res == -1)
-			puts("No Solution");
+		prep();
+		int i = 0, j = M;
+		while(i < j){
+			//debug("i %d j %d\n", i, j);
+			int m = (i + j)/2;
+			if(go(m))
+				j = m;
+			else
+				i = m+1;
+		}
+
+		if(go(i))
+			printf("%d\n", i);
 		else
-			printf("%d\n", res);
+			printf("No Solution\n");
 	}
 }
