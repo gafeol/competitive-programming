@@ -14,14 +14,11 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 #include "again.h"
 
 #define MASTER_NODE 0
-#define SENDING_DONE -1
 #define LARGE_PRIME 1000000007
 typedef long long ll;
 
 inline ll mod(ll x){
-	while(x < 0)
-		x += LARGE_PRIME;
-	return (x%LARGE_PRIME);
+	return ((x%LARGE_PRIME) + LARGE_PRIME)%LARGE_PRIME;
 }
 
 long long sa[30], sb[30];
