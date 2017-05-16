@@ -23,7 +23,7 @@ const int MAXN = 31, INF = 0x3f3f3f3f;
 #define L 1
 
 int n, M;
-int s[MAXN], w[MAXN], d[MAXN];
+int s[MAXN], d[MAXN];
 int cnt[MAXN];
 
 vector<ppi> ares;
@@ -33,7 +33,7 @@ ppi mk(int a, int b, int c){
 }
 
 void add(int i, int j, int t, int val){
-	if(!t)
+	if(t == G)
 		ares.pb(mk(j, i, -val));	
 	else
 		ares.pb(mk(i, j, val));
@@ -95,7 +95,6 @@ int main (){
 		ares.clear();
 		for(int a=0;a<=24;a++){
 			cnt[a] = 0;
-			w[a] = 0;
 			s[a] = 0;
 		}
 		for(int a=1;a<=24;a++){
@@ -103,9 +102,10 @@ int main (){
 		}
 		scanf("%d", &M);
 		for(int a=0;a<M;a++){
-			scanf("%d", &w[a]);
-			w[a]++;
-			cnt[w[a]]++;
+			int val;
+			scanf("%d", &val);
+			val++;
+			cnt[val]++;
 		}
 		prep();
 		int i = 0, j = M;
