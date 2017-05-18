@@ -20,18 +20,29 @@ const int MAXN = 312345;
 
 int n, m, k;
 
-vector<int> s[MAXN], adj[MAXN];
+vector<int> adj[MAXN];
+set<int> s[MAXN];
 
 set<int> q;
 
 int cor[MAXN], mx;
+int mrk[MAXN];
 
 void go(int u, int p){
-	set<int> nq;
-	for(int c: s[u]){
-		if(q.find(c) == q.end()){
-			cor[c] = q.size()+1;
-			mx = max(mx, cor[c]);
+	int c = 1;
+	for(auto &it: q){
+		if(s.find(it) == s.end()){
+			cor[it] = 0;
+			q.erase(it);
+		}
+	}
+	for(int i: s[u]){
+		if(q.find(i) == q.end()){
+			while(cor[c] == 1)
+				c++;
+			cor[i] = q.size()+1;
+			mrk[q.size()+1] = 1;
+			mx = max(mx, cor[i]);
 		}
 	}
 	for(int nxt: adj[u]){
@@ -49,7 +60,7 @@ int main (){
 		while(t--){
 			int val;
 			scanf("%d", val);
-			s[a].pb(val);
+			s[a].insert(val);
 		}
 	}
 	for(int a=0;a<n-1;a++){
