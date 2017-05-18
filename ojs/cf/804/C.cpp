@@ -23,43 +23,44 @@ int n, m, k;
 vector<int> adj[MAXN];
 set<int> s[MAXN];
 
-set<int> q;
 
 int cor[MAXN], mx;
 int mrk[MAXN];
 
 void go(int u, int p){
+	set<int> q;
+	q = s[p];
 	int c = 1;
 	for(auto &it: q){
-		if(s.find(it) == s.end()){
-			cor[it] = 0;
+		if(s[u].find(it) == s[u].end()){
+			mrk[cor[it]] = 0;
 			q.erase(it);
 		}
 	}
-	for(int i: s[u]){
+	for(auto &i: s[u]){
 		if(q.find(i) == q.end()){
-			while(cor[c] == 1)
+			while(mrk[c] == 1)
 				c++;
-			cor[i] = q.size()+1;
-			mrk[q.size()+1] = 1;
+			cor[i] = c;
+			mrk[c] = 1;
 			mx = max(mx, cor[i]);
 		}
 	}
 	for(int nxt: adj[u]){
 		if(nxt == p) continue;
-		
+		go(nxt, u);	
 	}
 }
 
 int main (){
 	mx = -1;
 	scanf("%d%d", &n, &m);
-	for(int a=0;a<n;a++){
+	for(int a=1;a<=n;a++){
 		int t;
 		scanf("%d", &t);
 		while(t--){
 			int val;
-			scanf("%d", val);
+			scanf("%d", &val);
 			s[a].insert(val);
 		}
 	}
@@ -70,4 +71,9 @@ int main (){
 		adj[j].pb(i);
 	}
 	go(1, 1);
+	printf("%d\n", mx);
+	for(int a=1;a<=n;a++){
+		printf("%d ", cor[a]);
+	}
+	putchar('\n');
 }
