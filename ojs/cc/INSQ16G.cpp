@@ -8,7 +8,7 @@ typedef pair<int, int> pii;
 #define pb push_back
 #define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
 #ifndef ONLINE_JUDGE
-#define debug(args...) //fprintf(stderr,args)
+#define debug(args...) fprintf(stderr,args)
 #else
 #define debug(args...)
 #endif //ONLINE_JUDGE
