@@ -16,64 +16,46 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 312345;
+const int MAXN = 21234;
 
 int n, m, k;
-
+int s[MAXN];
+int res[MAXN][2];
 vector<int> adj[MAXN];
-set<int> s[MAXN];
-
-int cor[MAXN], mx;
-int mrk[2*MAXN];
 
 void go(int u, int p){
-	set<int> q;
-	q = s[p];
-	for(auto &it: q){
-		if(s[u].find(it) == s[u].end()){
-			mrk[cor[it]] = 0;
-			q.erase(it);
-		}
-	}
-	int c = 1;
-	for(auto &i: s[u]){
-		if(q.find(i) == q.end()){
-			while(mrk[c] == 1)
-				c++;
-			debug("cara %d ganha cor %d\n", i, c);
-			cor[i] = c;
-			mrk[c] = 1;
-			mx = max(mx, cor[i]);
-		}
-	}
+	res[u][1] = k++;
 	for(int nxt: adj[u]){
 		if(nxt == p) continue;
-		go(nxt, u);	
+		res[nxt][0] = res[u][1];
+		go(nxt, u);
 	}
 }
 
 int main (){
-	mx = -1;
-	scanf("%d%d", &n, &m);
-	for(int a=1;a<=n;a++){
-		int t;
-		scanf("%d", &t);
-		while(t--){
-			int val;
-			scanf("%d", &val);
-			s[a].insert(val);
-		}
-	}
+	scanf("%d", &n);
 	for(int a=0;a<n-1;a++){
 		int i, j;
-		scanf("%d %d", &i, &j);
+		scanf("%d%d", &i, &j);
 		adj[i].pb(j);
 		adj[j].pb(i);
 	}
-	go(1, 0);
-	printf("%d\n", mx);
-	for(int a=1;a<=m;a++){
-		printf("%d ", cor[a]);
+	if(n == 2){
+		printf("1 2\n1 2\n");
+		return 0;
 	}
-	putchar('\n');
+	res[1][0] = 1;
+	res[1][1] = 2;
+	k = 3;
+	for(int i = 0;i <  adj[1].size();i++){ 
+		int nxt = adj[1][i];
+		if(i == 0)
+			res[nxt][0] = res[1][0];
+		else
+			res[nxt][0] = res[1][1];
+		go(nxt, 1);
+	}
+	for(int a=1;a<=n;a++){
+		printf("%d %d\n", res[a][0], res[a][1]);
+	}
 }
