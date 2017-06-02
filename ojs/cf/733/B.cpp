@@ -4,7 +4,8 @@ using namespace std;
 #define snd second
 typedef unsigned long long ull;
 typedef long long ll;
-typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+typedef pair<pii, int> ppi;
 #define pb push_back
 #define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
 #ifndef ONLINE_JUDGE
@@ -19,14 +20,29 @@ inline ll mod(ll x) { return x % modn; }
 const int MAXN = 212345;
 
 int n, m, k;
-int s[MAXN][2];
+ll s[MAXN][2];
+ll d;
 
-int main (){
-	scanf("%d", &n);
-	int tl, tr;
-	tl = tr = 0;
+map<int, vector<ppi> > ind;
 
-	for(int a=0;a<n;a++){
+void fail(){
+	puts("impossible");
+	exit(0);
+}
+
+pii transf(ll x, ll y){
+	pll aux = pii(x, y);
+	aux.fst = p.fst + p.snd;
+	aux.snd = p.snd - p.fst;
+	return aux; 
+}
+
+void add(ll x, ll y){
+	pii ini;
+	int xx = transf(x-d, y)
+}
+
+int main(){
 		scanf("%d %d", &s[a][0], &s[a][1]);
 		tl += s[a][0];
 		tr += s[a][1];
@@ -58,5 +74,4 @@ int main (){
 		}
 	}
 	printf("%d\n", ir+1);
-
 }
