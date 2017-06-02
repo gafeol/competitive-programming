@@ -43,13 +43,13 @@ pll untrans(pll u){
 void add(ll x, ll y){
 	pll i = trans(x, y-d);
 	pll ii = trans(x-d, y);
-//	debug("i (%lld %lld)\n", i.fst, i.snd);
-//	debug("ii (%lld %lld)\n", ii.fst, ii.snd);
+	debug("i (%lld %lld)\n", i.fst, i.snd);
+	debug("ii (%lld %lld)\n", ii.fst, ii.snd);
 	ev[i.fst].pb(mk(ii.snd, i.snd, 1));	
 	pll j = trans(x+d, y);
 	pll jj = trans(x, y+d);
-//	debug("j (%lld %lld)\n", j.fst, j.snd);
-//	debug("jj (%lld %lld)\n", jj.fst, jj.snd);
+	debug("j (%lld %lld)\n", j.fst, j.snd);
+	debug("jj (%lld %lld)\n", jj.fst, jj.snd);
 	ev[j.fst+1].pb(mk(jj.snd, j.snd, -1));
 }
 
@@ -87,6 +87,7 @@ ll rx, ry;
 ll res = LLONG_MAX;
 
 ll test(ll x, ll y){
+	assert(!((x + y)&1));
 	ll xx = x;
 	ll yy = y;
 	x = untrans(pll(xx, yy)).fst;
@@ -105,31 +106,45 @@ ll test(ll x, ll y){
 
 void btx(ll x, ll y, ll yy){
 	ll i = y, j = yy;
-/*	while(j - i > 3){
-		ll mi = i + (j-i)/3;
-		ll mj = j - (j-i)/3;
+	if((x + y)&1)
+		i++;
+	if((x + yy)&1)
+		j--;
+	if(i > j) return ;
+	while((j + 1 - i)/2 > 3){
+		ll h = (j + 1 - i)/2;
+		ll mi = i + (h/3)*2;
+		ll mj = j - (h/3)*2;
 		if(test(x, mi) < test(x, mj))
 			j = mj;
 		else
 			i = mi;
 	}
-*/	for(int a=i;a<=j;a++){
-		test(x, a);
+	for(int a=i;a<=j;a++){
+		if((x + a)%2 == 0)
+			test(x, a);
 	}
 }
 
 void bty(ll y, ll x, ll xx){
 	ll i = x, j = xx;
-/*	while(j - i > 3){
-		ll mi = i + (j-i)/3;
-		ll mj = j - (j-i)/3;
+	if((y + x)&1)
+		i++;
+	if((y + xx)&1)
+		j--;
+	if(i > j) return ;
+	while((j + 1 - i)/2 > 3){
+		ll h = (j + 1 - i)/2;
+		ll mi = i + (h/3)*2;
+		ll mj = j - (h/3)*2;
 		if(test(mi, y) < test(mj, y))
 			j = mj;
 		else
 			i = mi;
 	}
-*/	for(int a=i;a<=j;a++){
-		test(a, y);
+	for(int a=i;a<=j;a++){
+		if((y + a)%2 == 0)
+			test(a, y);
 	}
 }
 
@@ -139,7 +154,7 @@ int main(){
 		scanf("%lld %lld", &s[a].fst, &s[a].snd);
 		X2.pb(s[a].fst);
 		Y2.pb(s[a].snd);
-		debug("(%lld %lld) -> (%lld %lld)\n", s[a].fst, s[a].snd, trans(s[a].fst, s[a].snd).fst, trans(s[a].fst, s[a].snd).snd);
+		//debug("(%lld %lld) -> (%lld %lld)\n", s[a].fst, s[a].snd, trans(s[a].fst, s[a].snd).fst, trans(s[a].fst, s[a].snd).snd);
 	}
 	sort(X2.begin(), X2.end());
 	sort(Y2.begin(), Y2.end());
@@ -148,7 +163,7 @@ int main(){
 		add(s[a].fst, s[a].snd);
 
 	go();
-	debug("(%lld %lld) (%lld %lld)\n", p[0].fst, p[0].snd, p[1].fst, p[1].snd);
+	//debug("(%lld %lld) (%lld %lld)\n", p[0].fst, p[0].snd, p[1].fst, p[1].snd);
 	if(deg < 2 || p[0].snd > p[1].snd || p[0].fst > p[1].fst){
 		puts("impossible");
 		return 0;
@@ -157,36 +172,40 @@ int main(){
 	ll my2 = Y2[n/2];
 	ll mx = trans(mx2, my2).fst;
 	ll my = trans(mx2, my2).snd;
-	debug("mx my (%lld %lld)\n", mx, my);
-	debug("mx my (%lld %lld)\n", trans(mx2, my2).fst, trans(mx2, my2).snd);
+//	debug("mx my (%lld %lld)\n", mx, my);
+//	debug("mx my (%lld %lld)\n", trans(mx2, my2).fst, trans(mx2, my2).snd);
 
 	pll lb = p[0];
 	pll ru = p[1];
-	if(mx >= lb.fst && mx <= ru.fst)
-		rx = mx;
-	else
-		rx = (abs(lb.fst - mx) < abs(ru.fst - mx) ? lb.fst : ru.fst);
 
-	if(my >= lb.snd && my <= ru.snd)
-		ry = my;
-	else
-		ry = (abs(lb.snd - my) < abs(ru.snd - my) ? lb.snd : ru.snd);
-	debug("testa (%lld %lld)\n", rx, ry);
-	test(rx, ry);
+	if(mx >= lb.fst && mx <= ru.fst && my >= lb.snd && my <= ru.snd)
+		test(mx, my);
+		
+	/*debug("a\n");
 	test(p[0].fst, p[0].snd);
+	debug("a\n");
 	test(p[0].fst, p[1].snd);
+	debug("a\n");
 	test(p[1].fst, p[0].snd);
+	debug("a\n");
 	test(p[1].fst, p[1].snd);
+	debug("a\n");
 	test(rx, p[0].snd);
+	debug("a\n");
 	test(rx, p[1].snd);
+	debug("a\n");
 	test(p[0].fst, ry);
+	debug("a\n");
 	test(p[1].fst, ry);
 	debug("%lld\n", res);
-
+*/
 	btx(p[0].fst, p[0].snd, p[1].snd);
 	btx(p[1].fst, p[0].snd, p[1].snd);
-	debug("%lld\n", res);
-	bty(p[0].snd, p[0].fst, p[1].snd);
-	bty(p[1].snd, p[0].fst, p[1].snd);
-	printf("%lld\n", res);
+//	debug("%lld\n", res);
+	bty(p[0].snd, p[0].fst, p[1].fst);
+	bty(p[1].snd, p[0].fst, p[1].fst);
+	if(res == LLONG_MAX)
+		puts("impossible");
+	else
+		printf("%lld\n", res);
 }
