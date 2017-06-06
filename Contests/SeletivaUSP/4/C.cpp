@@ -16,35 +16,40 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 212345;
-const ll INF = 300000000000LL;
+const int MAXN = 202;
+ll INF = 4000000000000ll;
 
 int n, m, k;
-int s[MAXN];
-int dp[MAXN][MAXN*MAXN];
+int ini, fim;
+ll d;
+ll s[MAXN];
+int L[MAXN], R[MAXN];
+ll dp[MAXN][2*MAXN*MAXN + MAXN];
+int tempo;
+int atu[MAXN][2*MAXN*MAXN + MAXN];
 
 vector<ll> pos;
 
-int find(int x){
-	return lower_bound(pos.begin(), pos.end(), x) - pos.begin();
-}
+map<ll, int> ind; 
 
 ll go(int i, int p){
-	int l = find(pos[p] - d);
-	int r = find(pos[p] + d + 1);
-
+//	debug("go(%d %d) pos[] %lld\n", i, p, pos[p]);
+	if(atu[i][p] != tempo){
+		atu[i][p] = tempo;
+		dp[i][p] = -1;
+	}
 	if(dp[i][p] != -1)
 		return dp[i][p];
 
 	if(i + 1 == n-1){
-		int m = find(s[i+1]);
-		if(i <= m && j >= m)
+		if(L[p] <= fim && R[p] >= fim)
 			return 0;
 		return INF;
 	}
 
-	for(int a=l;a<r;a++){
-		dp[i][p] = min(dp[i][p], go(i+1, a) + abs(s[i+1]);
+	dp[i][p] = INF;
+	for(int a=L[p];a<=R[p];a++){
+		dp[i][p] = min(dp[i][p], go(i+1, a) + abs(s[i+1] - pos[a]));
 	}
 
 	return dp[i][p];
@@ -52,16 +57,59 @@ ll go(int i, int p){
 
 int main (){
 	for_tests(t, tt){
-		memset(dp, -1, sizeof(dp));
+		++tempo;
+		pos.clear();
+		ind.clear();
 		scanf("%d %lld", &n, &d);
+		ll mx = -1, mn = INF;
 		for(int a=0;a<n;a++){
-			scanf("%d", &s[a]);
-			pos.pb(s[a]);
-			pos.pb(s[a] + d);
-			pos.pb(s[a] - d);
+			scanf("%lld", &s[a]);
+			mn = min(mn, s[a]);
+			mx = max(mx, s[a]);
+			if(ind.find(s[a]) == ind.end()){
+				ind[s[a]] = 1;
+				pos.pb(s[a]);
+			}
+
 		}
+		for(int a=0;a<n;a++){
+			for(ll k=1;k<=n;k++){
+				if(s[a] + d*k < mx && ind.find(s[a] + d*k) == ind.end()){
+					ind[s[a] + d*k] = 1;
+					pos.pb(s[a] + d*k);
+				}
+				if(s[a] - d*k > mn && ind.find(s[a] - d*k) == ind.end()){
+					ind[s[a] - d*k] = 1;
+					pos.pb(s[a] - d*k);
+				}
+			}
+		}
+		//debug("sz %d\n", (int)pos.size());
 		sort(pos.begin(), pos.end());
-		pos.erase(unique(pos.begin(), pos.end()), pos.end());
-		go(0, find(s[0]));
+		//debug("sz %d\n", (int)pos.size());
+		int l = 0;
+		for(int i=0;i<pos.size();i++){
+			while(l < i && pos[l] < pos[i] - d)
+				l++;
+			L[i] = l;
+		}
+
+		int r = pos.size()-1;
+		for(int i=pos.size()-1;i>=0;i--){
+			while(r > i && pos[r] > pos[i] + d)
+				r--;
+			R[i] = r;
+		}
+
+		for(int i=0;i<pos.size();i++){
+			if(pos[i] == s[0])
+				ini = i;
+			if(pos[i] == s[n-1])
+				fim = i;
+		}
+		if(go(0, ini) >= INF)
+			puts("impossible");
+		else
+			printf("%lld\n", go(0, ini));
 	}
 }
