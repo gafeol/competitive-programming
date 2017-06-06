@@ -16,21 +16,19 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 202;
+const int MAXN = 102, MAXM = 2*MAXN*MAXN + MAXN;
 ll INF = 4000000000000ll;
 
 int n, m, k;
 int ini, fim;
 ll d;
 ll s[MAXN];
-int L[MAXN], R[MAXN];
-ll dp[MAXN][2*MAXN*MAXN + MAXN];
+int L[MAXM], R[MAXM];
+ll dp[MAXN][MAXM];
 int tempo;
-int atu[MAXN][2*MAXN*MAXN + MAXN];
+int atu[MAXN][MAXM];
 
 vector<ll> pos;
-
-map<ll, int> ind; 
 
 ll go(int i, int p){
 //	debug("go(%d %d) pos[] %lld\n", i, p, pos[p]);
@@ -59,33 +57,24 @@ int main (){
 	for_tests(t, tt){
 		++tempo;
 		pos.clear();
-		ind.clear();
 		scanf("%d %lld", &n, &d);
 		ll mx = -1, mn = INF;
 		for(int a=0;a<n;a++){
 			scanf("%lld", &s[a]);
 			mn = min(mn, s[a]);
 			mx = max(mx, s[a]);
-			if(ind.find(s[a]) == ind.end()){
-				ind[s[a]] = 1;
-				pos.pb(s[a]);
-			}
+			pos.pb(s[a]);
 
 		}
 		for(int a=0;a<n;a++){
 			for(ll k=1;k<=n;k++){
-				if(s[a] + d*k < mx && ind.find(s[a] + d*k) == ind.end()){
-					ind[s[a] + d*k] = 1;
-					pos.pb(s[a] + d*k);
-				}
-				if(s[a] - d*k > mn && ind.find(s[a] - d*k) == ind.end()){
-					ind[s[a] - d*k] = 1;
-					pos.pb(s[a] - d*k);
-				}
+				pos.pb(s[a] + d*k);
+				pos.pb(s[a] - d*k);
 			}
 		}
 		//debug("sz %d\n", (int)pos.size());
 		sort(pos.begin(), pos.end());
+		pos.erase(unique(pos.begin(), pos.end()), pos.end());
 		//debug("sz %d\n", (int)pos.size());
 		int l = 0;
 		for(int i=0;i<pos.size();i++){
