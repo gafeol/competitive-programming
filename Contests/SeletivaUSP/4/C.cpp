@@ -25,6 +25,7 @@ ll d;
 ll s[MAXN];
 int L[MAXM], R[MAXM];
 ll dp[MAXN][MAXM];
+int opt[MAXN][MAXM];
 int tempo;
 int atu[MAXN][MAXM];
 
@@ -51,6 +52,30 @@ ll go(int i, int p){
 	}
 
 	return dp[i][p];
+}
+
+void calculaopt(int i, int pl, int pr, int ole, int ori){
+//	debug("calculaopt(%d, %d, %d, %d, %d)\n", i, pl, pr, ole, ori);
+	if(pl > pr) return ;
+
+	int m = (pl + pr)/2;
+
+	if(atu[i][m] != tempo){
+		atu[i][m] = tempo;
+		dp[i][m] = INF;
+	}
+
+	for(int a=max(L[m], ole);a <= min(R[m], ori);a++){
+//		debug("testa a %d pod[a] %lld\n", a,  pos[a]);
+		if(dp[i][m] >= go(i + 1, a) + abs(s[i+1] - pos[a])){
+//			debug("opt[%d][%d] %d\n", i, m, a);
+			dp[i][m] = go(i + 1, a) + abs(s[i+1] - pos[a]);
+			opt[i][m] = a;
+		}
+	}
+
+	calculaopt(i, pl, m-1, ole, opt[i][m]);
+	calculaopt(i, m+1, pr, opt[i][m], ori);
 }
 
 int main (){
@@ -95,6 +120,9 @@ int main (){
 				ini = i;
 			if(pos[i] == s[n-1])
 				fim = i;
+		}
+		for(int i=n-3;i>=0;i--){
+			calculaopt(i, 0, pos.size()-1, 0, pos.size()-1);
 		}
 		if(go(0, ini) >= INF)
 			puts("impossible");

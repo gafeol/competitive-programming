@@ -6,8 +6,7 @@ typedef unsigned long long ull;
 typedef long long ll;
 typedef pair<int, int> pii;
 #define pb push_back
-#define int ll
-#define for_tests(t, tt) int t; scanf("%lld", &t); for(int tt = 1; tt <= t; tt++)
+#define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
 #ifndef ONLINE_JUDGE
 #define debug(args...) fprintf(stderr,args)
 #else
@@ -17,24 +16,26 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 512345;
+const int MAXN = 2123456;
 
 int n, m, k;
 int s[MAXN];
-int L[MAXN];
+int L[MAXN], R[MAXN];
 int bit[MAXN], res[MAXN];
 int tempo;
 
-vector<int> adj[2][MAXN]; 
+vector<int> adj1[MAXN], adj[MAXN]; 
 
 void lin(int u, int p){
 	L[u] = tempo++;
-	assert(tempo < MAXN);
 
-	for(int nxt: adj[0][u]){
+	for(int i = 0;i < adj1[u].size();i++){
+		int nxt = adj1[u][i];
 		if(nxt == p) continue;
 		lin(nxt, u);
 	}
+
+	R[u] = tempo++;
 }
 
 int qry(int i){
@@ -56,40 +57,46 @@ void upd(int i, int val){
 }
 
 void go(int u, int p){
-	assert(L[u] != 0);
 	res[u] = qry(L[u]);
+
 	upd(L[u], 1);
-//	debug("liga L[%lld] %lld 1\n", u, L[u]);
-	for(int nxt: adj[1][u]){
+	upd(R[u], -1);
+
+	for(int nxt: adj[u]){
 		if(nxt == p) continue;
 		go(nxt, u);
 	}
-//	debug("liga R[%lld] %lld -1\n", u, R[u]);
+
 	upd(L[u], -1);
+	upd(R[u], 1);
 }
 
-main (){
+int main (){
 	for_tests(t, tt){
 		tempo = 1;
-		scanf("%lld", &n);
-		for(int tp=0;tp<2;tp++){
-			for(int a=0;a<n-1;a++){
-				int i, j;
-				scanf("%lld %lld", &i, &j);
-				adj[tp][i].pb(j);
-				adj[tp][j].pb(i);
-			}
-		}
-
-		lin(1, 0);
-		go(1, 0);
-
+		scanf("%d", &n);
 		for(int a=1;a<=n;a++){
-			adj[0][a].clear();
-			adj[1][a].clear();
-			assert(L[a] != 0);
-			printf("%lld ", res[a]);
+			adj[a].clear();
+			adj1[a].clear();
 		}
+		for(int a=0;a<n-1;a++){
+			int i, j;
+			scanf("%d %d", &i, &j);
+			adj[i].pb(j);
+			adj[j].pb(i);
+		}
+
+		for(int a=0;a<n-1;a++){
+			int i, j;
+			scanf("%d %d", &i, &j);
+			adj1[i].pb(j);
+			adj1[j].pb(i);
+		}
+		lin(1, 1);
+		go(1, 1);
+
+		for(int a=1;a<=n;a++)
+			printf("%d ", res[a]);
 		printf("\n");
 	}
 }
