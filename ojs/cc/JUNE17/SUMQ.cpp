@@ -26,6 +26,12 @@ vector<ll> s[4];
 int main (){
 	for_tests(t1, tt2){
 		scanf("%d%d%d", &n[0], &n[1], &n[2]);
+
+		for(int a=0;a<3;a++)
+			s[a].clear();
+		s[0].pb(LLONG_MAX);
+		s[2].pb(LLONG_MAX);
+
 		for(int tp=0;tp<3;tp++){
 			for(int a=1;a<=n[tp];a++){
 				ll val;
@@ -34,25 +40,22 @@ int main (){
 			}
 			s[tp].pb(LLONG_MIN);
 			sort(s[tp].begin(), s[tp].end());
-			s[tp].erase(unique(s[tp].begin(), s[tp].end()), s[tp].end());
-			n[tp] = s[tp].size()-1;
+			n[tp] = s[tp].size();
 		}
-		int tp = 0;
-		for(int a=1;a<=n[tp];a++)
-			sum[tp][a] = mod(s[tp][a] + sum[tp][a-1]);
-		tp = 2;
-		for(int a=1;a<=n[tp];a++)
-			sum[tp][a] = mod(s[tp][a] + sum[tp][a-1]);
 
+		
+		for(int tp=0;tp<3;tp++)
+			for(int a=1;a<n[tp]-1;a++)
+				sum[tp][a] = mod(s[tp][a] + sum[tp][a-1]);
+		
 		ll l = 0, r = 0;
 		ll res = 0;
-
-		for(int a=1;a<=n[1];a++){
-			while(l < n[0] && s[0][l+1] <= s[1][a])
+		for(int a=1;a<n[1];a++){
+			while(s[0][l+1] <= s[1][a])
 				l++;
-			while(r < n[2] && s[2][r+1] <= s[1][a])
+			while(s[2][r+1] <= s[1][a])
 				r++;
-			res = mod(res + mod(mod(s[1][a]*l*sum[2][r]) + mod(s[1][a]*r*sum[0][l])) + mod(mod(s[1][a]*s[1][a])*(l*r)) + mod(sum[0][l]*sum[2][r]));
+			res = mod(res + mod(s[1][a]*mod(l*sum[2][r])) + mod(s[1][a]*mod(r*sum[0][l])) + mod(mod(s[1][a]*s[1][a])*mod(l*r)) + mod(sum[0][l]*sum[2][r]));
 		}
 		printf("%lld\n", res);
 	}
