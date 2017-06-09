@@ -25,18 +25,12 @@ ll d;
 ll s[MAXN];
 int L[MAXM], R[MAXM];
 ll dp[MAXN][MAXM];
-int opt[MAXN][MAXM];
-int tempo;
 int atu[MAXN][MAXM];
 
 vector<ll> pos;
 
 ll go(int i, int p){
-//	debug("go(%d %d) pos[] %lld\n", i, p, pos[p]);
-	if(atu[i][p] != tempo){
-		atu[i][p] = tempo;
-		dp[i][p] = -1;
-	}
+	//	debug("go(%d %d) pos[] %lld\n", i, p, pos[p]);
 	if(dp[i][p] != -1)
 		return dp[i][p];
 
@@ -52,30 +46,6 @@ ll go(int i, int p){
 	}
 
 	return dp[i][p];
-}
-
-void calculaopt(int i, int pl, int pr, int ole, int ori){
-//	debug("calculaopt(%d, %d, %d, %d, %d)\n", i, pl, pr, ole, ori);
-	if(pl > pr) return ;
-
-	int m = (pl + pr)/2;
-
-	if(atu[i][m] != tempo){
-		atu[i][m] = tempo;
-		dp[i][m] = INF;
-	}
-
-	for(int a=max(L[m], ole);a <= min(R[m], ori);a++){
-//		debug("testa a %d pod[a] %lld\n", a,  pos[a]);
-		if(dp[i][m] >= go(i + 1, a) + abs(s[i+1] - pos[a])){
-//			debug("opt[%d][%d] %d\n", i, m, a);
-			dp[i][m] = go(i + 1, a) + abs(s[i+1] - pos[a]);
-			opt[i][m] = a;
-		}
-	}
-
-	calculaopt(i, pl, m-1, ole, opt[i][m]);
-	calculaopt(i, m+1, pr, opt[i][m], ori);
 }
 
 int main (){
@@ -121,9 +91,20 @@ int main (){
 			if(pos[i] == s[n-1])
 				fim = i;
 		}
-		for(int i=n-3;i>=0;i--){
-			calculaopt(i, 0, pos.size()-1, 0, pos.size()-1);
+		
+
+		for(int p=0;p<pos.size();p++){
+			dp[n-2][p] = -1;
+			dp[n-2][p] = go(n-2, p);
 		}
+
+		for(int i = n-3;i >= 0;i--){
+			int i = 0, j = 0;
+			for(int p=0;p<pos.size();p++){
+				while(pos[i] 	
+			}
+		}
+
 		if(go(0, ini) >= INF)
 			puts("impossible");
 		else
