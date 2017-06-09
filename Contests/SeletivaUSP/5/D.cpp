@@ -16,23 +16,32 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 41234;
+const int MAXN = 212345;
 
 int n, m, k;
-struct pti{
-	int x, y;
-} s[MAXN][2];
 
-map<int, vector<pii> > ind;
+struct pti{
+	int x, y, c;
+	pti(){}
+	pti(int xx, int yy, int cc){
+		x = xx;
+		y = yy;
+		c = cc;
+	}
+} s[MAXN];
+
+vector<int> Y;
 
 int main (){
 	for_tests(t, tt){
-		scanf("%d", &n);
+		scanf("%d%d", &n, &k);
 		for(int a=0;a<n;a++){
-			scanf("%d%d%d%d", &s[a][0].x, &s[a][0].y, &s[a][1].x, &s[a][1].y);
-			if(s[a][0].x > s[a][1].x)
-				swap(s[a][0], s[a][1]);
-			ind[s[a][0].x].pb(pii(s[a][0].y, 
+			int x, y, c;
+			scanf("%d %d %d", &x, &y, &c);
+			s[a] = pti(x, y, c);
+			Y.pb(y);
 		}
-	}	
-}	
+		sort(Y.begin(), Y.end());
+		int i = 0, j = Y.size()-1;
+	}
+}
