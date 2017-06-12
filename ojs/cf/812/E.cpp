@@ -61,8 +61,8 @@ int main (){
 		for(auto &r: mrk[0]){
 			int key = r.fst;
 			int val = r.snd;
-			int proi = tot[0]^key;
-			res += mrk[1][proi]*mrk[0][key];
+			int proi = (tot[0]^key);
+			res += (ll)mrk[1][proi]*val;
 		}
 	}
 	else{
