@@ -1,0 +1,56 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define fst first
+#define snd second
+typedef unsigned long long ull;
+typedef long long ll;
+typedef pair<int, int> pii;
+#define pb push_back
+#define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
+#ifndef ONLINE_JUDGE
+#define debug(args...) fprintf(stderr,args)
+#else
+#define debug(args...)
+#endif //ONLINE_JUDGE
+template<typename T> inline T abs(T t) { return t < 0? -t : t; }
+const ll modn = 1000000007;
+inline ll mod(ll x) { return x % modn; }
+
+const int MAXN = 21;
+
+int n, m, k;
+int cus[MAXN][2];
+int dp[MAXN][2];
+
+
+int go(int i, int p){
+	if(dp[i][p] != -1)
+		return dp[i][p];
+	if(i == 0)
+		return dp[i][p] = cus[i][p];
+	
+	dp[i][p] = 1 + min(go(i-1, p) + 2*cus[i][p], go(i-1, 1-p)+m+1);
+
+	return dp[i][p];
+}
+
+int main (){
+	scanf("%d%d", &n, &m);
+	int ini = n-1;
+	int has = 0;
+	for(int a=0;a<n;a++){
+		cus[a][0] = cus[a][1] = 0;
+		for(int b=0;b<m+2;b++){
+			char ch;
+			scanf(" %c", &ch);
+			if((ch - '0')){
+				cus[a][1] = max(cus[a][1], m+1 - b); 
+				cus[a][0] = max(cus[a][0], b);
+				has = 1;
+			}
+		}
+		debug("a %d cus[a][0] %d cus[a][1] %d\n", a, cus[a][0], cus[a][1]); 
+	}
+	memset(dp, -1, sizeof(dp));
+	printf("%d\n", go(n-1, 0));
+}
