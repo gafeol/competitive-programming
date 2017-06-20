@@ -20,23 +20,72 @@ const int MAXN = 1123;
 
 int n, m, k;
 int s[MAXN];
-int dp[MAXN][MAXN];
+pii dp[MAXN][MAXN];
 char M[MAXN][MAXN];
+int up[MAXN][MAXN], sum[MAXN][MAXN];
+
+int res[MAXN*2];
+
+
+inline int soma(int i, int j, int ii, int jj){
+	return sum[ii][jj] - sum[ii][j-1] - sum[i+1][jj] + sum[i+1][j-1];
+}
+
+inline int bb(int pi, int pj, int h){
+	int i = pj, j = m;
+	while(i < j){
+		int mid = (i+j+1)/2;
+		if(soma(pi, pj, h, mid) == 0)
+			i = mid;
+		else
+			j = mid-1;
+	}
+	return i;
+}
+
+inline int dist(int i, int j, int ii, int jj){
+	return abs(i - ii) + abs(j - jj);
+}
 
 int main (){
 	for_tests(t, tt){
 		memset(dp, 0, sizeof(dp));
+		memset(res, 0, sizeof(res));
 		scanf("%d%d", &n, &m);
 		for(int a=1;a<=n;a++){
 			for(int b=1;b<=m;b++){
 				scanf(" %c", &M[a][b]);
+				sum[a][b] = 0;
+				sum[a][b] = (M[a][b] == '#');
+				if(M[a-1][b] != '.')
+					up[a][b] = a;
+				else
+					up[a][b] = up[a-1][b];
+
 			}
 		}
+		for(int a=n;a>0;a--){
+			for(int b=1;b<=m;b++){
+				sum[a][b] += sum[a+1][b] + sum[a][b-1] - sum[a+1][b-1];
+			}
+		}
+
 		for(int a=1;a<=n;a++){
 			for(int b=m;b>0;b--){
-				if(M[a][b] == '.'){
-					dp[a][b] = max(dp[a+1][	
-				}
+				if(M[a][b] == '#') continue;
+				int j = bb(a, b, up[a][b]);	
+				dp[a][b] = pii(up[a][b], j);
+				if(M[a][j+1] == '.' &&  dist(a, b, up[a][b], j) < dist(a, b, dp[a][j+1].fst, dp[a][j+1].snd))
+					dp[a][b] = dp[a][j+1];
+
+				debug("para cara %d %d res %d %d per %d\n", a, b, dp[a][b].fst, dp[a][b].snd, 2*(dist(a, b, dp[a][b].fst, dp[a][b].snd) + 2));
+
+				res[2*(dist(a, b, dp[a][b].fst, dp[a][b].snd)+2)]++;
+			}
+		}
+		for(int a=4;a<=MAXN*2;a++){
+			if(res[a] != 0){
+				printf("%d x %d\n", res[a], a);
 			}
 		}
 	}
