@@ -16,18 +16,19 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 212345;
+const int MAXN = 100005;
 
 int n, m, k;
 int s[MAXN];
 int deg;
-int L[MAXN*18], R[MAXN*18], cnt[MAXN*18];
+int L[MAXN*30], R[MAXN*30], cnt[MAXN*30];
 
-void add(int x){
+void upd(int x, int val){
 	int u = 0;
 	int i = 27;	
 	while(i > -1){
-		cnt[u]++;
+		cnt[u]+=val;
+		debug("upd %d val %d cnt[u] %d\n", u, val, cnt[u]);
 		if(((1<<i)&x) == 0){
 			if(L[u] == -1)
 				L[u] = deg++;
@@ -40,25 +41,8 @@ void add(int x){
 		}
 		i--;			
 	}
-}
-
-void rmv(int x){
-	int u = 0;
-	int i = 27;	
-	while(i > -1){
-		cnt[u]--;
-		if(((1<<i)&x) == 0){
-			if(L[u] == -1)
-				L[u] = deg++;
-			u = L[u];
-		}
-		else{
-			if(R[u] == -1)
-				R[u] = deg++;
-			u = R[u];
-		}
-		i--;			
-	}
+	debug("upd %d val %d cnt[u] %d\n", u, val, cnt[u]+val);
+	cnt[u] += val;
 }
 
 int qry(int x, int val){
@@ -66,32 +50,38 @@ int qry(int x, int val){
 	int i = 27;	
 	int ans = 0;
 	while(i > -1){
+		debug("qry %d  i %d bit %d\n", u, i, (1<<i));
+
 		if(((1<<i)&val) == 0){
-			if((1<<i)&x == 0){
-				if(R[u] != -1)
-					ans += cnt[R[u]];
+			if(((1<<i)&x) == 0){
 				if(L[u] != -1)
 					u = L[u];
+				else
+					return ans;
 			}
 			else{
-				if(L[u] != -1)
-					ans += cnt[L[u]];
 				if(R[u] != -1)
 					u = R[u];
+				else
+					return ans;
 			}
 		}
 		else{
-			if((1<<i)&x == 0){
+			if(((1<<i)&x) == 0){
 				if(L[u] != -1)
 					ans += cnt[L[u]];
 				if(R[u] != -1)
 					u = R[u];
+				else
+					return ans;
 			}
 			else{
 				if(R[u] != -1)
 					ans += cnt[R[u]];
 				if(L[u] != -1)
 					u = L[u];
+				else
+					return ans;
 			}
 		}
 		i--;			
@@ -100,6 +90,7 @@ int qry(int x, int val){
 }
 
 int main (){
+	deg = 1;
 	memset(L, -1, sizeof(L));
 	memset(R, -1, sizeof(R));
 	scanf("%d", &n);
@@ -107,9 +98,9 @@ int main (){
 		int t, p;
 		scanf("%d%d", &t, &p);
 		if(t == 1)
-			add(p);
+			upd(p, 1);
 		else if(t == 2)
-			rmv(p);
+			upd(p, -1);
 		else{
 			int l;
 			scanf("%d", &l);
@@ -117,3 +108,4 @@ int main (){
 		}
 	}
 }
+
