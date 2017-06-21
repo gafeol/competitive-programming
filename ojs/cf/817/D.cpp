@@ -16,54 +16,55 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 212345;
+const int MAXN = 1123456;
 
 int n, m, k;
-int s[MAXN];
-int mx[MAXN][2];
-int mn[MAXN][2];
+ll s[MAXN];
 
-set<int> pos;
+ll mnL[MAXN], mnR[MAXN], mxL[MAXN], mxR[MAXN];
 
-vector<pii> ind;
+stack<int> q;
 
 int main (){
 	scanf("%d", &n);
-	for(int a=0;a<n;a++){
-		scanf("%d", s+a);
-		ind.pb(pii(s[a], a));
+	for(int a=1;a<=n;a++){
+		scanf("%lld", s+a);
+	}
+	q.push(0);
+	s[0] = LLONG_MAX;
+	s[n+1] = LLONG_MAX;
+	for(int a=1;a<=n+1;a++){
+		while(!q.empty() && s[q.top()] < s[a]){
+			mxR[q.top()] = a;
+			q.pop();
+		}
+		mxL[a] = q.top();
+		q.push(a);
 	}
 
-	sort(ind.begin(), ind.end());
+	while(!q.empty())
+		q.pop();
 
-	for(int a=1;a<n;a++){
-		if(s[a-1] > s[a])
-			mx[a][0] = a-1;
-		else
-				
+	s[0] = LLONG_MIN;
+	s[n+1] = LLONG_MIN;
+	q.push(0);
+
+	for(int a=1;a<=n+1;a++){
+		while(!q.empty() && s[q.top()] > s[a]){
+			mnR[q.top()] = a;
+			q.pop();
+		}
+		mnL[a] = q.top();
+		q.push(a);
 	}
-	for(int a=n-2;a>=0;a--){
-	}
+
+	while(!q.empty())
+		q.pop();
+
 	ll res = 0;
-	for(int a=0;a<n;a++){
-		int l = mx[a][0];
-		if(l == a)
-			l = -1;
-		int r = mx[a][1];
-		if(r == a)
-			r = n;
-		res += s[a]*(a - l)*(r - a);
-		debug("soma l %d r %d res += %d\n", l, r, s[a]*(a - l)*(r - a));
-
-		l = mn[a][0];
-		if(l == a)
-			l = -1;
-		r = mn[a][1];
-		if(r == a)
-			r = n;
-		res -= s[a]*(a - l)*(r - a);
-		debug("sub l %d r %d res -= %d\n", l, r, s[a]*(a - l)*(r - a));
+	for(ll a=1;a<=n;a++){
+		res += s[a]*(a - mxL[a])*(mxR[a] - a);
+		res -= s[a]*(a - mnL[a])*(mnR[a] - a);
 	}
 	printf("%lld\n", res);
-
 }
