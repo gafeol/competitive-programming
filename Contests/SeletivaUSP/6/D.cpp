@@ -40,9 +40,12 @@ struct seg{
 
 bool operator< (const seg& u, const seg& o) {
 	double yy;
+	debug("cmp %d %d\n", u.ind, o.ind);
 	for(int a=0;a<2;a++){
 		if(u.x[a] >= o.x[0] && o.x[1] >= u.x[a]){
-			yy = (double)(abs(o.y[1] - o.y[0])/((double)abs(o.x[1] - o.x[0])))*(double)abs(u.x[a] - o.x[0]); 
+			yy = (double)((o.y[1] - o.y[0])/((double)abs(o.x[1] - o.x[0])))*(double)abs(u.x[a] - o.x[0]); 
+			yy = o.y[0] + yy; 
+			debug("	return1 (%.3f < %.3f)\n", (double)u.y[a], yy);
 			return ((double)u.y[a] < yy); 
 		}
 	}
@@ -50,9 +53,12 @@ bool operator< (const seg& u, const seg& o) {
 	for(int a=0;a<2;a++){
 		if(o.x[a] >= u.x[0] && u.x[1] >= o.x[a]){
 			yy = (double)(abs(u.y[1] - u.y[0])/((double)abs(u.x[1] - u.x[0])))*(double)abs(o.x[a] - u.x[0]); 
+			yy = u.y[0] + yy;
+			debug("	return2 (%.3f < %.3f)\n", yy, (double)o.y[a]);
 			return (yy < (double)o.y[a]); 
 		}
 	}
+	debug("	return false\n");
 	return false;
 }
 
@@ -68,12 +74,18 @@ void sweep(){
 	vector<pii> ev;
 	for(auto& r : ind){
 		ev = r.snd;
+		debug("to em x = %d\n", r.fst);
+		debug("q.sz = %d\n", (int)q.size());
+		debug("q.begin %d\n", q.begin()->ind);
 		for(pii e : ev){
 			int t = e.snd;
 			int i = e.fst;
+			debug("	evs %d %d\n", i, t);
 			if(t) continue;
 			q.insert(s[i]);
 		}
+		debug("q.sz = %d\n", (int)q.size());
+		debug("q.begin %d\n", q.begin()->ind);
 		for(pii e: ev){
 			int t = e.snd;
 			int i = e.fst;
@@ -89,6 +101,8 @@ void sweep(){
 			if(!t) continue;
 			q.erase(s[i]);
 		}
+		debug("q.sz = %d\n", (int)q.size());
+		debug("q.begin %d\n", q.begin()->ind);
 	}
 }
 
@@ -106,7 +120,6 @@ int end(int i){
 
 int main (){
 	scanf("%d", &n);
-	q.clear();
 	q.insert(seg(-1000000, -2000000, 1000000, -1900000, n+100));
 	memset(nxt, -1, sizeof(nxt));
 	for(int a=0;a<n;a++){
