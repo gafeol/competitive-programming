@@ -8,7 +8,7 @@ typedef pair<int, int> pii;
 #define pb push_back
 #define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
 #ifndef ONLINE_JUDGE
-#define debug(args...) fprintf(stderr,args)
+#define debug(args...) //fprintf(stderr,args)
 #else
 #define debug(args...)
 #endif //ONLINE_JUDGE
@@ -17,6 +17,13 @@ const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
 const int MAXN = 212345;
+
+int n, m, k;
+
+int nxt[MAXN];
+
+map<int, vector<pii> > ind;
+
 
 struct seg{
 	int x[2], y[2];
@@ -35,92 +42,89 @@ struct seg{
 		y[1] = yy;
 		ind = i;
 	}
-
 } s[MAXN];
 
-bool operator< (const seg& u, const seg& o) {
-	double yy;
-	debug("cmp %d %d\n", u.ind, o.ind);
-	for(int a=0;a<2;a++){
-		if(u.x[a] >= o.x[0] && o.x[1] >= u.x[a]){
-			yy = (double)((o.y[1] - o.y[0])/((double)abs(o.x[1] - o.x[0])))*(double)abs(u.x[a] - o.x[0]); 
-			yy = o.y[0] + yy; 
-			debug("	return1 (%.3f < %.3f)\n", (double)u.y[a], yy);
-			return ((double)u.y[a] < yy); 
+struct cmp{
+	bool operator() (const int& ui, const int& oi) {
+		if(ui == -1) return true;
+		if(oi == -1) return false;
+		seg u = s[ui];
+		seg o = s[oi];
+		double yy;
+		for(int a=0;a<2;a++){
+			if(u.x[a] >= o.x[0] && o.x[1] >= u.x[a]){
+				yy = (double)((o.y[1] - o.y[0])/((double)(o.x[1] - o.x[0])))*(double)(u.x[a] - o.x[0]); 
+				yy = o.y[0] + yy; 
+				return ((double)u.y[a] < yy); 
+			}
 		}
-	}
 
-	for(int a=0;a<2;a++){
-		if(o.x[a] >= u.x[0] && u.x[1] >= o.x[a]){
-			yy = (double)(abs(u.y[1] - u.y[0])/((double)abs(u.x[1] - u.x[0])))*(double)abs(o.x[a] - u.x[0]); 
-			yy = u.y[0] + yy;
-			debug("	return2 (%.3f < %.3f)\n", yy, (double)o.y[a]);
-			return (yy < (double)o.y[a]); 
+		for(int a=0;a<2;a++){
+			if(o.x[a] >= u.x[0] && u.x[1] >= o.x[a]){
+				yy = (double)((u.y[1] - u.y[0])/((double)(u.x[1] - u.x[0])))*(double)(o.x[a] - u.x[0]); 
+				yy = u.y[0] + yy;
+				return (yy < (double)o.y[a]); 
+			}
 		}
+		debug("	return false\n");
+		return (u.ind < o.ind);
 	}
-	debug("	return false\n");
-	return false;
-}
+};
 
-int n, m, k;
-
-int nxt[MAXN];
-
-map<int, vector<pii> > ind;
-
-set<seg> q;
+multiset<int, cmp> q;
 
 void sweep(){
 	vector<pii> ev;
 	for(auto& r : ind){
 		ev = r.snd;
-		debug("to em x = %d\n", r.fst);
-		debug("q.sz = %d\n", (int)q.size());
-		debug("q.begin %d\n", q.begin()->ind);
+		if(r.fst > -10 && r.fst < 10){
+//			printf("to em x = %d\n", r.fst);
+//			printf("q.sz %d\n", (int)q.size());
+		}
 		for(pii e : ev){
 			int t = e.snd;
 			int i = e.fst;
 			debug("	evs %d %d\n", i, t);
 			if(t) continue;
-			q.insert(s[i]);
+		//	int sz = q.size();
+			q.insert(i);
+		//	if(sz - q.size() == 0)
+//				printf("to em %d e dei insert em %d e o sz nao mudou %d\n", r.fst, i, sz);
 		}
-		debug("q.sz = %d\n", (int)q.size());
-		debug("q.begin %d\n", q.begin()->ind);
 		for(pii e: ev){
 			int t = e.snd;
 			int i = e.fst;
 			if(s[i].y[t] < s[i].y[1-t]){
-				seg lw = *(--q.lower_bound(s[i]));
-				nxt[i] = lw.ind;
-				debug("nxt[%d] = %d\n", i, lw.ind);
+				int lw = *(--q.find(i));
+				nxt[i] = lw;
+//				if(i < 10) printf("nxt[%d] = %d\n", i, lw);
 			}
 		}
 		for(pii e: ev){
 			int t = e.snd;
 			int i = e.fst;
 			if(!t) continue;
-			q.erase(s[i]);
+			q.erase(i);
 		}
-		debug("q.sz = %d\n", (int)q.size());
-		debug("q.begin %d\n", q.begin()->ind);
 	}
 }
 
 double avalia(seg o, int x){
-	if(x < o.x[0] || x > o.x[1]) return -2000000.;
-	double yy = (double)(abs(o.y[1] - o.y[0])/((double)abs(o.x[1] - o.x[0])))*(double)abs(x - o.x[0]); 
+	if(x < o.x[0] || x > o.x[1]) return -1600000.;
+	double yy = (double)((o.y[1] - o.y[0])/((double)(o.x[1] - o.x[0])))*(double)(x - o.x[0]); 
+	yy += o.y[0];
 	return yy;	
 }
 
 int end(int i){
 	if(s[i].y[0] < s[i].y[1])
-		return s[i].y[0];
-	return s[i].y[1];
+		return s[i].x[0];
+	return s[i].x[1];
 }
 
 int main (){
 	scanf("%d", &n);
-	q.insert(seg(-1000000, -2000000, 1000000, -1900000, n+100));
+	q.insert( -1);
 	memset(nxt, -1, sizeof(nxt));
 	for(int a=0;a<n;a++){
 		int x, y, xx, yy;
@@ -146,9 +150,11 @@ int main (){
 			ini = a;
 	}
 	int pos = X;
-	while(ini == -1){
+	while(ini != -1){
 		pos = end(ini);
+//		printf("to em %d vou pra %d prox %d\n", ini, pos, nxt[ini]);
 		ini = nxt[ini];
+		assert(ini != nxt[ini]);
 	}
 	printf("%d\n", pos);
 }
