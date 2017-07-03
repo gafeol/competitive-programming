@@ -77,9 +77,9 @@ void sweep(){
 		debug("sweep x %d sz %d\n", x, (int)q.size());
 		if(q.size() != 0 && (*q.rbegin()) != -1){
 			seg top = s[*q.rbegin()];
-			debug("no ponto %d top e %d ( seg %d %d %d %d)\n", x, top.i, top.x[0], top.y[0], top.x[1], top.y[1]);
-			debug("dp[%d] += %d\n", top.i, x - ult);
+			debug("no ponto %d top e %d\n", x, top.i);
 			dp[top.i] += x - ult;
+			ult = x;
 		}
 		
 		for(pii ev: v){
@@ -105,13 +105,11 @@ void sweep(){
 			if(t)
 				q.erase(q.find(id));
 		}
-		ult = x;
 	}
 }
 
 int main (){
 	for_tests(t, tt){
-		memset(dp, 0, sizeof(dp));
 		add(seg(0, -5, MAXX, -4, -1));
 		scanf("%d", &n);
 		for(int a=0;a<n;a++){
@@ -131,7 +129,6 @@ int main (){
 		while(!ts.empty()){
 			int top = ts.front();
 			ts.pop();
-			if(nxt[top] == -1) continue;
 			deg[nxt[top]]--;
 			if(deg[nxt[top]] == 0)
 				ts.push(nxt[top]);
