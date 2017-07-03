@@ -46,3 +46,5 @@ struct cmp{
 
 multiset<int, cmp> q;
 
+// q.erase(ind); nao dar find no erase
+

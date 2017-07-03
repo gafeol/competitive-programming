@@ -8,7 +8,7 @@ typedef pair<int, int> pii;
 #define pb push_back
 #define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
 #ifndef ONLINE_JUDGE
-#define debug(args...) fprintf(stderr,args)
+#define debug(args...) //fprintf(stderr,args)
 #else
 #define debug(args...)
 #endif //ONLINE_JUDGE
@@ -36,6 +36,8 @@ struct seg{
 
 struct cmp{
 	bool operator() (const int& ui, const int& oi){
+		if(ui == -1) return true;
+		if(oi == -1) return false;
 		seg u = s[ui];
 		seg o = s[oi];
 		double yy;
@@ -54,7 +56,7 @@ struct cmp{
 				return (yy < (double)o.y[a]);
 			}
 		}
-		return (u.i < o.i);
+		return (ui < oi);
 	}
 };
 
@@ -76,10 +78,8 @@ void sweep(){
 		int x = it.fst;
 		debug("sweep x %d sz %d\n", x, (int)q.size());
 		if(q.size() != 0 && (*q.rbegin()) != -1){
-			seg top = s[*q.rbegin()];
-			debug("no ponto %d top e %d ( seg %d %d %d %d)\n", x, top.i, top.x[0], top.y[0], top.x[1], top.y[1]);
-			debug("dp[%d] += %d\n", top.i, x - ult);
-			dp[top.i] += x - ult;
+			int top = (*q.rbegin());
+			dp[top] += x - ult;
 		}
 		
 		for(pii ev: v){
@@ -93,8 +93,9 @@ void sweep(){
 			int t = ev.snd;
 			if(id != -1 && s[id].y[t] < s[id].y[(t^1)]){
 				int nx = *(--q.lower_bound(id));	
+				nxt[id] = nx;
+				debug("nxt[%d] %d\n", id, nx);
 				if(nx != -1){
-					nxt[id] = nx;
 					deg[nx]++;
 				}
 			}
@@ -103,7 +104,7 @@ void sweep(){
 			int t = ev.snd;
 			int id = ev.fst;
 			if(t)
-				q.erase(q.find(id));
+				q.erase(id);
 		}
 		ult = x;
 	}
@@ -112,7 +113,9 @@ void sweep(){
 int main (){
 	for_tests(t, tt){
 		memset(dp, 0, sizeof(dp));
-		add(seg(0, -5, MAXX, -4, -1));
+		q.clear();
+		hor.clear();
+		add(seg(0, -2, MAXX, -1, -1));
 		scanf("%d", &n);
 		for(int a=0;a<n;a++){
 			int x, xx, y, yy;
@@ -140,5 +143,6 @@ int main (){
 		for(int a=0;a<n;a++){
 			printf("%d\n", dp[a]);
 		}
+		if(tt != t) printf("\n");
 	}	
 }	
