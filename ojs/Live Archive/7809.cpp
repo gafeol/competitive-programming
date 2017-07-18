@@ -46,7 +46,7 @@ inline bool check(int a, int b, int p){
 	return true;
 }
 
-int main (){
+main (){
 	for(int a = 10;a <= 99;a++){
 		for(int b = a;b <= 99;b++){
 			int m = a*b;
