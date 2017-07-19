@@ -1,0 +1,7 @@
+C.cpp: In function ‘int main()’:
+C.cpp:39:15: error: ‘struct std::pair<point, point>’ has no member named ‘ff’
+   cout << aux.ff.ff << endl << aux.ff.ss << endl;
+               ^
+C.cpp:39:36: error: ‘struct std::pair<point, point>’ has no member named ‘ff’
+   cout << aux.ff.ff << endl << aux.ff.ss << endl;
+                                    ^
