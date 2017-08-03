@@ -1,0 +1,72 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define fst first
+#define snd second
+typedef unsigned long long ull;
+typedef long long ll;
+typedef pair<int, int> pii;
+#define pb push_back
+#define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
+#ifndef ONLINE_JUDGE
+#define debug(args...) fprintf(stderr,args)
+#else
+#define debug(args...)
+#endif //ONLINE_JUDGE
+template<typename T> inline T abs(T t) { return t < 0? -t : t; }
+const ll modn = 1000000007;
+inline ll mod(ll x) { return x % modn; }
+
+const int MAXN = 352345, MAXK = 51;
+
+int n, m, k;
+int s[MAXN];
+
+int dp[MAXN][MAXK], opt[MAXN][MAXK];
+
+int beg[MAXN];
+
+void solve(int i, int j, int l, int r, int kk){
+	if(i > j) return ;
+	int m = (i+j)/2;
+	memset(beg, -1, sizeof(beg));
+	int ansb = 0;
+	for(int a=max(m, l);a<=r;a++){
+		if(beg[s[a]] == -1)
+			beg[s[a]] = a;
+	}
+	for(int a=max(l, m);a<=r;a++){
+		if(a == beg[s[a]])
+			ansb++;
+		if(dp[m][kk] < dp[a+1][kk-1] + ansb){
+			debug("dp[%d][%d] <- dp[%d][%d] %d + ansb %d\n", m, kk, a+1, kk-1, dp[a+1][kk-1], ansb);
+			dp[m][kk] = dp[a+1][kk-1] + ansb;
+			opt[m][kk] = a;
+		}
+	}
+	solve(i, m-1, l, opt[m][kk], kk);
+	solve(m+1, j, opt[m][kk], r, kk);
+	debug("dp[%d][%d] %d\nopt[%d][%d] %d\n", m, kk, dp[m][kk], m, kk, opt[m][kk]);
+}
+
+int main (){
+	scanf("%d%d", &n, &k);
+	for(int a=0;a<n;a++){
+		scanf("%d", s+a);
+	}
+	int ans = 0;
+	memset(beg, -1, sizeof(beg));
+	for(int a=n-1;a>=0;a--){
+		if(beg[s[a]] == -1){
+			beg[s[a]] = a;
+			ans++;
+		}
+		dp[a][0] = ans;
+		debug("dp[%d][0] = %d\n", a, ans);
+	}
+	dp[n][0] = 0;
+	for(int j=1;j<=k;j++){
+		solve(0, n-1, 0, n-1, j);
+	}
+	printf("%d\n", dp[0][k]);
+}
+
