@@ -16,19 +16,65 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 212345;
+const int MAXN = 65;
 
 int n, m, k;
-int s[MAXN];
+int s[MAXN], som[MAXN], sz[MAXN], pos[MAXN], pai[MAXN];
+int men[MAXN], mrk[MAXN];
 
-int main (){
-	scanf("%d", &n);
-	for(int a=0;a<n;a++)
-		scanf("%d", &s[a]);
-	for(int a=0;a<n;a++){
-		scanf("%d", &pos[a]);
-		if(pos[a] != a)
-			ans += s[a];
-	}
+int res;
+
+int raiz(int i){
+	if(pai[i] == i) return i;
+	return pai[i] = raiz(pai[i]);
 }
 
+void join(int i, int j){
+	i = raiz(i);
+	j = raiz(j);
+	
+	if(i == j) return ;
+
+	if(sz[i] < sz[j])
+		swap(i, j);
+	pai[j] = i;
+	sz[i] += sz[j];
+	men[i] = min(men[i], men[j]);
+	som[i] += som[j];
+}
+
+void go(int u){
+	mrk[u] = 1;
+	if(!mrk[pos[u]])
+		go(pos[u]);
+}
+
+vector<int> ent;
+
+int main (){
+	int x;
+	while(scanf("%d", &x)!= EOF){
+		ent.pb(x);
+	}
+	n = ent.size()/2;
+	int mn = INT_MAX;
+	for(int a=0;a<n;a++){
+		s[a] = ent[a];
+		sz[a] = 1;
+		pai[a] = a;
+		som[a] = s[a];
+		men[a] = s[a];
+		mn = min(mn, s[a]);
+	}
+	for(int a=0;a<n;a++){
+		pos[a] = ent[n+a];
+		join(a, pos[a]);
+	}
+	for(int a=0;a<n;a++){
+		if(mrk[a]) continue;
+		int r = raiz(a);
+		res += min(men[r]*(sz[r]-2) + som[r], 2*(mn + men[r]) + som[r]-men[r] + mn*(sz[r] - 1));
+		go(a);
+	}
+	printf("%d\n", res);
+}
