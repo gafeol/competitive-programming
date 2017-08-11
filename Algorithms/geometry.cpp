@@ -1,3 +1,6 @@
+
+/////Header de Geometria/////
+
 // area de calota 2.pi.R.h (h altura)
 // volume de calota pi.h/6 * (3r^2 + h^2)
 

@@ -1,3 +1,6 @@
+
+// Z Algorithm
+//////////////
 const int MAXS = ;
 
 int L, R, Z[MAXS];

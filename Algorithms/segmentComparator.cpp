@@ -1,3 +1,6 @@
+
+//////Segment Comparator////////
+
 struct seg{
 	int x[2], y[2];
 	int ind;
