@@ -20,6 +20,7 @@ const int MAXN = 212345;
 
 int n, m, k;
 int s[MAXN];
+int proi[MAXN][10];
 int cnt[10];
 
 int main (){
@@ -28,7 +29,7 @@ int main (){
 	s[0] = 1;
 	cnt[1]++;
 	for(int a=1;a<10000;a++){
-			
+					
 	}
 	for_tests(t, tt){
 		scanf("%d", &n);
