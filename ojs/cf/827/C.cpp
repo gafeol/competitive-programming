@@ -23,7 +23,7 @@ char s[MAXN], st[11];
 int cp[MAXN][11][11][4];
 int bit[11*11*4][MAXN];
 
-int sz[11][11][4];
+int subsz[11][11][4];
 
 
 char ch[] = {'A', 'C', 'G', 'T'};
@@ -32,13 +32,14 @@ inline int ic(char c){
 	for(int i=0;i<4;i++)
 		if(ch[i] == c)
 			return i;
-	puts("ERRO");
+	debug("ERRO char %c\n", c);
 	return -1;
 }
 
 int ind[11][11][4], degi;
 
 void upd(int idx, int i, int x){
+	if(idx < 1) return ;
 	i+=2;
 	while(i < MAXN){
 		bit[idx][i] += x;
@@ -47,6 +48,7 @@ void upd(int idx, int i, int x){
 }
 
 int qry(int idx, int i){
+	if(idx < 1) return 0;
 	i += 2;
 	int ans = 0;
 	while(i > 0){
@@ -58,17 +60,21 @@ int qry(int idx, int i){
 
 int main (){
 	scanf(" %s", s);
+	degi = 1;
 	int tam = strlen(s);
-	for(int sz=1;sz<=10;sz++){
+	for(int sz=1;sz<=10 && sz <= tam;sz++){
 		for(int c=0;c<4;c++){
-			for(int ini=0;ini<sz;ini++){
+			for(int ini=0;ini<sz && ini < tam;ini++){
 				int deg = 0;
+				debug("degi %d sub sz %d c %c ini %d SUBS ", degi, sz, ch[c], ini);
 				for(int i=ini;i<tam;i+=sz){
+					debug("%d", (int)(s[i] == ch[c]));
 					if(s[i] == ch[c])
 						upd(degi, deg, 1);
 					cp[deg++][ini][sz][c] = (s[i] == ch[c]); 
 				}
-				sz[ini][sz][c] = deg;
+				debug("\n");
+				subsz[ini][sz][c] = deg;
 				ind[ini][sz][c] = degi;
 				degi++;
 			}
@@ -84,19 +90,28 @@ int main (){
 			l--;r--;
 			int tam = strlen(st);
 			int res = 0;
+			debug("res += \n");
 			for(int i=0;i<tam;i++){
 				int idx = ind[(l + i)%tam][tam][ic(st[l+i])];
+				printf("qry no degi %d entre %d e %d\n", idx, (l+i)/tam - ((l+i)%tam == 0), r/tam);
 				res += qry(idx, r/tam) - qry(idx, (l+i)/tam - ((l+i)%tam == 0));
 			}
+			printf("%d\n", res);
 		}
 		else{
+			int i;
+			char c;
 			scanf("%d %c", &i, &c);
-			// fazer upd 1
-			for(int tam = 1;tam <= 10;tam++){
-
-				upd(
+			int l = ic(s[i]), r = ic(c);
+			int idx;
+			for(int sz = 1;sz <= 10 && sz <= tam;sz++){
+				// tira
+				idx = ind[i%sz][sz][l];
+				upd(idx, i/tam, -1);
+				// bota 
+				idx = ind[i%sz][sz][r];
+				upd(idx, i/tam, 1);
 			}
 		}
 	}
-
 }
