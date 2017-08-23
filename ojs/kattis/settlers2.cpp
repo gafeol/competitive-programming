@@ -27,8 +27,19 @@ int main (){
 	int nl = 6;
 	int ind = 0;
 	s[0] = 1;
+	s[1] = 2;
+	s[2] = 3;
+	s[3] = 4;
+	s[4] = 5;
+	s[5] = 2;
+	s[6] = 3;
 	cnt[1]++;
-	for(int a=1;a<10000;a++){
+	cnt[2]+=2;
+	cnt[3]+=2;
+	cnt[4]++;
+	cnt[5]++;
+	int nl = 
+	for(int a=7;a<10000;a++){
 					
 	}
 	for_tests(t, tt){
