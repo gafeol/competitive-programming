@@ -23,73 +23,71 @@ int k;
 pii s[MAXN];
 
 map<ll, vector<pii> > ind;
+vector<ll> X;
+
+vector<pii> v;
+
+multiset<ll> p;
 
 
-multiset<ll> ev;
-
-void add(int id){
-	ev.insert(s[id].fst);
-	debug("add s[%d] %lld\n", id, s[id].fst);
+void add(int id, ll t){
+	p.insert(s[id].snd - t);
+	p.insert(s[id].snd);
+	p.insert(s[id].snd + t);
 }
-void rmv(int id){
-	ev.erase(ev.find(s[id].fst));
+
+void rmv(int id, ll t){
+	p.erase(p.find(s[id].snd - t));
+	p.erase(p.find(s[id].snd));
+	p.erase(p.find(s[id].snd + t));
 }
 
 bool go(ll t){
-	if(t == 0){
-		return (n*m == k-1);
-	}
-	ll mnx = n-1, mxx = 0, mx = 0, mn = m-1;
+	p.clear();
+	X.clear();
 	ind.clear();
-	ev.clear();
+	ll mnx = n-1, mxx = 0, mny = m-1, mxy = 0;
 	for(int a=0;a<k;a++){
-		ind[s[a].fst-t].pb(pii(a, 0));
-		ind[s[a].fst+t].pb(pii(a, 1));
+		ind[s[a].fst - t].pb(pii(a, 0));	
+		ind[s[a].fst + t + 1].pb(pii(a, 1));
+		X.pb(s[a].fst - t);
+		X.pb(s[a].fst + t + 1);
+		X.pb(s[a].fst - t - 1);
+		X.pb(s[a].snd + t + 2);
 	}
-	vector<pii> v;
-	ind[n+t].pb(pii(0, 0));
-	ind[n+t].pb(pii(0, 1));
-	ll lstx = -2*t-1;
-	for(auto &r: ind){
-		ll x = r.fst;
-		v = r.snd;	
-		int has = 0;
+	X.pb(0);
+	X.pb(n-1);
+	p.insert(m + t);
+	sort(X.begin(), X.end());
+	X.erase(unique(X.begin(), X.end()), X.end());
+	for(ll x : X){
+		v = ind[x];
 		for(pii e: v){
-			if(e.snd == 0){
-				has = 1;
-				add(e.fst);
-			}
+			int tp = e.snd;
+			int id = e.fst;
+			if(tp == 0)
+				add(id, t);
+			else
+				rmv(id, t);
 		}
-		if(has && lstx + 2*t + 1 < x - t){
-			debug("nao cobre todo x de %lld a %lld\n", lstx, x);
-			mnx = min(mnx, lstx+2*t+1);
-			mxx = max(mxx, x-t-1);
-		}
-		if(has) lstx = x;
-		if(x == n+t)
-			break;
-		ev.insert(m+t);
-		ll lst = -2*t-1;
-		for(auto e: ev){
-			if(lst + 2*t + 1 < e - t){
-				debug("nao cobre todo y de %lld a %lld\n", lst, e);
-				mn = min(mn, lst+2*t+1);
-				mx = max(mx, e-t-1);
+		if(x < 0 || x >= n) continue;
+		debug("em x %lld:\n", x); 
+		int ulty = -t-1;
+		for(auto &it : p){
+			ll y = it;
+			debug("	y %lld\n", y);
+			if(max(0ll, ulty + t + 1ll) < min(y - t, m)){
+				mnx = min(mnx, x);
+				mxx = max(mxx, x);
+				mny = min(mny, max(0ll, ulty + t + 1));
+				mxy = max(mxy, min(y - t - 1, m-1));
+				debug("mnx = %lld mxx %lld mny %lld mxy %lld\n", mnx, mxx, mny, mxy);
 			}
-			debug("lst(%lld) = %lld\n", lst, e);
-			lst = e;	
-		}
-		for(pii e: v){
-			if(e.snd == 0){
-				rmv(e.fst);
-			}
+			ulty = y;
 		}
 	}
-	debug("t %lld\n", t);
-	debug("%lld %lld %lld %lld\n", mxx, mnx, mx, mn);
-	if(max(mxx - mnx, mx - mn)+1 <= 2*t + 1)
-		return 1;
-	return 0;
+	debug("t %lld mnx %lld mxx %lld mny %lld mxy %lld\n", t, mnx, mxx, mny, mxy);
+	return (max(mxx - mnx, mxy - mny) + 1  <= 2*t + 1);
 }
 
 int main (){
