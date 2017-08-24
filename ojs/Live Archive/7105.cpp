@@ -21,6 +21,7 @@ const int MASK = (1<<5), MAXS = 100;
 
 int n, m, k;
 
+ll M[MAXS][MAXS], base[MAXS][MAXS], aux[MAXS][MAXS];
 map<pii, int> ind;
 int bf[MASK], af[MASK];
 
@@ -51,7 +52,6 @@ bool valid(int a, int b){
 	return ((nb|b) == nb && (na|a) == na);
 }
 
-ll M[MAXS][MAXS], base[MAXS][MAXS], aux[MAXS][MAXS];
 
 void expo(ll e){
 	if(e == 0) return ;
@@ -95,16 +95,16 @@ int main (){
 				if(valid(i, j)){
 					bf[deg] = i;
 					af[deg] = j;
-					ind[pii(i, j)] = deg++;			
+					ind[pii(i, j)] = deg++;
 				}
 			}
 		}
 		for(int i=0;i<deg;i++){
 			for(int j=0;j<deg;j++){
-				base[j][i] = 0;
+				base[i][j] = 0;
 				int nx = next(bf[i], af[i]);
 				if(af[i] == bf[j] && (nx|af[j]) == nx)
-					base[j][i] = 1;
+					base[i][j] = 1;
 			}
 		}
 		for(int i=0;i<deg;i++){
@@ -127,7 +127,7 @@ int main (){
 		}
 		ll res = 0;
 		for(int a=0;a<deg;a++){
-			res = mod(res + M[a][0]);
+			res = mod(res + M[0][a]);
 		}
 		printf("%lld\n", res);
 	}
