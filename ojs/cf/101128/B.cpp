@@ -16,6 +16,8 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
+#define set asdasd
+
 const int MAXN = 65*2;
 
 int n, m, k;
@@ -66,6 +68,17 @@ int tarjan(int u){
 int id(int i, int t){
 	return i*2+t;
 }
+char zero = 'Z'+1;
+
+/*void set(int a, int t, int p){
+	add_edge(zero, (p^1), c[a][t], p);
+	add_edge(c[a][t], 1-p, zero, p);
+	add_edge(zero, p, c[a][t], p);
+	add_edge(c[a][t], 1-p, zero, 1-p);
+}*/
+void set(int a, int t, int p){
+	add_edge(c[a][t], 1-p, c[a][t], p);
+}
 
 int main (){
 	scanf("%d", &n);
@@ -74,7 +87,6 @@ int main (){
 		p[a] -= 1;
 	}
 	int res =0;
-	char zero = 'Z'+1;
 	for(A='A';A<='Z';A++){
 		for(B=A+1;B<='Z';B++){
 			for(C=B+1;C<='Z';C++){
@@ -96,22 +108,13 @@ int main (){
 						break;
 					}
 					if(s[a] == 2){
-						add_edge(zero, (p[a]^1), c[a][0], p[a]);	
-						add_edge(c[a][0], (p[a]^1), zero, p[a]);	
-						add_edge(zero, (p[a]^1), c[a][0], (p[a]^1));	
-						add_edge(c[a][0], (p[a]^1), zero, p[a]);	
-
-						add_edge(zero, (p[a]^1), c[a][1], p[a]);
-						add_edge(c[a][1], (p[a]^1), zero, p[a]);
-						add_edge(zero, p[a], c[a][1], p[a]);
-						add_edge(c[a][1], (p[a]^1), zero, (p[a]^1));
-						//conitnue
+						set(a, 0, p[a]);
+						set(a, 1, p[a]);
 					}
 					else if(s[a] == 1){
 						if(cnt == 1){
-							char ch = (mf(c[a][0]) ? c[a][1] : c[a][0]);
-							add_edge(zero, (p[a]^1), ch, p[a]);
-							add_edge(ch, (p[a]^1), zero, p[a]);
+							int t = (mf(c[a][0]) ? 1 : 0);
+							set(a, t, p[a]);
 						}
 						else{
 							add_edge(c[a][0], p[a], c[a][1], (p[a]^1));
@@ -124,15 +127,12 @@ int main (){
 						if(cnt == 2)
 							continue;
 						else if(cnt == 1){
-							char ch = (mf(c[a][0]) ? c[a][1] : c[a][0]);
-							add_edge(zero, p[a], ch, (p[a]^1));
-							add_edge(ch, p[a], zero, (p[a]^1));
+							int t = (mf(c[a][0]) ? 1 : 0);
+							set(a, t, 1-p[a]);
 						}
 						else{
-							add_edge(zero, p[a], c[a][1], (p[a]^1));
-							add_edge(zero, (p[a]^1), c[a][1], (p[a]^1));
-							add_edge(zero, p[a], c[a][0], (p[a]^1));
-							add_edge(zero, (p[a]^1), c[a][0], (p[a]^1));
+							set(a, 0, 1-p[a]);
+							set(a, 1, 1-p[a]);
 						}
 					}
 				}
