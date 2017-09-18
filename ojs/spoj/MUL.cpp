@@ -86,7 +86,7 @@ int main (){
 		C = FFT(C, -1);
 		int c = 0;
 		for(Complex u: C){
-			int x = u.real() + 0.5L;	
+			int x = u.real();	
 			debug("%d = %.3Lf %.3Lfi\n", x, u.real(), u.imag());
 			res.push((x+c)%10);
 			c = (x + c)/10;
