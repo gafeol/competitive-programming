@@ -1,0 +1,99 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define fst first
+#define snd second
+typedef unsigned long long ull;
+typedef long long ll;
+typedef pair<int, int> pii;
+#define pb push_back
+#define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
+#ifndef ONLINE_JUDGE
+#define debug(args...) fprintf(stderr,args)
+#else
+#define debug(args...)
+#endif //ONLINE_JUDGE
+template<typename T> inline T abs(T t) { return t < 0? -t : t; }
+const ll modn = 1000000007;
+inline ll mod(ll x) { return x % modn; }
+
+const int MAXN = 212;
+
+int n, m, k;
+ll M[MAXN][MAXN];
+ll dp[MAXN][MAXN][MAXN];
+
+inline ll add(int i, int j, int t){
+	if(i >= 0 && j >= 0 && t >= 0)
+		return dp[i][j][t];
+	debug("add %d %d %d = 0\n", i, j, t);
+	return 0;
+}
+
+inline ll rmv(int i, int j, int t){
+	return -add(i, j, t);
+}
+
+inline void go(int i, int j, int tempo){
+	if(i > 0){
+		dp[i][j][tempo] = dp[i-1][j][tempo];
+		int cnt = 0;
+		for(int a=max(0, j-tempo);a<=min(m-1, j+tempo);a++){
+			dp[i][j][tempo] = mod(dp[i][j][tempo] + add(i+cnt, a, tempo-1));
+			dp[i][j][tempo] = mod(dp[i][j][tempo] + rmv(i-1-cnt, a, tempo-1));
+			if(a < j)
+				cnt++;
+			else
+				cnt--;
+		}
+		return ;
+	}
+	if(j > 0){
+		dp[i][j][tempo] = dp[i][j-1][tempo];
+		int cnt = 0;
+		for(int a=max(0, i-tempo);a<=min(n-1, i+tempo);a++){
+			dp[i][j][tempo] = mod(dp[i][j][tempo] + add(a, j+cnt, tempo-1));
+			dp[i][j][tempo] = mod(dp[i][j][tempo] + rmv(a, j-1-cnt, tempo-1));
+			if(a < i)
+				cnt++;
+			else
+				cnt--;
+		}
+		return ;
+	}
+	for(int a=max(0, i-tempo);a<=min(n-1, i+tempo);a++){
+		for(int b=max(0, j-tempo);b<=min(m-1, j+tempo);b++){
+			if(abs(a - i) + abs(b - j) <= tempo){
+				dp[i][j][tempo] = mod(dp[i][j][tempo] + add(a, b, tempo-1));
+				debug("dp %d %d %d: %lld  add %d %d %d =  %lld\n", i, j, tempo, dp[i][j][tempo], a, b, tempo-1, add(a, b, tempo-1));
+			}
+		}
+	}
+}
+
+int main (){
+	for_tests(t, tt){
+		int T, i, j;
+		scanf("%d%d%d%d%d", &n, &m, &T, &i, &j);
+		for(int a=0;a<n;a++){
+			for(int b=0;b<m;b++){
+				scanf("%lld", &M[a][b]);
+				dp[a][b][0] = M[a][b];
+				debug("dp[%d][%d][0] = %lld\n", a, b, M[a][b]);
+			}
+		}
+		memset(dp, 0, sizeof(dp));
+		for(int tempo = 1;tempo < T;tempo++){
+			debug("tempo %d\n", tempo);
+			for(int a=0;a<n;a++){
+				for(int b=0;b<m;b++){
+					go(a, b, tempo);
+					debug("%lld ", dp[a][b][tempo]);
+				}
+				debug("\n");
+			}
+			debug("\n");
+		}
+		printf("Case %d: %lld\n", tt, dp[i][j][T-1]);
+	}
+}
+
