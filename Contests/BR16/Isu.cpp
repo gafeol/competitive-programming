@@ -16,31 +16,42 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 112345;
+const int MAXN = 6123, MAXK = 112;
 
 int n, m, k;
-int s[MAXN], ok[MAXN], res;
+int s[MAXN];
 
-multiset<int> q;
+ll dp[MAXN][MAXK], b, c;
 
-int main (){
-	scanf("%d%d", &n, &m);
-	for(int a=0;a<n;a++){
-		scanf("%d", s+a);
-		ok[a] = ((a+1)%(m+1) == 0 && a != 0);
-	}
-	for(int a=n-1;a>=0;a--){
-		q.insert(-s[a]);
-		if(ok[a]){
-			q.erase(q.begin());
-		}
-	}
+ll cus(int i, int j){
 
-	while(!q.empty()){
-		res += -(*q.begin());
-		q.erase(q.begin());
-	}
-
-	printf("%d\n", res);
 }
 
+void solve(int i, int j, int l, int r, int k){
+	if(i > j) return ;
+	int m = (i+j)/2;
+	int opt;
+	ll best = LLONG_MAX;
+	for(int a=max(m, l);a<=min(j, r);a++){
+		if(best > dp[a][k-1] + cus(m, a){
+			best = dp[a][k-1] + cus(m, a);
+		}
+	}
+}
+
+int main (){
+	scanf("%d%lld%lld", &n, &b, &c);
+	for(int a=0;a<n;a++){
+		scanf("%lld", s+a);	
+	}
+	s[n] = 0;
+	
+	for(int a=n-1;a>=0;a--){
+		dp[a][0] = dp[a+1][0] + s[a];
+	}
+	printf("%lld ", dp[0][0] + b); 
+	for(int a=1;a<n;a++){
+		solve(0, n-1, 0, n-1, a);
+		printf("%lld%s", dp[0][a] + b*(a+1), " \n"[(a == n-1)]);
+	}
+}

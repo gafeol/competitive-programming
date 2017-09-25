@@ -27,17 +27,16 @@ int main (){
 	scanf("%d%d", &n, &m);
 	for(int a=0;a<n;a++){
 		scanf("%d", s+a);
-		ok[a] = ((a+1)%(m+1) == 0 && a != 0);
+		ok[a] = (a%m == 0 && a != 0);
 	}
 	for(int a=n-1;a>=0;a--){
 		q.insert(-s[a]);
-		if(ok[a]){
+		if(ok[a])
 			q.erase(q.begin());
-		}
 	}
 
 	while(!q.empty()){
-		res += -(*q.begin());
+		res = -(*q.begin());
 		q.erase(q.begin());
 	}
 
