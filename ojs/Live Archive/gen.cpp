@@ -22,14 +22,15 @@ int n, m, k;
 int s[MAXN];
 
 int main (){
-	scanf("%d", &n);
+	int sz;
+	scanf("%d %d", &n, &sz);
 	while(n--){
-		for(int a=0;a<5;a++){
+		for(int a=0;a<sz;a++){
 			int c = rand()%26;
 			printf("%c", c+'a');	
 		}
 		puts("");
-		printf("%d", 1+rand()%5);
+		printf("%d", 1+rand()%20);
 		puts("");
 	}
 }

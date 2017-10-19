@@ -1,3 +1,5 @@
+// TESTAR COM in6
+
 #include <bits/stdc++.h>
 using namespace std;
 #define fst first
@@ -8,7 +10,7 @@ typedef pair<int, int> pii;
 #define pb push_back
 #define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
 #ifndef ONLINE_JUDGE
-#define debug(args...) //fprintf(stderr,args)
+#define debug(args...) fprintf(stderr,args)
 #else
 #define debug(args...)
 #endif //ONLINE_JUDGE
@@ -17,7 +19,7 @@ const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
 const int MAXN = 2123;
-const ll INF = 11234567890123LL;
+const ll INF = 11234567890123LL, DEZ = (ll)1e18 + 2;
 
 int n, m;
 ll k;
@@ -63,12 +65,14 @@ ll go(int i, int j, int tam){
 
 	dp[i][j] = 0;
 
-	if(s[i] == s[j] && tam == 2ll+sz(i+1, j-1))
-		return dp[i][j] = min((ll)1e18, dp[i][j] + go(i+1, j-1, tam-2));
+	if(s[i] == s[j] && tam == 2ll+sz(i+1, j-1)){
+		debug("dp[%d][%d] %lld\n", min(DEZ, dp[i][j] + go(i+1, j-1, tam-2)));
+		return dp[i][j] = min(DEZ, dp[i][j] + go(i+1, j-1, tam-2));
+	}
 	if(tam == 2ll+sz(i+1, j))
-		dp[i][j] = min((ll)1e18, dp[i][j] + go(i+1, j, tam-2));
+		dp[i][j] = min(DEZ, dp[i][j] + go(i+1, j, tam-2));
 	if(tam == 2ll+sz(i, j-1))
-		dp[i][j] = min((ll)1e18, dp[i][j] + go(i, j-1, tam-2));
+		dp[i][j] = min(DEZ, dp[i][j] + go(i, j-1, tam-2));
 
 	debug("dp[%d][%d] %lld\n", i, j, dp[i][j]);
 	return dp[i][j];
@@ -100,7 +104,7 @@ void re(int i, int j, int tam){
 	}
 	else{
 		debug("%c > %c\n", s[i], s[j]);
-		debug("%lld > go(%d %d) %lld\n", k, i, j-1, go(i, j-1, tam-2));
+		debug("tam %d == 2 + %lld && %lld > go(%d %d) %lld\n", tam, sz(i+1, j), k, i, j-1, go(i, j-1, tam-2));
 		if(tam == 2 + sz(i+1, j) && k > go(i, j-1, tam-2)){
 			k -= go(i, j-1, tam-2);
 			ans.pb(s[i]);
