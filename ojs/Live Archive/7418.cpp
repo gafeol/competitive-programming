@@ -49,7 +49,7 @@ ll sz(int i, int j){
 	if(mn[i][j] != INF) return mn[i][j];
 
 	if(s[i] == s[j])
-		return mn[i][j] = min(mn[i][j], sz(i+1, j-1) + 2ll);	
+		mn[i][j] = min(mn[i][j], sz(i+1, j-1) + 2ll);	
 	
 	mn[i][j] = min(mn[i][j], sz(i+1, j) + 2ll);
 	mn[i][j] = min(mn[i][j], sz(i, j-1) + 2ll);
@@ -60,13 +60,14 @@ ll sz(int i, int j){
 ll go(int i, int j, int tam){
 	if(i >= j)
 		return dp[i][j] = 1;
+	if(mn[i][j] != tam) return 0;
 	
 	if(dp[i][j] != -1) return dp[i][j];
 
 	dp[i][j] = 0;
 
 	if(s[i] == s[j] && tam == 2ll+sz(i+1, j-1)){
-		debug("dp[%d][%d] %lld\n", min(DEZ, dp[i][j] + go(i+1, j-1, tam-2)));
+		debug("dp[%d][%d] %lld\n", i, j, min(DEZ, dp[i][j] + go(i+1, j-1, tam-2)));
 		return dp[i][j] = min(DEZ, dp[i][j] + go(i+1, j-1, tam-2));
 	}
 	if(tam == 2ll+sz(i+1, j))
@@ -97,6 +98,7 @@ void re(int i, int j, int tam){
 			re(i, j-1, tam-2);
 		}
 		else{
+			debug("tam %d == 2 + %lld\n", tam, sz(i+1, j));
 			assert(tam == 2ll + sz(i+1, j));
 			ans.pb(s[i]);
 			re(i+1, j, tam-2);
@@ -111,6 +113,7 @@ void re(int i, int j, int tam){
 			re(i+1, j, tam-2);
 		}
 		else{
+			debug("tam %d == 2 + %lld\n", tam, sz(i, j-1)); 
 			assert(tam == 2ll + sz(i, j-1));
 			ans.pb(s[j]);
 			re(i, j-1, tam-2);
