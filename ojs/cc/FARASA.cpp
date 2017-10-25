@@ -17,7 +17,7 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 212345;
+const int MAXN = 5123456;
 
 int n, m, k;
 ll s[MAXN];
@@ -25,7 +25,6 @@ ll s[MAXN];
 typedef complex<long double> Complex;
 const long double PI = acos(-1.0L);
 
-vector<Complex> A, B;
 // Computes the DFT of vector v if type = 1, or the IDFT if type = -1
 // If you are calculating the product of polynomials, don't forget to set both
 // vectors' degrees to at least the sum of degrees of both polynomials, regardless
@@ -58,7 +57,10 @@ vector<Complex> FFT(vector<Complex> v, int type) {
 }
 
 
+vector<Complex> A, B;
 int mrk[MAXN], mrk2[MAXN];
+
+unordered_map<ll, int> cnt;
 
 int main (){
 	scanf("%d", &n);
@@ -66,6 +68,20 @@ int main (){
 	for(int a=0;a<n;a++){
 		scanf("%lld", &s[a]);
 		sum += s[a];
+	}
+	if(n <= 10000){
+		ll ac = 0;
+		for(int i=0;i<n;i++){
+			ac += s[i];
+			ll bc = 0;
+			cnt[ac] = 1;
+			for(int j=0;j<i;j++){
+				bc += s[j];
+				cnt[ac-bc] = 1;
+			}
+		}
+		printf("%d\n", (int)cnt.size() - 1);
+		return 0;
 	}
 	ll ac = 0;
 	mrk[0] = 1;
@@ -86,12 +102,13 @@ int main (){
 		if(mrk2[a] == 1)
 			debug("B pb %d\n", a);
 	}
-	FFT(A, 1); FFT(B, 1);
+	A = FFT(A, 1); 
+	B = FFT(B, 1);
 	for(int a=0;a<A.size();a++){
 		debug("A[%d] = (%.3Lf + j%.3Lf) * (%.3Lf + j%.3Lf)\n", a, A[a].real(), A[a].imag(), B[a].real(), B[a].imag());
 		A[a] = A[a]*B[a];
 	}
-	FFT(A, -1); 
+	A = FFT(A, -1); 
 	int res = 0;
 	for(int a=sum+1;a<A.size();a++){
 		debug("A %d: %.3Lf %.3Lf\n", a, A[a].real(), A[a].imag());
