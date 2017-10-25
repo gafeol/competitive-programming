@@ -16,7 +16,7 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 21234;
+const int MAXN = 312345;
 
 typedef complex<long double> Complex;
 const long double PI = acos(-1.0L);

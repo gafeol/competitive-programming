@@ -1,4 +1,3 @@
-
 #include <bits/stdc++.h>
 using namespace std;
 #define fst first
@@ -25,43 +24,92 @@ int d[MAXN][MAXN];
 char M[MAXN][MAXN];
 int s[MAXN];
 
-int vi[] = {0, 0, -1, 1};
-int vj[] = {1, -1, 0, 0};
-
 queue<pii> q;
 
 bool valid(int i, int j){
 	return (i >= 0 && j >= 0 && i < n && j < m && M[i][j] != '#');
 }
 
-void go(int i, int j){
-	d[i][j] = 0;
-	q.push(pii(i, j));
-	while(!q.empty()){
-		i = q.front().fst;
-		j = q.front().snd;
-		q.pop();
-		for(int dir=0;dir<4;dir++){
-			int ni = i + vi[dir];
-			int nj = j + vj[dir];
-			if(!valid(ni, nj)) continue;
-			if(d[ni][nj] > d[i][j] + 1)
-				q.push(pii(ni, nj));
-			d[ni][nj] = min(d[ni][nj], d[i][j] + 1);
-		}
+set<int> lin[MAXN], col[MAXN];
+
+int dist(int i, int j, int ii, int jj){
+	return abs(ii - i) + abs(jj - j);
+}
+stack<pii> stl, stc;
+
+void limpa(){
+	while(!stl.empty()){
+		lin[stl.top().fst].erase(stl.top().snd);
+		stl.pop();
+	}
+	while(!stc.empty()){
+		col[stc.top().fst].erase(stc.top().snd);
+		stc.pop();
 	}
 }
 
-int mn = INT_MAX, mni, mnj;
+void go(int i, int j){
+	d[i][j] = 0;
+	q.push(pii(i, j));
+	lin[i].erase(j);
+	col[j].erase(i);
+	while(!q.empty()){
+		i = q.front().fst;
+		j = q.front().snd;
+		debug("i %d j %d: %d\n", i, j, d[i][j]); 
+		q.pop();
+		auto it = lin[i].lower_bound(j);
+		while(it != lin[i].end()){
+			int ii = i,jj = *it;
+			if(!valid(ii, jj) || dist(i, j, ii, jj) > k) break;
+			d[ii][jj] = d[i][j] + 1;
+			debug("	ii %d jj %d\n", ii, jj);
+			q.push(pii(ii,jj));
+			it++;
+			stl.push(pii(i, jj));
+			stc.push(pii(jj, i));
+		}
+		limpa();
+
+		it = lin[i].lower_bound(j);
+		while(it != lin[i].begin()){
+			it--;
+			int ii = i,jj = *it;
+			if(!valid(ii, jj) || dist(i, j, ii, jj) > k) break;
+			d[ii][jj] = d[i][j] + 1;
+			debug("	ii %d jj %d\n", ii, jj);
+			q.push(pii(ii,jj));
+			stl.push(pii(i, jj));
+			stc.push(pii(jj, i));
+		}
+		limpa();
 
 
+		it = col[j].lower_bound(i);
+		while(it != col[j].end()){
+			int ii = *it, jj = j;
+			if(!valid(ii, jj) || dist(i, j, ii, jj) > k) break;
+			d[ii][jj] = d[i][j] + 1;
+			debug("	ii %d jj %d\n", ii, jj);
+			q.push(pii(ii,jj));
+			it++;
+			stc.push(pii(j, ii));
+			stl.push(pii(ii, j));
+		}
+		limpa();
 
-void atu(int i, int j){
-	if(!valid(i, j)) return ;
-	if(mn > d[i][j]){
-		mn = d[i][j];
-		mni = i;
-		mnj = j;
+		it = col[j].lower_bound(i);
+		while(it != col[j].begin()){
+			it--;
+			int ii = *it, jj = j;
+			if(!valid(ii, jj) || dist(i, j, ii, jj) > k) break;
+			d[ii][jj] = d[i][j] + 1;
+			debug("	ii %d jj %d\n", ii, jj);
+			q.push(pii(ii,jj));
+			stc.push(pii(j, ii));
+			stl.push(pii(ii, j));
+		}
+		limpa();
 	}
 }
 
@@ -71,6 +119,8 @@ int main (){
 	for(int a=0;a<n;a++){
 		for(int b=0;b<m;b++){
 			scanf(" %c", &M[a][b]); 
+			lin[a].insert(b);
+			col[b].insert(a);
 		}
 	}
 	int i, j, ii, jj;
@@ -81,34 +131,10 @@ int main (){
 	jj--;
 	d[ii][jj] = 0;
 	go(ii, jj);
-	int res = 0;
 	if(d[i][j] == INF){
 		puts("-1");
 		return 0;
 	}
-	while(i != ii || j != jj){
-		mn = INT_MAX;
-		for(int a=1;a<=k;a++){
-			if(!valid(i+a, j)) break;
-			atu(i+a, j);
-		}
-		for(int a=1;a<=k;a++){
-			if(!valid(i-a, j)) break;
-			atu(i-a, j);
-		}
-		for(int a=1;a<=k;a++){
-			if(!valid(i, j+a)) break;
-			atu(i, j+a);
-		}
-		for(int a=1;a<=k;a++){
-			if(!valid(i, j-a)) break;
-			atu(i, j-a);
-		}
-		res++;
-		i = mni;
-		j = mnj;
-		debug("i %d j %d\n", i, j);
-	}
-	printf("%d\n", res);
+	printf("%d\n", d[i][j]);
 }
 

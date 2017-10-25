@@ -1,3 +1,4 @@
+
 #include <bits/stdc++.h>
 using namespace std;
 #define fst first
@@ -16,11 +17,15 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 21234;
+const int MAXN = 212345;
+
+int n, m, k;
+ll s[MAXN];
 
 typedef complex<long double> Complex;
 const long double PI = acos(-1.0L);
 
+vector<Complex> A, B;
 // Computes the DFT of vector v if type = 1, or the IDFT if type = -1
 // If you are calculating the product of polynomials, don't forget to set both
 // vectors' degrees to at least the sum of degrees of both polynomials, regardless
@@ -52,64 +57,47 @@ vector<Complex> FFT(vector<Complex> v, int type) {
     return v2;
 }
 
-int n, m, k;
 
-vector<Complex> A, B, C;
-
-char s[MAXN], v[MAXN];
-
-stack<int> res;
+int mrk[MAXN], mrk2[MAXN];
 
 int main (){
 	scanf("%d", &n);
+	ll sum = 0;
 	for(int a=0;a<n;a++){
-		A.clear();
-		B.clear();
-		C.clear();
-		scanf(" %s %s", s, v);
-		int ts = strlen(s), tv = strlen(v);
-		for(int a=ts-1;a>=0;a--){
-			A.pb(Complex(s[a]-'0', 0));
-		}
-		for(int a=tv-1;a>=0;a--){
-			B.pb(Complex(v[a]-'0', 0));
-		}
-		int len = 2*max(ts, tv);
-		while(ts < len){
-			A.pb(Complex(0, 0));
-			ts++;
-		}
-		while(tv < len){
-			B.pb(Complex(0, 0));
-			tv++;
-		}
-		A = FFT(A, 1);
-		B = FFT(B, 1);
-		for(int i = 0;i < A.size();i++){
-			A[i] = A[i]*B[i];
-		}
-		A = FFT(A, -1);
-		int c = 0;
-		for(Complex u: A){
-			int x = u.real()+0.5;	
-			res.push((x+c)%10);
-			c = (x + c)/10;
-		}
-		while(c != 0){
-			res.push(c%10);
-			c /= 10;
-		}
-		int zer = 1;
-		while(!res.empty()){
-			if(zer == 0 || res.top() != 0){
-				printf("%d", res.top());
-				zer = 0;
-			}
-			res.pop();
-		}
-		if(zer)
-			printf("0");
-		printf("\n");
+		scanf("%lld", &s[a]);
+		sum += s[a];
 	}
+	ll ac = 0;
+	mrk[0] = 1;
+	mrk2[sum] = 1;
+	for(int a=0;a<n;a++){
+		ac += s[a];
+		debug("a %d\n	mrk %lld\n\tmrk2 %lld\n", a, ac, -ac+sum);
+		mrk[ac] = 1;
+		mrk2[-ac + sum] = 1;
+	}
+	for(int a=0;a<=sum*2;a++){
+		debug("mrk[%d] %d mrk2[%d] = %d\n", a, mrk[a], a, mrk2[a]);
+
+		A.pb(Complex(mrk[a], 0));
+		if(mrk[a] == 1)
+			debug("A pb %d\n", a);
+		B.pb(Complex(mrk2[a], 0));
+		if(mrk2[a] == 1)
+			debug("B pb %d\n", a);
+	}
+	FFT(A, 1); FFT(B, 1);
+	for(int a=0;a<A.size();a++){
+		debug("A[%d] = (%.3Lf + j%.3Lf) * (%.3Lf + j%.3Lf)\n", a, A[a].real(), A[a].imag(), B[a].real(), B[a].imag());
+		A[a] = A[a]*B[a];
+	}
+	FFT(A, -1); 
+	int res = 0;
+	for(int a=sum+1;a<A.size();a++){
+		debug("A %d: %.3Lf %.3Lf\n", a, A[a].real(), A[a].imag());
+		if(A[a].real()+0.5 > 1)
+			res++;
+	}
+	printf("%d\n", res-1);
 }
 
