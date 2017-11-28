@@ -16,27 +16,34 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 212345, MASK = (1<<11) + 10;
+const int MAXN = 212345;
 
 int n, m, k;
 int s[MAXN];
 
-ll dp[11][67][MASK][2];
-
-ll b, mai;
-
-ll go(int i, int bm, int lo){
-	if(dp[i][bm][lo] == -1) return dp[i][bm][lo];	
-
-}
-
-int main(){
-	scanf("%d", &n);
-	for(int a=0;a<n;a++){
-		ll l, r;
-		scanf("%d%lld%lld", &b, &l, &r); 
-		mai = r;
-		go(0, mai);
-		printf("%lld\n", go(0, ) - go(r));
+int main (){
+	for_tests(t, tt){
+		scanf("%d%d", &n, &k);
+		int mn = INT_MAX;
+		int mx = INT_MIN;
+		int ok = 1;
+		for(int a=0;a<n;a++){
+			int x;
+			scanf("%d", &x);
+			if(x < k){
+				if(mx > x)
+					ok = 0;
+				mx = x;
+			}
+			else{
+				if(mn < x)
+					ok = 0;
+				mn = x;
+			}
+		}
+		if(ok)
+			puts("YES");
+		else
+			puts("NO");
 	}
 }

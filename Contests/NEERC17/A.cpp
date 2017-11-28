@@ -17,33 +17,57 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 212345;
+const int MAXN = 212;
 
-int n, m, k;
-int s[200][20];
-int p[200];
+int n;
+
+int l[MAXN], r[MAXN], L[MAXN], R[MAXN];
+int sz[MAXN], p[MAXN];
+
+set<int> lef, rig;
+
+int raiz(int u){
+	if(p[u] == u) return u;
+	return p[u] = raiz(p[u]);
+}
+
+void join(int i, int j){
+	i = raiz(i);
+	j = raiz(j);
+	if(i == j) return ;
+	if(sz[i] < sz[j])
+		swap(i, j);
+	p[j] = i;
+	sz[i] += sz[j];	
+}
 
 int main (){
 	scanf("%d", &n);
-	k = 0;
-	for(int i=0;i<n;i++){
-		scanf("%d %d", &s[i+1][0], &s[i+1][1]);
-		if (s[i+1][0] == 0) p[k++] = i+1;
+	for(int a=1;a<=n;a++){
+		scanf("%d %d", &l[a], &r[a]);
+		if(l[a] != 0)
+			join(l[a], a);
+		if(r[a] != 0)
+			join(r[a], a);
 	}
-	int j = 1;
-	int cur = p[0];
-	for(;;) {
-		if (s[cur][1] == 0) {
-			if (j == k) break;
-			else {
-				s[cur][1] = p[j++];
-				s[s[cur][1]][0] = cur;
-			}
-		}
-		cur = s[cur][1];
+	set<int> g;
+	for(int a=1;a<=n;a++){
+		if(l[a] == 0)
+			L[raiz(a)] = a;
+		if(r[a] == 0)
+			R[raiz(a)] = a;
+		g.insert(raiz(a));
 	}
-	for (int i=0;i<n;i++) {
-		printf("%d %d\n", s[i+1][0], s[i+1][1]);
+	int ult = 0;
+	while(!g.empty()){
+		int u = *g.begin();
+		int left = L[u];
+		r[ult] = left;
+		l[left] = ult;
+		ult = R[u];
+		g.erase(g.begin());
+	}
+	for(int a=1;a<=n;a++){
+		printf("%d %d\n", l[a], r[a]);
 	}
 }
-

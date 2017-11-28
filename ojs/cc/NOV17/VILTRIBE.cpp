@@ -16,27 +16,35 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 212345, MASK = (1<<11) + 10;
+const int MAXN = 212345;
 
 int n, m, k;
-int s[MAXN];
+char s[MAXN];
+int nxt[MAXN];
 
-ll dp[11][67][MASK][2];
-
-ll b, mai;
-
-ll go(int i, int bm, int lo){
-	if(dp[i][bm][lo] == -1) return dp[i][bm][lo];	
-
-}
-
-int main(){
-	scanf("%d", &n);
-	for(int a=0;a<n;a++){
-		ll l, r;
-		scanf("%d%lld%lld", &b, &l, &r); 
-		mai = r;
-		go(0, mai);
-		printf("%lld\n", go(0, ) - go(r));
+int main (){
+	for_tests(t, tt){
+		scanf(" %s", s);
+		n = strlen(s);
+		int ult = 0;
+		int cnt[3];
+		memset(cnt, 0, sizeof(cnt));
+		for(int a=n-1;a>=0;a--){
+			if(s[a] == 'A')
+				ult = 1;
+			else if(s[a] == 'B')
+				ult = 2;
+			nxt[a] = ult;
+		}
+		ult = 0;
+		for(int a=0;a<n;a++){
+			if(s[a] == 'A')
+				ult = 1;
+			else if(s[a] == 'B')
+				ult = 2;
+			if(ult == nxt[a])
+				cnt[ult]++;
+		}
+		printf("%d %d\n", cnt[1], cnt[2]);
 	}
 }
