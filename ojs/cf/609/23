@@ -1,0 +1,126 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define fst first
+#define snd second
+typedef unsigned long long ull;
+typedef long long ll;
+typedef pair<int, int> pii;
+#define pb push_back
+#define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
+#ifndef ONLINE_JUDGE
+#define debug(args...) fprintf(stderr,args)
+#else
+#define debug(args...)
+#endif //ONLINE_JUDGE
+template<typename T> inline T abs(T t) { return t < 0? -t : t; }
+const ll modn = 1000000007;
+inline ll mod(ll x) { return x % modn; }
+
+const int MAXN = 412345;
+
+int n, m, k;
+ll s[MAXN], p[MAXN];
+ll mx[MAXN], ms[MAXN];
+
+vector<ll> X;
+
+map<ll, int> ind;
+
+int up(ll x){
+	return upper_bound(X.begin(), X.end(), x) - X.begin() - 1;
+}
+
+bool cmp(int a, int b){
+	return p[a] < p[b];
+}
+
+int in[MAXN];
+
+struct arv{
+	int f; 
+	int mn;
+	
+	arv(){
+		mn = INT_MAX;
+		f = -1;
+	}
+} tree[4*MAXN];
+
+void updf(int idx, int i, int j, int l, int r, int f){
+	if(i > r || j < l) return ;
+	if(tree[idx].f != 0){
+		if(i != j){
+			tree[idx*2].f = tree[idx].f;
+			tree[idx*2+1].f = tree[idx].f;
+		}
+	}
+	if(i >= l && j <= r){
+		tree[idx].f = val;
+		return ;
+	}
+	int m = (i + j)/2;
+	updf(idx*2, i, m, l, r, f);
+	updf(idx*2+1, m+1, j, l, r, f);
+}
+
+void updm(int idx, int i, int j, int l, int mo){
+	if(i > l || j < l) return ;
+	if(tree[idx].f != 0){
+		if(i != j){
+			tree[idx*2].f = tree[idx].f;
+			tree[idx*2+1].f = tree[idx].f;
+		}
+	}
+	if(i >= l && j <= l){
+		tree[idx].mn = mo;
+		return ;
+	}
+	int m = (i + j)/2;
+	updm(idx*2, i, m, l, mo);
+	updm(idx*2+1, m+1, j, l, mo);
+	tree[idx].mn = min(tree[idx*2].mn, tree[idx*2+1].mn); 
+}
+
+int resm[MAXN];
+
+int main (){
+	scanf("%d%d", &n, &m);
+	for(int a=0;a<n;a++){
+		scanf("%lld %lld", &p[a], &s[a]);
+		X.pb(p[a]);
+		in[a] = a;
+	}
+	sort(in, in+n, cmp);
+	for(int a=0;a<m;a++){
+		scanf("%lld%lld", mx+a, ms+a); 
+		X.pb(mx[a]);
+	}
+	sort(X.begin(), X.end());
+	X.erase(unique(X.begin(), X.end()), X.end());
+	for(int i=0;i<X.size();i++){
+		ind[X[i]] = i;
+	}
+	for(int a=0;a<m;a++){
+		mx[a] = ind[mx[a]];
+	}
+	for(int ii=n-1;ii>=0;ii--){
+		int i = in[ii];
+		int l = ind[p[i]];
+		int r = up(s[i] + p[i] - 1);
+		if(l > r) continue;
+		updf(1, 0, X.size()-1, l, r, i);
+	}
+	for(int a=0;a<m;a++){
+		int fg = qry(1, 0, X.size()-1, mx[a]);	
+		if(fg == -1)
+			updm(1, 0, X.size()-1, mx[a], a);
+		else{
+			int sz = ms[a];
+			while(1){
+				int l = up(s[fg] + p[fg] - 1);
+				int r = up(s[fg] + p[fg] + sz - 1);
+				int mo = qryf(1, 0, X.size()-1, l, r);
+			}
+		}
+	}
+}
