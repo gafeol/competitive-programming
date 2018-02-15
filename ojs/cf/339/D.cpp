@@ -6,88 +6,74 @@ typedef unsigned long long ull;
 typedef long long ll;
 typedef pair<int, int> pii;
 #define pb push_back
-#define mp make_pair
 #define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
+#ifndef ONLINE_JUDGE
+#define debug(args...) fprintf(stderr,args)
+#else
+#define debug(args...)
+#endif //ONLINE_JUDGE
 template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 100010;
+const int MAXN = (1<<18)+10;
 
-int n, ind[MAXN];
+int n, m, k;
+ll s[MAXN];
 
-ll A, m, cf, cm, s[MAXN], sum[MAXN], res, ini[MAXN], resmen, rescnt;
+ll tree[MAXN*4];
+int pot[MAXN];
 
-bool cmp(int a,int b){
-	return (s[a] < s[b]);
-}
-
-inline int bb(int i,int f,ll val){
-	while(i < f){
-		int mid = (i+f+1)/2;
-		if(sum[mid] <= val)
-			i = mid;
-		else
-			f = mid-1;
+void build(int idx, int i, int j){
+	if(i == j){
+		tree[idx] = s[i];
+		return ;
 	}
-	return i;
+	int m = (i + j)/2;
+	build(idx*2, i, m);
+	build(idx*2+1, m+1, j);
+	if(pot[j - i + 1])
+		tree[idx] = (tree[idx*2]^tree[idx*2+1]);
+	else
+		tree[idx] = (tree[idx*2]|tree[idx*2+1]);
 }
+
+void upd(int idx, int i, int j, int l, int x){
+	if(i > l || j < l) return ;
+	if(i == j){
+		tree[idx] = x;
+		return ;
+	}
+	int m = (i + j)/2;
+	upd(idx*2, i, m, l, x);
+	upd(idx*2+1, m+1, j, l, x);
+	if(pot[j - i + 1])
+		tree[idx] = (tree[idx*2]^tree[idx*2+1]);
+	else
+		tree[idx] = (tree[idx*2]|tree[idx*2+1]);
+}
+
 
 int main (){
-	scanf("%d", &n);
-	cin >> A >> cf >> cm >> m;
+	scanf("%d%d", &n, &m);
+	ll tam = 2;
+	pot[1] = 1;
+	while(tam < MAXN){
+		pot[tam] = (pot[tam/2]^1);
+		tam *= 2ll;
+	}
+
+	n = (1<<n);
 	for(int a=0;a<n;a++){
-		cin >> s[a];
-		ind[a] = a;
+		scanf("%lld", s+a);
 	}
-	sort(ind,ind+n,cmp);
-	ind[n] = n;
-	s[n] = A;
-	for(int a=1;a<=n;a++){
-		if(sum[a-1] == m+1){
-			sum[a] = m+1;
-			continue;
-		}
-		sum[a] = sum[a-1] + (s[ind[a]]-s[ind[a-1]])*a;
+	build(1, 0, n-1);
+	for(int a=0;a<m;a++){
+		int i, j;
+		scanf("%d %d", &i, &j);
+		i--;
+		upd(1, 0, n-1, i, j);
+		printf("%lld\n", tree[1]);
 	}
-
-	if(sum[n] <= m){
-		cout << n*cf + A*cm << '\n';
-		for(int a=0;a<n;a++){
-			cout << A << " ";
-		}
-		return 0;
-	}
-
-	ll cnt = -1;
-
-	for(int a=n;a>0;a--){
-		cnt++;
-		m -= (A - s[ind[a]]);
-		if(m < 0) break;
-		int i = min(bb(0,n,m),a-1);
-		ll mm = m;
-		mm -= sum[i];
-		ll men = min((mm/(i+1)) + s[ind[i]],A);
-		if( men*cm + cnt*cf > res ){
-			res = men*cm + cnt*cf;
-			rescnt = cnt;
-			resmen = men;
-		}
-	}
-	cout << res << '\n';
-	for(int a=n-1;a>=0;a--){
-		if(rescnt){
-			rescnt--;
-			s[ind[a]] = A;
-			continue;
-		}
-		if(s[ind[a]] < resmen){
-			s[ind[a]] = resmen;
-		}
-	}
-	for(int a=0;a<n;a++){
-		cout << s[a] << " ";
-	}
-
 }
+
