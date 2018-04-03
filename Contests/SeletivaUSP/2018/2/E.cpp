@@ -48,38 +48,41 @@ ll solve(int i, ll m){
 	if(i == n-1) return s[i];	
 	vector<ll> path;
 	path.pb(s[i]);
+	map<ll, int> mrk;
+	mrk[s[i]] = 0;
+	int aux = 1;
 	ll u = (s[i]*s[i])%m;
 	debug("Path %lld ", s[i]);
-	while(u != s[i]){
+	while(mrk.find(u) == mrk.end()){
 		debug("-> %lld ", u);
 		path.pb(u);
-		if(u == ((u*s[i])%m))
-			break;
+		mrk[u] = aux++;
 		u = (u*s[i])%m;	
 	}
-	int cnt = path.size()+1;
-	debug("\ncnt %d\n", (int)path.size());
-	if(u == ((u*s[i])%m)){
-		if(val[i+1] < path.size()){
-			debug("	i %d val %lld < cnt %d\n", i, val[i+1], cnt);
-			//TIRAR DEBUG
-			//assert(expo(s[i], val[i+1], m) == path[val[i+1]-1]);
-			return path[val[i+1]-1];
-		}
-		return u;
+	int cyc = mrk[u];
+	if(val[i+1] < path.size()){
+		//TIRAR DEBUG
+		//assert(expo(s[i], val[i+1], m) == path[val[i+1]-1]);
+		return path[val[i+1]-1];
 	}
 	else{
-		ll aux = ((cnt-2) + solve(i+1, (ll)cnt-1))%(cnt-1) + 1;
-		debug("	i %d expo(%lld, %lld, %lld) %lld\n", i, s[i], aux, m, expo(s[i], aux, m));
-		debug("	== path[%lld  %d] %lld\n", aux, cnt-1, path[(aux%(cnt-1))]);
-		//assert(expo(s[i], aux, m) == path[((cnt-2 + aux)%(cnt-1))]);
-		return path[((cnt-2+aux)%(cnt-1))];
+		int mns = mrk[u];
+		int cycsz = path.size() - mns; 
+		debug("mns %d cycsz %d\n", mns, cycsz);
+		if(cycsz == 1)
+			return u;
+		ll sv = solve(i+1, (ll)cycsz-1);
+		ll aux = ((cycsz-1) + sv - mns)%(cycsz-1) + 1;
+		debug("aux = ((%d + %lld - %lld) rest %d + 1\n", cycsz-2, sv, mns, cycsz-1);
+		//assert(expo(s[i], aux, m) == path[((cycsz-2 + aux)%(cycsz-1))]);
+		return path[((mns + cycsz-2+aux)%(cycsz-1))];
 	}
 }
 
 int main (){
 	int deg = 1;
 	while(scanf(" %s", p) != EOF && p[0] != '#'){
+		if(deg > 1) puts("");
 		k = atol(p);
 		scanf("%d", &n);
 		s[n] = 1;
@@ -91,6 +94,6 @@ int main (){
 		for(int a=0;a<n;a++)
 			debug("%lld ", val[a]);
 		debug("\n");
-		printf("Case #%d: %lld\n", deg++, solve(0, k));
+		printf("Case #%d: %lld", deg++, solve(0, k));
 	}
 }
