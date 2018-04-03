@@ -75,7 +75,7 @@ ll solve(int i, ll m){
 		ll aux = ((cycsz-1) + sv - mns)%(cycsz-1) + 1;
 		debug("aux = ((%d + %lld - %lld) rest %d + 1\n", cycsz-2, sv, mns, cycsz-1);
 		//assert(expo(s[i], aux, m) == path[((cycsz-2 + aux)%(cycsz-1))]);
-		return path[((mns + cycsz-2+aux)%(cycsz-1))];
+		return path[mns + ((cycsz-2+aux)%(cycsz-1))];
 	}
 }
 
