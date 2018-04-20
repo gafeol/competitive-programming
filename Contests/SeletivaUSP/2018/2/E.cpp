@@ -16,7 +16,7 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 212345;
+const int MAXN = 1123456;
 const ll INF = 1000000000LL;
 
 int n, m;
@@ -31,15 +31,6 @@ ll expom(ll base, ll e){
 	ans = min(INF, ans*ans);
 	if((e&1))
 		ans = min(INF, ans*base);
-	return ans;
-}
-
-ll expo(ll base, ll e, ll m){
-	if(e == 0) return 1;
-	ll ans = expo(base, e/2ll, m);
-	ans = (ans*ans)%m;
-	if((e&1))
-		ans = (ans*base)%m;
 	return ans;
 }
 
@@ -60,22 +51,15 @@ ll solve(int i, ll m){
 		u = (u*s[i])%m;	
 	}
 	int cyc = mrk[u];
-	if(val[i+1] < path.size()){
-		//TIRAR DEBUG
-		//assert(expo(s[i], val[i+1], m) == path[val[i+1]-1]);
+	if(val[i+1] <= path.size())
 		return path[val[i+1]-1];
-	}
 	else{
 		int mns = mrk[u];
 		int cycsz = path.size() - mns; 
 		debug("mns %d cycsz %d\n", mns, cycsz);
-		if(cycsz == 1)
-			return u;
-		ll sv = solve(i+1, (ll)cycsz-1);
-		ll aux = ((cycsz-1) + sv - mns)%(cycsz-1) + 1;
-		debug("aux = ((%d + %lld - %lld) rest %d + 1\n", cycsz-2, sv, mns, cycsz-1);
-		//assert(expo(s[i], aux, m) == path[((cycsz-2 + aux)%(cycsz-1))]);
-		return path[mns + ((cycsz-2+aux)%(cycsz-1))];
+		ll sv = solve(i+1, (ll)cycsz);
+		ll aux = (cycsz + ((sv - mns - 1)%cycsz))%cycsz;
+		return path[mns + aux];
 	}
 }
 
@@ -91,9 +75,6 @@ int main (){
 		val[n] = 1;
 		for(int a=n-1;a>=0;a--)
 			val[a] = expom(s[a], val[a+1]);
-		for(int a=0;a<n;a++)
-			debug("%lld ", val[a]);
-		debug("\n");
 		printf("Case #%d: %lld", deg++, solve(0, k));
 	}
 }
