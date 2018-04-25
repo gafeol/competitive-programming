@@ -9,7 +9,7 @@ typedef pair<int, int> pii;
 #define pb push_back
 #define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
 #ifndef ONLINE_JUDGE
-#define debug(args...) fprintf(stderr,args)
+#define debug(args...) //fprintf(stderr,args)
 #else
 #define debug(args...)
 #endif //ONLINE_JUDGE
@@ -18,6 +18,7 @@ const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
 const int MAXN = 112;
+const int INF = 0x3f3f3f3f;
 
 int n, m, k;
 
@@ -97,16 +98,17 @@ int convex_hull(pti p[], pti st[], int n) {
 }
 
 pti s[MAXN], cv[MAXN], pt[MAXN];
-int d[MAXN][MAXN];
+int d[MAXN][MAXN], adj[MAXN][MAXN];
 
 vector<pti> p;
 int tam;
 
 inline bool in(pti x){
-	int aux = sign(cv[0], cv[1], x);
+	//debug("in %d %d\n", x.x, x.y);
 	for(int a=0;a<tam;a++){
 		int aa = (a+1)%tam;
-		if(sign(cross(cv[a], cv[aa], x)) != aux)
+		//debug("cross((%d, %d), (%d, %d) = %d\n", cv[a].x, cv[a].y, cv[aa].x, cv[aa].y, cross(cv[a], cv[aa], x));
+		if(cross(cv[a], cv[aa], x) > 0)
 			return false;
 	}
 	return true;
@@ -118,29 +120,54 @@ int main (){
 		scanf("%d %d", &s[a].x, &s[a].y); 
 	for(int a=0;a<m;a++)
 		scanf("%d %d", &pt[a].x, &pt[a].y); 
+	if(n < 3){
+		printf("%d\n", 111*m);
+		return 0;
+	}
 	tam = convex_hull(s, cv, n);
 	for(int a=0;a<m;a++){
-		if(in(pt[a]))
+		if(in(pt[a])){
 			p.pb(pt[a]);
+			//debug("inp %d %d\n", pt[a].x, pt[a].y);
+		}
+	}
+	if(p.empty()){
+		printf("%d\n", 111*m);
+		return 0;
+	}
+	for(int i=0;i<n;i++){
+		for(int j=0;j<n;j++){
+			d[i][j] = INF;
+		}
+		d[i][i] = 0;
 	}
 	for(int i=0;i<n;i++){
 		for(int j=0;j<n;j++){
 			if(i == j) continue;
 			int ok = 1;
-			for(int a=0;a<p.size();a++)
-				if(cross(cv[i], cv[j], p[a]) <= 0)
+			for(int a=0;a<p.size();a++){
+				if(cross(s[i], s[j], p[a]) > 0)
 					ok = 0;
-			adj[i][j] = ok;
-		}
-	}
-	for(int k=0;k<n;k++){
-		for(int i=0;i<n;i++){
-			if(!adj[i][k]) continue;
-			for(int j=0;j<n;j++){
-				if(!adj[k][j]) continue;	
-
+			}
+			if(ok){
+				d[i][j] = 1;
+				debug("i %d -> j %d\n", i, j);
 			}
 		}
 	}
+	int cyc  = INT_MAX;
+	for(int k=0;k<n;k++){
+		for(int i=0;i<n;i++){
+			for(int j=0;j<n;j++){
+				if(i == j && j == k) continue;
+				d[i][j] = min(d[i][j], d[i][k]+d[k][j]);
+				if(i == j)
+					cyc = min(cyc, d[i][k]+d[k][j]);
+			}
+		}
+	}
+	assert(cyc != INT_MAX);
+	printf("%d\n", 20*cyc + 111*(m-(int)p.size()));
+	debug("cyc %d m %d psz %d\n", cyc, m, (int)p.size());
 }
 
