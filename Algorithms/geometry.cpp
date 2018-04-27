@@ -78,3 +78,5 @@ void convex_hull(pti p[], pti st[], int n) {
 	sn--;
 	// st[0..sn-1] agora tem o convex hull dos pontos p
 }
+
+
