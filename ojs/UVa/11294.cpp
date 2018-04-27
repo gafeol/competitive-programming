@@ -8,7 +8,7 @@ typedef pair<int, int> pii;
 #define pb push_back
 #define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
 #ifndef ONLINE_JUDGE
-#define debug(args...) fprintf(stderr,args)
+#define debug(args...) //fprintf(stderr,args)
 #else
 #define debug(args...)
 #endif //ONLINE_JUDGE
@@ -27,22 +27,17 @@ vector<int> adj[MAXN];
 stack<int> q;
 
 
-vector<int> adjc[MAXN], vc[MAXN];
-int degc[MAXN], mrkc[MAXN];
-queue<int> qc;
+vector<int> adjc[MAXN], c[MAXN];
 
 int res[MAXN];
 
 void reset(int nn=n){
 	while(!q.empty()) q.pop();
 	nc = visc = 0;
-	for(int a=0;a<=n;a++){
+	for(int a=0;a<=2*n;a++){
 		adj[a].clear();
 		cy[a] = -1;
 		vis[a] = 0;
-		adjc[a].clear();
-		degc[a] = 0;
-		vc[a].clear();
 		res[a] = -1;
 	}
 }
@@ -76,6 +71,7 @@ int id(int u, int t){
 }
 
 void add_edge(int u, int v){
+	debug("add %d%c -> %d%c\n", (u/2), ((u%2) == 0 ? 'h' : 'w'), v/2, ((v%2)==0 ? 'h' : 'w'));
 	adj[u].pb(v);
 }
 
@@ -88,25 +84,20 @@ int main (){
 	while(scanf("%d%d", &n, &m) != EOF && n+m != 0){
 		reset(n);
 		for(int a=0;a<m;a++){
-			int ii, i, jj, j;
+			int i, j;
 			char ci, cj;
-			scanf(" %d%c %d%c", &ii, &ci, &jj, &cj);
-			i = ii*2 + (ci == 'w');
-			j = jj*2 + (cj == 'w');
-			add_edge(i^1,j);	
-			add_edge(j^1,i);
+			scanf(" %d%c %d%c", &i, &ci, &j, &cj);
+			int ti = (ci == 'w');
+			int tj = (cj == 'w');
+			add_edge(id(i, 1-ti), id(j, tj)); 
+			add_edge(id(j, 1-tj), id(i, ti)); 
 		}
-		for(int a=1;a<=n;a++){
-			add_edge(id(a*2,0), id(a*2+1, 1));
-			add_edge(id(a*2,1), id(a*2+1, 0));
-			add_edge(id(a*2+1, 1), id(a*2, 0));
-			add_edge(id(a*2+1, 0), id(a*2, 1));
-		}
-		for(int a=0;a<4*n;a++)
+		add_edge(id(0, 0), id(0, 1));
+		for(int a=0;a<2*n;a++)
 			if(!vis[a])
 				tarjan(a);
 		int ok = 1;
-		for(int a=0;a<2*n;a++){
+		for(int a=0;a<n;a++){
 			if(cy[id(a, 0)] == cy[id(a, 1)]){
 				puts("bad luck");
 				ok = 0;
@@ -115,10 +106,6 @@ int main (){
 		}
 		if(!ok) continue;
 		debug("OK\n");
-		for(int a=0;a<4*n;a++){
-			int c = cy[a];
-			vc[c].pb(a);
-		}
 		// tarjan deixa as componentes na ordem topologica reversa
 		for(int a=0;a<nc;a++){
 			if(res[a] == -1){
@@ -127,10 +114,15 @@ int main (){
 				res[b] = 0;
 			}
 		}
-		for(int a=0;a<2*n;a++){
-			if(res[cy[a]] == res[cy[0]]){
-				printf("%d%c ", a/2, ((a&1)==0 ? 'h' : 'w'));
+		int pt = 0;
+		for(int a=2;a<2*n;a++){
+			//printf("%d%c cy %d res %d\n", a/2, ((a&1)==0 ? 'h' : 'w'), cy[a], res[cy[a]]);
+			if(res[cy[a]] == res[cy[1]]){
+				if(pt) putchar(' ');
+				pt = 1;
+				printf("%d%c", a/2, ((a&1)==0 ? 'h' : 'w'));
 			}
 		}
+		puts("");
 	}
 }
