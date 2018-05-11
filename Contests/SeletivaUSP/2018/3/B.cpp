@@ -16,32 +16,43 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 212;
+const int MAXN = 212345;
 
 int n, m, k;
 int s[MAXN];
 
-char M[MAXN][MAXN];
-
-int ind[MAXN][MAXN], deg;
+map<int, map<char, int> > qtd;
+vector<char> v[2];
 
 int main (){
-	deg = 0;
-	memset(ind, -1, sizeof(ind));
-	scanf("%d%d", &n, &m);
-	for(int a=0;a<n;a++){
-		for(int b=0;b<m;b++){
-			scanf(" %c", &M[a][b]);
-			if(M[a][b] == 'T')
-				ind[a][b] = deg++;
+	for_tests(t, tt){
+		scanf("%d%d", &n, &k);
+		char c;
+		v[0].clear();
+		v[1].clear();
+		qtd.clear();
+		for(int a=0;a<n;a++){
+			scanf(" %c", &c);	
+			qtd[a%k][c]++;
+			v[0].pb(c);
 		}
-	}
-	for(int a=0;a<n;a++){
-		for(int b=0;b<m;b++){
-			if(M[a][b] == 'n'){
-				int t[5];		
+		for(int a=0;a<n;a++){
+			scanf(" %c", &c);
+			qtd[a%k][c]--;
+			v[1].pb(c);
+		}
+		int ans = 1;
+		for(int b=0;b<2;b++){
+			for(int a=0;a<n;a++){
+				if(qtd[a%k][v[b][a]] != 0) 
+					ans = 0;
+				qtd[a%k][v[b][a]]=0;
 			}
 		}
+		if(ans)
+			puts("Yes");
+		else
+			puts("No");
 	}
 }
 

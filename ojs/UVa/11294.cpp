@@ -34,6 +34,7 @@ int res[MAXN];
 void reset(int nn=n){
 	while(!q.empty()) q.pop();
 	nc = visc = 0;
+	/* atencao para zerar o valor de TODAS variaveis */
 	for(int a=0;a<=2*n;a++){
 		adj[a].clear();
 		cy[a] = -1;
@@ -71,7 +72,6 @@ int id(int u, int t){
 }
 
 void add_edge(int u, int v){
-	debug("add %d%c -> %d%c\n", (u/2), ((u%2) == 0 ? 'h' : 'w'), v/2, ((v%2)==0 ? 'h' : 'w'));
 	adj[u].pb(v);
 }
 

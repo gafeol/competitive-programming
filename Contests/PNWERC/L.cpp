@@ -16,32 +16,26 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 212;
+const int MAXN = 212345;
 
 int n, m, k;
+int p, x;
 int s[MAXN];
 
-char M[MAXN][MAXN];
-
-int ind[MAXN][MAXN], deg;
-
 int main (){
-	deg = 0;
-	memset(ind, -1, sizeof(ind));
-	scanf("%d%d", &n, &m);
-	for(int a=0;a<n;a++){
-		for(int b=0;b<m;b++){
-			scanf(" %c", &M[a][b]);
-			if(M[a][b] == 'T')
-				ind[a][b] = deg++;
-		}
+	scanf("%d%d%d", &k, &p, &x);
+	int t = sqrt((k*p)/x);
+	double d;
+	double ans = DBL_MAX;
+	for(int aux=0;aux<1000000;aux++){
+		if(t - aux <= 0) break;
+		d = (k/((double)t-aux));
+		ans = min(ans, d*p + (double)(t-aux)*x);	
 	}
-	for(int a=0;a<n;a++){
-		for(int b=0;b<m;b++){
-			if(M[a][b] == 'n'){
-				int t[5];		
-			}
-		}
+	for(int aux=0;aux<1000000;aux++){
+		d = (k/((double)t+aux));
+		ans = min(ans, d*p + (double)(t+aux)*x);	
 	}
+	printf("%.3f\n", ans);
 }
 
