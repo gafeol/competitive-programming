@@ -26,7 +26,7 @@ int go(int i, int fe, int fd){
 	if(dp[i][fe][fd] < INF) return dp[i][fe][fd];
 	int &r = dp[i][fe][fd];
 	if(i == n/2 + (n&1) - 1){
-		if(n&1){
+		if((n&1)){
 			int nv = s[i] + fd;
 			if(fe)
 				return r = 10 - nv;
@@ -36,10 +36,10 @@ int go(int i, int fe, int fd){
 			int nv = s[i+1]+fd + 10*s[i];
 			assert(nv <= 100);
 			if(fe)
-				return r = min(100 - nv, 10-(nv/10)+(nv%10));
+				return r = min(100 - nv, min(10-(nv/10)+(nv%10), 10 - (s[i] + 1) + (10 - s[i+1])));
 			if(nv == 100)
 				return r = INF;
-			return r = abs(nv%10 - nv/10);
+			return r = min(abs(nv%10 - nv/10), nv%10+10 - nv/10 + 1);
 		}
 	}
 	for(int d=0;d<=9;d++){
