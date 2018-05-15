@@ -39,7 +39,7 @@ int go(int i, int fe, int fd){
 				return r = min(100 - nv, min(10-(nv/10)+(nv%10), 10 - (s[i] + 1) + (10 - s[i+1])));
 			if(nv == 100)
 				return r = INF;
-			return r = min(abs(nv%10 - nv/10), nv%10+10 - nv/10 + 1);
+			return r = min(abs(nv%10 - nv/10), nv/10+10 - nv%10 + 1);
 		}
 	}
 	for(int d=0;d<=9;d++){
