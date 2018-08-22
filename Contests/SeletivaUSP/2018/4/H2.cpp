@@ -8,7 +8,7 @@ typedef pair<int, int> pii;
 #define pb push_back
 #define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
 #ifndef ONLINE_JUDGE
-#define debug(args...) fprintf(stderr,args)
+#define debug(args...) //fprintf(stderr,args)
 #else
 #define debug(args...)
 #endif //ONLINE_JUDGE
@@ -26,7 +26,7 @@ namespace f {
 const int N = 51*11 + 11 + 2, M =  (51*51*11 + 51 + 51*11) * 2;
 typedef int val;
 typedef int num;
-int es[N], to[M], nx[M], en, pai[N];
+int es[N], to[M], nx[M], en, pai[N], ori[M];
 val fl[M], cp[M];
 num cs[M], d[N];
 const num inf = 1e8, eps = 0;
@@ -74,8 +74,8 @@ num mncost(int s, int t) {
 	return tot;
 }
 
-void add_edge(int u, int v, val c, num s) {
-	fl[en] = 0; cp[en] = c; to[en] = v; nx[en] = es[u]; cs[en] =  s; es[u] = en++;
+void add_edge(int u, int v, val c, num s, int o) {
+	fl[en] = 0; cp[en] = c; to[en] = v; nx[en] = es[u]; cs[en] =  s; ori[en] = o; es[u] = en++;
 	fl[en] = 0; cp[en] = 0; to[en] = u; nx[en] = es[v]; cs[en] = -s; es[v] = en++;
 }
 }
@@ -87,7 +87,7 @@ void add(int ii, int jj, int cu){
 		assert(i < f::N && j+q-1 < f::N);
 		debug("fake %d -> %d cus %d\n", ii, jj, q*cu);
 		debug("real %d -> %d cus %d\n", i, j+q-1, q*cu);
-		f::add_edge(i, j+q-1, 1, q*cu);
+		f::add_edge(i, j+q-1, 1, q*cu, cu);
 	}
 }
 
@@ -97,8 +97,13 @@ bool cmp(int a, int b){
 
 pii ex[MAXN];
 
+int q[MAXN][MAXN];
+int on[MAXN], tim[MAXN], cust[MAXN];
+
 int main (){
+	int caso = 1;
 	while(scanf("%d %d", &n, &m) != EOF && n+m != 0){
+		memset(q, -1, sizeof(q));
 		f::init();
 		for(int a=0;a<n;a++){
 			scanf("%d", s+a);
@@ -116,9 +121,9 @@ int main (){
 				cnt++;
 			}
 			ex[t] = pii(INT_MAX, 0);
-			for(int i=0;i<t;i++){
-				for(int bb=0;bb<n;bb++){
-					int b = ind[bb];
+			for(int bb=0;bb<n;bb++){
+				int b = ind[bb];
+				for(int i=0;i<t;i++){
 					if(s[b] >= ex[i].fst && s[b] < ex[i+1].fst){
 						add(a, b, ex[i].snd);
 					}
@@ -128,25 +133,46 @@ int main (){
 		int S = n*m + m;
 		int T = S + 1;
 		for(int a=0;a<m;a++){
-			f::add_edge(S, n*m + a, 1, 0);
+			f::add_edge(S, n*m + a, 1, 0, 0);
 			debug("beg to %d\n%d -> %d\n", a, S, n*m+a);
 		}
 		for(int a=0;a<n;a++){
 			for(int i=0;i<m;i++){
-				f::add_edge(a*m + i, T, 1, 0);
+				f::add_edge(a*m + i, T, 1, 0, 0);
 				debug("(%d, %d) to end\n%d -> %d\n", a, i, a*m+i, T);
 			}
 		}
-		printf("Average turnaround time = %.10f\n", ((double)f::mncost(S, T))/m);
+		printf("Case %d\n", caso++);
+		printf("Average turnaround time = %.2f\n", ((double)f::mncost(S, T))/m);
 		for(int a=0;a<m;a++){
 			int id = n*m + a;
-			for(int nxt=es[id];nxt != -1;nxt = nx[nxt]){
-				if(fl[nxt]){
-					int idd = to[nxt]/m;
-					int pos = to[nxt]%m;
+			debug("a %d\n", a);
+			for(int nxt=f::es[id];nxt != -1;nxt = f::nx[nxt]){
+				if(f::fl[nxt] > 0){
+					debug("id %d fl[%d] %d to %d\n", id, nxt, f::fl[nxt], f::to[nxt]);
+					int idd = f::to[nxt]/m;
+					int pos = m - 1 - f::to[nxt]%m;
+					debug("on idd %d on %d-th pos\n", idd, pos);
 					//id runs on idd on pos-th
+					q[idd][pos] = a;
+					on[a] = idd;
+					cust[a] = f::ori[nxt];
+					debug("ori c %d\n", f::ori[nxt]);
 				}
 			}
 		}
+		for(int a=0;a<n;a++){
+			int tempo = 0;
+			debug("a %d\n", a);
+			for(int i=0;i<m;i++){
+				if(q[a][i] == -1) continue;
+				debug("tem[%d] = %d\n", q[a][i], tempo);
+				tim[q[a][i]] = tempo;
+				tempo += cust[q[a][i]];
+			}
+		}
+		for(int a=0;a<m;a++)
+			printf("Program %d runs in region %d from %d to %d\n", a+1, on[a]+1, tim[a], tim[a]+cust[a]);
+		puts("");
 	}
 }
