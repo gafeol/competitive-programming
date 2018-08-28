@@ -39,105 +39,69 @@ void prep_cin(){
 
 set<int> q;
 
-set<pii> s;
+set<int> s[2];
+
+void fail(){
+	puts("0");
+	exit(0);
+}
+
+void add(int x, int val = -1){
+	debug("add", x, val);
+	if(val == -1){
+		if(s[0].upper_bound(x) != s[0].end())
+			add(x, 0);
+		else if(s[1].lower_bound(x) != s[1].begin())
+			add(x, 1);
+		else
+			q.insert(x);
+		return ;
+	}
+
+	if(val == 0){
+		if(s[1].lower_bound(x) != s[1].begin())
+			fail();
+		s[val].insert(x);
+	}
+	else{
+		if(s[0].upper_bound(x) != s[0].end())
+			fail();
+		s[val].insert(x);
+	}
+	
+}
 
 char t[110];
-
-int findval(int x){
-	auto nxt = s.lower_bound(pii(x, 0));
-	int aft = -1;
-	if(nxt != s.end()){
-		aft = nxt->snd; 
-	}
-	int bef = -1;
-	auto lst = s.lower_bound(pii(x, 0));
-	if(lst != s.begin()){
-		lst--;
-		bef = lst->snd;
-	}
-	//printf("add %d bef %d aft %d\n", x, bef, aft);
-	if(aft == bef) return aft;
-	if(aft == 0 && bef == 1){
-		puts("0");
-		exit(0);
-	}
-	if(aft == 0) return 0;
-	if(bef == 1) return 1;
-	return -1;
-}
-
-void isbest(pii p){
-	auto lst = s.lower_bound(p);
-	//puts("bla");
-	if(lst != s.begin()){
-		lst--;
-		if(lst->snd == 1){
-			puts("0");
-			exit(0);
-		}
-	}
-	//puts("bla");
-//	printf("is best %d %d\n", p.fst, p.snd);
-	
-	auto nxt = s.lower_bound(p);
-	nxt++;
-	if(nxt != s.end()){
-		if(nxt->snd == 0){
-			puts("0");
-			exit(0);
-		}
-	}
-//	puts("bla");
-}
-
 int main (){
 	scanf("%d", &n);
 	ll res = 1;
 	for(int a=0;a<n;a++){
-		//printf("a %d\n", a);
 		int x;
 		scanf(" %s %d", t, &x);
-		if(t[1] == 'D'){
-			int val = findval(x);
-			//printf("val %d\n", val);
-			if(val == -1)
-				q.insert(x);
-			else
-				s.insert(pii(x, val));
-		}
+		if(t[1] == 'D')
+			add(x);	
 		else{
-			if(q.find(x) == q.end()){
-				pii p = *s.lower_bound(pii(x, 0));
-				if(p.fst == x){
-					isbest(p);
-					s.erase(p);					
-					for(auto it: q){
-						int p = it;
-						if(p < x)
-							s.insert(pii(p,0));
-						else
-							s.insert(pii(p,1));
-					}
-				}
-				else 
-					assert(false);
+			if(q.find(x) != q.end()){
+				res = mod(res*2ll);
+				q.erase(x);
 			}
 			else{
-				res = mod(res * 2ll);
-				int type = 0;
-				for(auto it: q){
-					int p = it;
-					//	printf("insert %d %d\n", p, type);
-					if(p == x)
-						type++;
-					else
-						s.insert(pii(p, type));
+				if(s[0].find(x) != s[0].end()){
+					if(*s[0].rbegin() != x)
+						fail();
+					s[0].erase(x);
 				}
-				q.clear();
+				else{
+					if(!s[1].empty() && *s[1].begin() != x)
+						fail();
+					s[1].erase(x);
+				}
 			}
+			for(auto it: q)
+				add(it, (it > x));
+			q.clear();
 		}
 	}
-	//printf("sz %d\n", q.size());
 	res = mod(res * (1ll + (ll)q.size()));
 	printf("%lld\n", res);
 }
