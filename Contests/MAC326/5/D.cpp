@@ -39,7 +39,7 @@ const ll INF = 9000000000000LL;
 int n, m, k;
 
 vector<pli> s;
-ll dp[20][MAXK];
+ll dp[15009][MAXK];
 
 void prep_cin(){
 	ios::sync_with_stdio(false);
@@ -52,17 +52,17 @@ struct qry{
 
 vector<qry> q;
 
-int mrk[MAXN];
-
 int L[MAXN], R[MAXN];
-vector<int> ins, ers;
+int acu[MAXN];
 ll pot[MAXK];
 
-ll f(int h){
+int h;
+
+inline ll f(int h){
 	ll res = 0;
 	ll mx = 0;
 	for(int a=1;a<=k;a++){
-		mx = max(mx, dp[h][a]);
+		mx = mod(max(mx, dp[h][a]));
 		res = mod(res + mod(mx*pot[a-1]));
 	}
 	return res;
@@ -72,49 +72,50 @@ inline bool sup(int i, int j, int l, int r){
 	return (i < l && j > r);
 }
 
-inline void add(int h, int id){
+inline void add(int id){
+	h++;
 	int pes = s[id].snd;
 	ll val = s[id].fst;
-	for(int a=k-pes;a>=0;a--){
-		if(dp[h-1][a] != -INF)
-			dp[h][a+pes] = max(dp[h][a+pes], mod(dp[h-1][a] + val));
-		if(dp[h][a] != -INF)
-			dp[h][a+pes] = max(dp[h][a+pes], mod(dp[h][a] + val));
+	for(int a=0;a<=k;a++){
+		dp[h][a] = dp[h-1][a];
+		if(a >= pes)
+			dp[h][a] = max(dp[h][a], dp[h-1][a-pes] + val);
 	}
 }
 
-void go(int i, int j, int insi, int insj, int ersi, int ersj, int h){
-	for(int a=0;a<=k;a++)
-		dp[h][a] = dp[h-1][a];
-
+void go(int i, int j){
 	if(i == j){
 		if(q[i].t == 3)
-			printf("%lld\n", f(h-1));
+			printf("%lld\n", f(h));
 		return ;
 	}
 	int m = (i+j)/2;	
 
-	for(int a=0;a<=k;a++)
-		dp[h][a] = dp[h-1][a];
+	if(acu[m] - (i == 0 ? 0 : acu[i-1]) != 0){
+		int old = h;
+		for(int a=m+1;a<=j;a++){
+			if(q[a].t == 1 || q[a].t == 3) continue;
+			int id = q[a].id;
+			if(sup(L[id], R[id], i, m))
+				add(id);	
+		}	
+		go(i, m);
 
-	for(int a=m+1;a<=j;a++){
-		if(q[a].t == 1 || q[a].t == 3) continue;
-		int id = q[a].id;
-		if(sup(L[id], R[id], i, m))
-			add(h, id);	
+		h = old;
 	}
-	go(i, m, h+1);
 
-	for(int a=0;a<=k;a++)
-		dp[h][a] = dp[h-1][a];
-	
-	for(int a=i;a<=m;a++){
-		if(q[a].t == 2 || q[a].t == 3) continue;
-		int id = q[a].id;
-		if(sup(L[id], R[id], m+1, j))
-			add(h, id);
+
+	if(acu[j] - acu[m] != 0){
+		int old = h;
+		for(int a=i;a<=m;a++){
+			if(q[a].t == 2 || q[a].t == 3) continue;
+			int id = q[a].id;
+			if(sup(L[id], R[id], m+1, j))
+				add(id);
+		}
+		go(m+1, j);
+		h = old;
 	}
-	go(m+1, j, h+1);
 }
 
 int main (){
@@ -123,51 +124,44 @@ int main (){
 	pot[0] = 1;
 	for(int a=1;a<k;a++)
 		pot[a] = mod(pot[a-1]*modn2);
+
+	const int inf = 1e7;
 	for(int a=0;a<n;a++){
 		pli x;
 		scanf("%lld %d", &x.fst, &x.snd);
 		s.pb(x);
-		mrk[a]++;
 		q.pb({1, a});
-		ins.pb(a);
 		L[a] = a;
+		R[a] = inf;
 	}
 
 	scanf("%d", &m);
 	for(int a=0;a<m;a++){
 		qry p;
 		scanf("%d", &p.t);
+		if(q.size() > 0) acu[q.size()] = acu[q.size()-1];
 		if(p.t == 1){
 			pli x;
 			scanf("%lld %d", &x.fst, &x.snd);
 			s.pb(x);
-			n++;
 			p.id = (int)s.size()-1;
-			ins.pb(p.id);
-			mrk[p.id]++;
 			L[p.id] = q.size();
+			R[p.id] = inf;
 		}
 		else if(p.t == 2){
 			scanf("%d", &p.id);
 			p.id--;
-			ers.pb(p.id);
 			R[p.id] = q.size();
-			mrk[p.id]--;
 		}
+		else
+			acu[q.size()]++;
 		q.pb(p);
 	}
 	n = s.size();
-	for(int a=0;a<n;a++){
-		if(mrk[a]){
-			mrk[a] = 0;
-			R[a] = q.size();
-			q.pb({2, a});
-		}
-	}
 	m = q.size();
+
 	for(int a=0;a<=k;a++)
 		dp[0][a] = -INF;
 	dp[0][0] = 0;
-	go(0, m-1, 0, ins.size()-1, 0, ers.size()-1, 1);
+	go(0, m-1);
 }
-
