@@ -39,8 +39,32 @@ void prep_cin(){
 	cin.tie(0);
 }
 
+
+int mrk[MAXN];
+
 int main (){
+	freopen("bureau.in", "r", stdin);
+	freopen("bureau.out", "w", stdout);
 	scanf("%d", &n);
-	for(int a=0;a<n;a++){
+	for(int a=1;a<=n;a++){
+		char pal[10];
+		scanf(" %s", pal);
+		if(pal[0] == 'd')
+			s[a] = 0;
+		else
+			scanf("%d", &s[a]);
 	}
+	stack<int> st;
+	for(int a=n;a>=1;a--){
+		if(mrk[a]) continue;
+		mrk[s[a]] = 1;
+		st.push(a);
+	}
+	printf("%d\n", st.size());
+	while(!st.empty()){
+		printf("%d ", st.top());
+		st.pop();
+	}
+	puts("");
 }
+

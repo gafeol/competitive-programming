@@ -1,1 +1,1 @@
-CXXFLAGS=-std=c++11 -DLOCAL
+CXXFLAGS=-std=c++11 -DLOCAL -O3

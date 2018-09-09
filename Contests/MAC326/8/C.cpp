@@ -29,18 +29,39 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 212345;
+const int MAXN = 212;
 
 int n, m, k;
-int s[MAXN];
+int s[MAXN], p[MAXN];
 
 void prep_cin(){
 	ios::sync_with_stdio(false);
 	cin.tie(0);
 }
 
+bool is(){
+	for(int a=0;a<n;a++){
+		if(p[a] != p[p[a]]) return false;
+	}
+	return true;
+}
+
 int main (){
 	scanf("%d", &n);
 	for(int a=0;a<n;a++){
+		scanf("%d", s+a);
+		s[a]--;
+		p[a] = s[a];
+	}
+	int cnt = 1;
+	while(1){
+		if(is()){
+			printf("%d\n", cnt);
+			return 0;
+		}
+		for(int a=0;a<n;a++)
+			p[a] = s[p[a]];	
+		cnt++;
 	}
 }
+
