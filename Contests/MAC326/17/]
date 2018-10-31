@@ -1,0 +1,132 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define fst first
+#define snd second
+typedef unsigned long long ull;
+typedef long long ll;
+typedef pair<int, int> pii;
+#define pb push_back
+#define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
+
+template <typename T> void write(ostream& out, T t) {
+	out << t << "\n";
+}
+template <typename T, typename... Args>
+void write(ostream& out, T t, Args... args) {
+	out << t << ' ';
+	write(out, args...);
+}
+
+template <typename... Args>
+void debug(Args... args) {
+	#ifdef LOCAL
+		write(cerr, args...);
+	#endif
+}
+
+
+template<typename T> inline T abs(T t) { return t < 0? -t : t; }
+const ll modn = 1000000007;
+inline ll mod(ll x) { return x % modn; }
+
+const int MAXN = 3023;
+
+int n, m, k;
+
+char M[MAXN][MAXN];
+
+int l[MAXN][MAXN], r[MAXN][MAXN];
+
+void prep_cin(){
+	ios::sync_with_stdio(false);
+	cin.tie(0);
+}
+
+bool valid(int a, int b){
+	return (a >= 0 && b >= 0 && a < n && b < m);
+}
+
+int gor(int a, int b){
+	if(!valid(a, b) || M[a][b] != 'z') return 0;	
+	if(r[a][b] != -1)
+		return r[a][b];
+	return r[a][b] = 1 + gor(a, b+1);
+}
+
+int gol(int a, int b){
+	if(!valid(a, b) || M[a][b] != 'z') return 0;	
+	if(l[a][b] != -1)
+		return l[a][b];
+	return l[a][b] = 1 + gol(a, b-1);
+}
+
+vector<int> put[MAXN];
+
+void cons(int i, int j, int mx){
+	if(!valid(i, j)) return ;	
+	if(M[i][j] == 'z'){
+		int jj = min(mx, j+gor(i, j)-1);
+		put[jj].pb(i);	
+	}
+	cons(i-1, j-1, mx);
+}
+
+int bit[MAXN];
+
+void upd(int x, int val){
+	x += 2;
+	while(x < MAXN){
+		bit[x] += val;
+		x += (x&-x);
+	}
+}
+
+int qry(int x){
+	x+=2; 
+	int ans = 0;
+	while(x > 0){
+		ans += bit[x];
+		x -= (x&-x);
+	}
+	return ans;
+}
+
+ll go(int i, int j){
+	if(!valid(i, j)) return 0;
+	ll ans = 0;
+	for(int x: put[j]){
+		upd(x, 1);
+	}
+
+	int sz = l[i][j];
+	ans = qry(i + sz) - qry(i - 1);
+	
+	return ans + go(i-1, j-1);
+}
+
+int main (){
+	scanf("%d%d", &n, &m);
+	memset(l, -1, sizeof(l));
+	memset(r, -1, sizeof(r));
+	for(int a=0;a<n;a++){
+		getchar();
+		for(int b=0;b<m;b++){
+			M[a][b] = getchar();
+		}
+	}
+	for(int a=0;a<n;a++){
+		for(int b=0;b<m;b++){
+			r[a][b] = gor(a, b);		
+			l[a][b] = gol(a, b);
+		}
+	}
+	for(int b=0;b<m;b++){
+		cons(0, b, b);
+		res += go(0, b);
+	}
+	for(int a=1;a<n;a++){
+		cons(a, m-1, m-1);
+		res += go(a, m-1);
+	}
+}
+

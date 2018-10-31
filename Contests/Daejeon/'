@@ -1,0 +1,79 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define fst first
+#define snd second
+typedef unsigned long long ull;
+typedef long long ll;
+typedef pair<int, int> pii;
+#define pb push_back
+#define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
+
+template <typename T> void write(ostream& out, T t) {
+	out << t << "\n";
+}
+template <typename T, typename... Args>
+void write(ostream& out, T t, Args... args) {
+	out << t << ' ';
+	write(out, args...);
+}
+
+template <typename... Args>
+void debug(Args... args) {
+	#ifdef LOCAL
+		write(cerr, args...);
+	#endif
+}
+
+
+template<typename T> inline T abs(T t) { return t < 0? -t : t; }
+const ll modn = 1000000007;
+inline ll mod(ll x) { return x % modn; }
+
+const int MAXN = 212345;
+const int INF = 0x3f3f3f3f;
+
+int n, m, k;
+int s[MAXN];
+int d[5][5][5][5][5][5];
+int j[5][5][5][5][5][5];
+
+queue<tuple<int, int, int, int, int, int> > q;
+
+void prep_cin(){
+	ios::sync_with_stdio(false);
+	cin.tie(0);
+}
+
+int main (){
+    int x;
+	scanf("%d", &x);
+    scanf("%d%d", &n, &m);
+    q.push({1, x, (1 == x), (2 == x), (3 == x), (4 == x)});
+    d[1][x][(1 == x)][(2 == x)][(3 == x)][(4 == x)] = 1;
+    int res = 0;
+    while(!q.empty()){
+        int i, j, qtd[5];
+        tie(i, j, qtd[1], qtd[2], qtd[3], qtd[4]) = q.front();
+        int jog = ::j[i][j][qtd[1]][qtd[2]][qtd[3]][qtd[4]];
+        printf("i %d j %d q %d %d %d %d\n", i, j, qtd[1], qtd[2], qtd[3], qtd[4]);
+
+        int dis = d[i][j][qtd[1]][qtd[2]][qtd[3]][qtd[4]];
+        if(i == n && j == m)
+            res += dis;
+        q.pop();
+        for(int a=1;a<=4;a++){
+            if(qtd[a] + 1 <= 4){
+                int oldq = qtd[a];
+                qtd[a] += pot[qtd[a]]*((jog^1) + 1);
+                printf("checa %d %d %d %d %d %d = %d\n", qtd[a], a, qtd[1], qtd[2], qtd[3], qtd[4], d[qtd[a]][a][qtd[1]][qtd[2]][qtd[3]][qtd[4]]);
+                if(d[qtd[a]][a][qtd[1]][qtd[2]][qtd[3]][qtd[4]] == 0)
+                    q.push({qtd[a], a, qtd[1], qtd[2], qtd[3], qtd[4]});
+                d[qtd[a]][a][qtd[1]][qtd[2]][qtd[3]][qtd[4]] += dis;
+                j[qtd[a]][a][qtd[1]][qtd[2]][qtd[3]][qtd[4]] = (jog^1);
+                qtd[a] = oldq; 
+            }
+        }
+    }
+    printf("%d\n", res);
+}
+

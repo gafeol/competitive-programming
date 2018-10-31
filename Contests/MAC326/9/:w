@@ -1,0 +1,182 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define fst first
+#define snd second
+typedef unsigned long long ull;
+typedef long long ll;
+typedef pair<int, int> pii;
+#define pb push_back
+#define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
+
+template <typename T> void write(ostream& out, T t) {
+	out << t << "\n";
+}
+template <typename T, typename... Args>
+void write(ostream& out, T t, Args... args) {
+	out << t << ' ';
+	write(out, args...);
+}
+
+template <typename... Args>
+void debug(Args... args) {
+	#ifdef LOCAL
+	#endif
+}
+
+
+template<typename T> inline T abs(T t) { return t < 0? -t : t; }
+const ll modn = 1000000007;
+inline ll mod(ll x) { return x % modn; }
+
+const int MAXN = 212345;
+const int MAXT = MAXN*22;
+
+int n, m, k;
+int s[MAXN];
+int L[MAXT], R[MAXT];
+
+void prep_cin(){
+	cin.tie(0);
+}
+
+vector<ll> tree;
+
+ll v(int x){
+    // Retorna o valor de tree[x] se x ja existe na arv, senao retorna 0
+    if(x == -1) return 0;
+    return tree[x];
+}
+
+void ex(int u, int dir){
+    // Se dir[u] nao existir, cria o no
+    if(!dir){
+        if(L[u] != -1) return ;
+        L[u] = tree.size();
+    }
+    else{
+        if(R[u] != -1) return ;
+        R[u] = tree.size();
+    }
+    tree.pb(0ll);
+}
+
+int lcp(int ra, int rb, int i = 0, int j = n-1){
+    if(i == j)
+        return i;
+    int m = (i + j)/2;
+    if(v(L[ra]) == v(L[rb])){
+        ex(ra, 1);
+        ex(rb, 1);
+        return lcp(R[ra], R[rb], m+1, j);
+    }
+    else{
+        ex(ra, 0);
+        ex(rb, 0);
+        return lcp(L[ra], L[rb], i, m);
+    }
+}
+
+int qry(int idx, int i, int j, int l){
+    if(idx == -1) return 0;
+    if(i > l || j < l) return 0;
+    if(i == j) 
+        return tree[idx];
+    int m = ((i+j)>>1);
+    return qry(L[idx], i, m, l) + 
+            qry(R[idx], m+1, j, l);
+}
+
+ll pot[MAXN];
+
+// antes de dar o upd, tree.size() eh a raiz da nova arvore
+void upd(int idx, int i, int j, int l, int x){
+    if(i > l || j < l) return ;
+    int nidx = tree.size();
+    tree.pb(0);
+    if(i == j){
+        tree[nidx] = x;
+        return ;
+    }
+    int m = (i + j)/2;
+    if(l <= m){
+       R[nidx] = R[idx];
+       ex(idx, 0);
+       upd(L[idx], i, m, l, x);
+    }
+    else{
+        L[nidx] = L[idx];
+        ex(idx, 1);
+        upd(R[idx], m+1, j, l, x);
+
+    }
+    tree[idx] = mod(mod(tree[L[idx]]*pot[m-i+1]) + tree[R[idx]]);
+}
+
+struct tree_cmp {
+    bool operator() (const int &a, const int &b) const {
+        printf("tree cmp %d %d\n", a, b);
+        int l = lcp(a, b);
+        printf("lcp %d\n", l);
+        assert(l != n-1);
+        int la = qry(a, 0, n-1, l+1);
+        int lb = qry(b, 0, n-1, l+1); //PODE APAGAR
+        assert(la != lb);
+        return (la == 0);
+    }
+};
+
+set<int, tree_cmp> ord;
+
+int main (){
+    pot[0] = 1;
+    for(int a=1;a<=MAXN;a++)
+        pot[a] = mod(pot[a-1]*2ll);
+    for_tests(t, tt){
+        ll res = 1;
+        int r = 0;
+        tree.clear();
+        ord.clear();
+        memset(L, -1, sizeof(L));
+        memset(R, -1, sizeof(R));
+        scanf("%d%d", &n, &m);
+        for(int a=0;a<m;a++){
+            char c;
+            scanf(" %c", &c); 
+            if(c == '!'){
+                int x;
+                scanf("%d", &x);
+                int i = n-1-x; 
+                int nr; 
+                nr = tree.size();
+                upd(r, 0, n-1, i, 0);
+                r = nr;
+                i--;
+                if(i >= 0){
+                    nr = tree.size();
+                    upd(r, 0, n-1, i, 1);
+                    r = nr;
+                }
+                printf("insere %d\n", r);
+                ord.insert(r);
+                printf("inseriu %d\n", r);
+                // fazer conta com os dois ais proximos pra ver quanto adiciona na resposta
+                auto it = ord.find(r); 
+                int mx = 0;
+                if(it != ord.begin()){
+                    auto beg = --ord.find(r);
+                    mx = max(mx, lcp(r,*beg));  
+                }
+                it++;
+                if(it != ord.end()){
+                    mx = max(mx, lcp(r, *it));
+                }
+
+                res = mod(modn + mod(res + pot[n-1-mx]-1));
+            }
+            else{
+                printf("%lld\n", res);
+            }
+        }
+    }
+}
+

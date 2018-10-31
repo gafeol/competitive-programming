@@ -1,0 +1,52 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+#define pb push_back
+
+const int MAXN = 100010;
+
+int n;
+
+typedef long long ll;
+
+typedef pair<ll, ll> pll;
+#define fst first
+#define snd second
+
+pll s[MAXN];
+
+bool go(long double y){
+	long double mn = DBL_MIN, mx = DBL_MAX;
+	for(int a=0;a<n;a++){
+		long double dy = abs(y - s[a].snd);
+		if(abs(y) < abs(dy))
+			return false;
+		long double dx = sqrt(y*y - dy*dy);
+		mn = max(mn, s[a].fst - dx); 
+		mx = min(mx, s[a].fst + dx);
+	}
+	return (mn <= mx);
+}
+
+int main (){
+	clock_t clk = clock();
+	scanf("%d", &n);
+	for(int a=0;a<n;a++){
+		ll i, j;
+		scanf("%lld%lld", &i, &j);
+		s[a] = pll(i, j);
+	}
+	long double i = 0, j = 2e15+10.;
+	while(j > i && ((long double)clock() - clk)/CLOCKS_PER_SEC < 1.5){
+		long double m = (i + j)/2.;
+		if(go(m))
+			j = m;
+		else
+			i = m;
+	}
+	long double ans = (i + j)/2.;
+	if(ans > 2e15)
+		puts("-1");
+	else
+		printf("%.10Lf\n", (i+j)/2.);
+}

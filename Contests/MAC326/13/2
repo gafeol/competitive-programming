@@ -1,0 +1,136 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define fst first
+#define snd second
+typedef unsigned long long ull;
+typedef long long ll;
+typedef pair<int, int> pii;
+#define pb push_back
+#define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
+
+template <typename T> void write(ostream& out, T t) {
+	out << t << "\n";
+}
+template <typename T, typename... Args>
+void write(ostream& out, T t, Args... args) {
+	out << t << ' ';
+	write(out, args...);
+}
+
+template <typename... Args>
+void debug(Args... args) {
+	#ifdef LOCAL
+		write(cerr, args...);
+	#endif
+}
+
+
+template<typename T> inline T abs(T t) { return t < 0? -t : t; }
+const ll modn = 1000000007;
+inline ll mod(ll x) { return x % modn; }
+
+const int MAXN = 212345;
+
+int n, m, k;
+int s[MAXN];
+
+void prep_cin(){
+	ios::sync_with_stdio(false);
+	cin.tie(0);
+}
+
+int f[2][MAXN], t[MAXN], has[MAXN];
+
+pii ar[MAXN];
+
+vector<pii> adj[MAXN];
+
+int bef[MAXN];
+
+void print(int u, int d=2){
+    vector<int> p;
+    while(bef[u] != u){
+        p.pb(u);
+        u = bef[u];
+    }
+    p.pb(u);
+
+    if(d != 1)
+        for(int i=p.size()-1;i>=0;i--)
+            printf("%d ", p[i]);
+    if(d != 0)
+        for(int i=0;i<p.size();i++)
+            printf("%d ", p[i]);
+}
+
+void dfs(int u, int p){
+    bef[u] = p;
+    for(pii ar: adj[u]){
+        int nxt = ar.fst;
+        int c = ar.snd;
+        if(nxt == p) continue;
+        dfs(nxt, u);
+    }
+}
+
+void go(int u, int p){
+   if(s[u] != -1){
+       f[0][s[u]] = u;
+   }
+   for(pii ar: adj[u]){
+       int nxt = ar.fst;
+       int c = ar.snd;
+       if(nxt == p) continue;
+       if(c == -1)
+           go(nxt, u);
+        else{
+            f[1][c] = nxt;
+            if(t[c])
+                go(nxt, u);
+        }
+   }
+}
+
+int main (){
+    while(scanf("%d%d%d%d", &n, &k, &x, &y) != EOF && n+m+x+y > 0){
+        memset(s, -1, sizeof(s));
+        for(int a=0;a<n;a++){
+           f[0][a] = 0;
+           f[1][a] = 0;
+           adj[a].clear();
+        }
+        for(int a=0;a<k;a++){
+            int v;
+           scanf("%d", &v); 
+           s[v] = a;
+           has[a] = v;
+        }
+        s[y] = k;
+        has[k] = y;
+        for(int a=0;a<n-1;a++){
+            int i, j, c;
+            scanf("%d%d%d", &i, &j, &c);
+            adj[i].pb(pii(j, c));
+            adj[j].pb(pii(i, c));
+        }
+        dfs(x, x);
+        int cnt = k;
+        while(1){
+             go(x, x);
+             int foi = 0;
+             if(f[0][k]){
+                 print(has[k]);
+                 break;
+             }
+             for(int a=0;a<k;a++){
+                 if(f[0][a] && f[1][a] && !t[a]){
+                     foi = 1;
+                    print(a);
+                    t[a] = 1;
+                 }
+             }
+             if(!foi)
+        }
+    }
+}
+
