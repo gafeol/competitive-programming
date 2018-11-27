@@ -1,0 +1,144 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define fst first
+#define snd second
+typedef unsigned long long ull;
+typedef long long ll;
+typedef pair<int, int> pii;
+#define pb push_back
+#define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
+
+template <typename T> void write(ostream& out, T t) {
+	out << t << "\n";
+}
+template <typename T, typename... Args>
+void write(ostream& out, T t, Args... args) {
+	out << t << ' ';
+	write(out, args...);
+}
+
+template <typename... Args>
+void debug(Args... args) {
+	#ifdef LOCAL
+		write(cerr, args...);
+	#endif
+}
+
+
+template<typename T> inline T abs(T t) { return t < 0? -t : t; }
+const ll modn = 1000000007;
+inline ll mod(ll x) { return x % modn; }
+
+const int MAXN = 212345;
+const int MX = 1000000000;
+
+int n, m, k;
+int s[MAXN];
+
+struct seg{
+	int i, j;
+	ll x;
+
+	bool cov (seg o){
+		return (i <= o.i && j >= o.j);			
+	}
+};
+
+struct arv{
+	ll x;
+	bool ok;
+
+	int l, r;
+
+	arv() {
+		x = 0;
+		ok = false;
+		l = -1;
+		r = -1;
+	}
+};
+
+vector<arv> tree;
+						//  j, x  // i , x
+unordered_map<int, set<pil> > segi, segf;
+
+bool hasui(int i, int j){
+	if(segi[i].empty()) return false;	
+	if(segi[i].rbegin()->fst < j) return false;
+	return true;
+}
+
+tuple<int, int, ll> getui(int i){
+	auto it = segi[i].rbegin();
+	//segi[i].erase(segi[i].begin());
+	return {i, it->fst, it->snd};
+}
+
+
+
+bool hasi(int i, int j){
+	if(segi[i].empty()) return false;	
+	if(segi[i].begin()->fst > j) return false;
+	return true;
+}
+
+tuple<int, int, ll> geti(int i){
+	auto it = segi[i].begin();
+	//segi[i].erase(segi[i].begin());
+	return {i, it->fst, it->snd};
+}
+
+bool hasf(int i, int j){
+	if(segf[j].empty()) return false;
+	if(segf[j].rbegin()->fst < i) return false;
+	return true;
+}
+
+tuple<int, int, ll> getf(int j){
+	auto it = segf[j].rbegin();
+	//segf[j].erase(*it);
+	return {it->fst, j, it->snd};
+}
+
+void add(pii sg, ll x){
+	arv val = qry(1, 0, MX, sg.fst, sg.snd);
+	if(val.ok) return ;
+
+	
+	bool hui = hasui(sg.fst, sg.snd);
+	bool huf = hasuf(sg.fst, sg.snd);
+
+	if(
+
+
+	bool hi = hasi(sg.fst, sg.snd);
+	bool hf = hasf(sg.fst, sg.snd);
+	if(hi || hf){
+		tuple<int, int, ll> osg;
+		if(hi)	
+			osg = geti(sg.fst);
+		else
+			osg = getf(sg.snd);
+
+		int oi, oj;
+		ll ox;
+		tie(oi, oj, ox) = osg;
+		if(hi)
+			add({oj+1, sg.snd}, (x^ox))
+		else
+			add({sg.fst, oi-1}, (x^ox));
+	}
+	else{
+		upd(1, 0, MX, sg.fst, sg.snd, x); 
+		segi[sg.fst].insert({sg.snd, x});
+		segf[sg.snd].insert({sg.fst, x});
+	}
+}
+
+int main (){
+	scanf("%d", &n);
+	for(int a=0;a<n;a++){
+		scanf("%d", &t);
+	}
+}
+

@@ -18,11 +18,23 @@ inline ll mod(ll x) { return x % modn; }
 
 const int MAXN = 212345;
 
-int n, m, k;
-int s[MAXN];
+ll n, k;
+
+ll go(ll v, ll d){
+	if(v/d == 0) return 0;
+	return v/d + go(v, d*k);
+}
 
 int main (){
-	scanf("%d", &n);
-	for(int a=0;a<n;a++){
+	scanf("%lld%lld", &n, &k);
+	ll i = 0, j = 100000000000LL;
+	while(i < j){
+		ll m = (i + j)/2ll;
+		if(m + go(m, k) >= n)
+			j = m;
+		else
+			i = m+1;
 	}
+	printf("%lld\n", i);
 }
+
