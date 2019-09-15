@@ -17,6 +17,22 @@ char v1[MAXC], v2[MAXC];
 int tam, c[MAXN];
 long long dp[3][15][100][3]; 
 
+
+int lp[MAXN];
+vector<int> pr;
+inline void linCrivo(){
+    for(int i=2;i<MAXN;i++){
+        if(lp[i] == 0){
+            lp[i] = i;
+            pr.pb(i);
+        }
+        for(int j=0;j<pr.size() && pr[j] <= lp[i] && i*pr[j] < MAXN;j++){
+           lp[i*pr[j]] = pr[j]; 
+        }
+    }
+}
+
+/*
 inline void crivo(){
 	for(int i=2;i<10000;i++){
 		if(c[i]!=-1){
@@ -27,10 +43,10 @@ inline void crivo(){
 		}
 	}
 }
+*/
 
 inline int ehprimo(int val){
-	if(val<=1) return 0;
-	if(c[val]==1) return 1;
+	if(lp[val]==val) return 1;
 	else return 0;
 }
 
@@ -65,7 +81,7 @@ inline int v1eh(){
 }
 
 int main (){
-	crivo();
+	linCrivo();
 	for_tests(t,tt){
 		memset(dp,-1,sizeof(dp));
 		scanf(" %s %s", v2, v1);
