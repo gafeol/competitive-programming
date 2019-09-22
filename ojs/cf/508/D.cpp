@@ -17,27 +17,97 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 212345;
+const int MAXN = 412345;
 
 int n, m, k;
-char s[MAXN][4];
+int s[MAXN];
 
-map<pcc, vector<int> > pre, pos;
+struct ed{
+    int u;
+    int id;
+};
 
-int l[MAXN], r[MAXN], head=-1;
+int mrk[MAXN];
+vector<ed> adj[MAXN];
+int ind[MAXN], oud[MAXN];
+
+vector<pcc> v;
+
+map<pcc, int> idd;
+pcc ret[MAXN];
+int ini[MAXN];
+
+queue<int> aux_path;
+stack<int> final_path;
+
+void euler_path(int u){
+    aux_path.push(u);
+    while(ini[u] < adj[u].size()){
+        ed e =  adj[u][ini[u]];
+        ini[u]++;
+        euler_path(e.u); 
+    }
+    final_path.push(u);
+}
+
+
 
 int main (){
-	scanf("%d", &n);
-	memset(l, -1, sizeof(l));
-	memset(r, -1, sizeof(r));
-	for(int a=0;a<n;a++){
-		scanf(" %s", s+a);
-		pre[pcc(s[0], s[1])].pb(a);
-		pos[pcc(s[1], s[2])].pb(a);
-	}
-	vector<int> odd;
-	for(int a=0;a<n;a++){
-		if(
-	}
+    scanf("%d", &n);
+    int deg = 0, degu=0;
+    for(int a=0;a<n;a++){
+        char i, j, k;
+        scanf(" %c%c%c", &i, &j, &k);
+        if(idd.find({i, j}) == idd.end()){
+            ret[degu] = {i, j};
+            idd[{i, j}] = degu++;
+        }
+        if(idd.find({j, k}) == idd.end()){
+            ret[degu] = {j, k};
+            idd[{j, k}] = degu++;
+        }
+
+        int id1 = idd[{i, j}], id2 = idd[{j, k}];
+        adj[id1].pb({id2, deg++});
+        oud[id1]++;
+        ind[id2]++;
+    }
+
+    vector<int> odd;
+    bool ok = true;
+    for(int u=0;u<degu;u++){
+        ok &= (abs(ind[u] - oud[u]) <= 1);
+        if(ind[u] != oud[u])
+            odd.pb(u);
+    }
+    ok &= (odd.size() <= 2);
+    if(odd.size() == 2)
+        ok &= (ind[odd[0]] - oud[odd[0]] + ind[odd[1]] - oud[odd[1]] == 0);
+
+    if(!ok){
+        puts("NO");
+        return 0;
+    }
+
+    if(odd.size() == 2){
+        if(oud[odd[0]] < ind[odd[0]])
+            swap(odd[0], odd[1]);
+        // start is odd[0]
+        euler_path(odd[0]);
+    }
+    else
+        euler_path(0);
+    
+    if(final_path.size() == n+1){
+        puts("YES");
+        printf("%c", ret[final_path.top()].first);
+        while(final_path.size()){
+            printf("%c", ret[final_path.top()].snd);
+            final_path.pop();
+        }
+        puts("");
+    }
+    else
+        puts("NO");
 }
 
