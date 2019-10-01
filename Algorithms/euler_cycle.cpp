@@ -22,6 +22,7 @@ void add_edge(int a, int b){
 void euler_dfs(int u){
 	temp_path[tsz++] = u;
 	for(pii ar: adj[u]){
+        // FICA QUADRATICO SE O CASO EH SO UM VERTICE COM VARIOS LOOPS VER CF508D ou mesmo se tiver um vertice com muitos arcos/arestas 
 		int id = ar.snd;
 		if(mrk[id]) continue;
 		mrk[id] = 1;
