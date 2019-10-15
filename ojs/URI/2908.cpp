@@ -29,7 +29,8 @@ void go(int st){
     while(st--){
         for(int a=1;a<=z;a++){
             if(cnt[a] == b){
-                printf("%d %lld\n", a, res);
+                printf("%d ", a);
+                cout << res << endl;
                 exit(0);
             }
             else if(cnt[a] > 0)
@@ -48,6 +49,7 @@ int cycsz[MAXB], zno[MAXB][MAXZ];
 vector<int> poss_zoo;
 
 void dfs(int b, int u, int ini){
+    assert(zno[b][u] == -1);
     zno[b][u] = cycsz[b]++; 
     if(nxt[b][u] != ini)
         dfs(b, nxt[b][u], ini);
@@ -62,26 +64,75 @@ void recon(){
     for(int i=1;i<=z;i++){
         int aux = 0;
         for(int a=1;a<=b;a++)
-            aux += (cnt[a] != -1);
+            aux += (zno[a][i] != -1);
         if(aux == b){
-           poss.pb(i); 
+           poss_zoo.pb(i); 
         }
     }
 }
 
 
-void prep(int zoo, vector<int> &val, vector<int> &md){
+void prep(int zoo, vector<ll> &val, vector<ll> &md){
+    //debug("prep zoo %d\n", zoo);
     for(int bst=1;bst<=b;bst++){
         // x % cycsz[bst] == zno[bst][zoo]
         val.pb(zno[bst][zoo]);
         md.pb(cycsz[bst]);
+        //debug("bst %d val pb %d md pb %d\n", bst, zno[bst][zoo], cycsz[bst]);
     }
 }
+//begin of algo
 
-ll crt(vector<int> &val, vector<int> &md){
-
-
+ll gcd(ll a, ll b, ll &x, ll &y){
+    if (a == 0){
+        x = 0;
+        y = 1;
+        return b;
+    }
+    ll x1, y1;
+    ll d = gcd(b%a, a, x1, y1);
+    x = y1 - (b/a)*x1;
+    y = x1;
+    return d;
 }
+
+
+bool join(ll &a, ll &n, ll b, ll m){
+    //cerr << "a " << toString(a) << " n " << toString(n) << " b " << toString(b) << " m " << toString(m) << endl;
+    ll x, y;
+    ll gc = gcd(n, m, x, y);
+    //cerr << " gcd " << toString(gc) <<  endl;
+    //cerr << "x " << toString(x) << " y " << toString(y) << endl;
+    //debug("gc %lld\n", gc);
+    if((a - b)%gc != 0 || (n == m && a != b))
+        return false; // n tem solucao
+
+    ll lcm = (n/gc)*m;
+    //cerr << " lcm " << toString(lcm) << endl;
+    ll res = (a + x * (b - a)/gc % (m / gc) * n) % lcm; 
+    res = (res + lcm)%lcm; // get a positive solution
+
+    //cerr << "res " << toString(res) << endl;
+    //debug("res %lld\n", res);
+    assert(res%n == a && res%m == b);
+
+    // preparing for the next step
+    a = res;
+    n = lcm;
+    return true;
+}
+
+ll crt(vector<ll> &val, vector<ll> &md){
+    assert(val.size() > 0 &&  val.size() == md.size());
+    ll lval = val[0], lmd = md[0];
+
+    for(int i=1;i<val.size();i++){
+        if(!join(lval, lmd, val[i], md[i]))
+            return -1;
+    }
+    return lval;
+}
+
 
 int main (){
     memset(zno, -1, sizeof(zno));
@@ -93,13 +144,34 @@ int main (){
             scanf("%d", &nxt[a][i]);
         }
 	}
-    go(100);
+    go(150);
     recon();
 
-    for(int zoo: poss_zoo){
-        vector<int> val, md;
-        prep(zoo, val, md);
+    if(!poss_zoo.size()){
+        puts("*");
+        return 0;
     }
+
+
+    ll best = LLONG_MAX, zbest;
+    for(int zoo: poss_zoo){
+        vector<ll> val, md;
+        prep(zoo, val, md);
+
+        ll res = crt(val, md);
+        if(res == -1) // n tem solucao
+            continue;
+        ll meetup_time = 150ll + res;
+        
+        if(best > meetup_time){
+            best = meetup_time;
+            zbest = zoo;
+        }
+    }
+    if(best == LLONG_MAX)
+        puts("*");
+    else
+        cout << zbest << " " << best << endl;
 }
 
 
