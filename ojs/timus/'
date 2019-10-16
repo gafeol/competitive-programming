@@ -16,7 +16,7 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 51234;
+const int MAXN = 5123;
 
 // Suffix array Nlog2 + Kazai
 
@@ -27,20 +27,15 @@ char s[MAXN];
 int main (){
     scanf(" %s", s);
     n = strlen(s);
-
-    if(n == 1){
-        puts("1");
-        return 0;
-    }
     
     vector<int> r(n), p(n), aux(n);
     for(int a=0;a<n;a++){
         r[a] = s[a];
         p[a] = a;
     }
-    r.pb(-1);
+    r.pb(0);
 
-    for(int d=1;d < n;d*=2ll){
+    for(int d=1;(1<<d) < n;d*=2ll){
         sort(p.begin(), p.end(), [&](int a, int b){
             return make_pair(r[a], r[min(n, a+d)]) < make_pair(r[b], r[min(n, b+d)]);
                 }); 
@@ -59,23 +54,12 @@ int main (){
     int sz = 0;
     vector<int> lcp(n);
     for(int i=0;i<n;i++){
-        if(r[i] == n-1){
+        if(r[i] == 0){
             lcp[i] = sz = 0;
             continue;
         }
-        int o = p[r[i]+1];
-        //printf("o %d\n", o);
-        while(i + sz < n && o + sz < n && s[i + sz] == s[o + sz])
-            sz++;
-        //printf("lcp %d = %d\n", i, sz);
-        lcp[i] = sz;
-        sz = max(0, sz-1);
+        int o = p[r[i]-1];
+        while(
     }
-
-
-    int ans = 0;
-    for(int a=0;a<n;a++)
-        ans += n-a-lcp[a];
-    printf("%d\n", ans);
 }
 
