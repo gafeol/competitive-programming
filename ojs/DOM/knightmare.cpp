@@ -20,19 +20,26 @@ inline ll mod(ll x) { return x % modn; }
 int n, m, k;
 
 map<ll, vector<pair<pair<ll, ll>, ll>>> ev;
-map<ll, int> acc;
+unordered_map<ll, int> acc;
+vector<ll> pos;
 
 void add(ll i, ll j, ll ii, ll jj){
     if(i < 0) return;
     if(jj < 0) return;
-    if(i < ii || j < jj) return;
+    if(i < ii || j > jj) return;
     ii = max(ii, 0ll);
     j = max(j, 0ll);
-    if(i < ii || j < jj) return;
-    ev[jj].pb(mp(mp(0ll, ii), i)); 
-    ev[j+1].pb(mp(mp(1ll, ii), i));
-    acc[ii] = 0;
-    acc[i+1] = 0;
+    //debug("add %lld %lld %lld %lld\n", i, j, ii, jj);
+    ev[j].pb(mp(mp(0ll, ii), i)); 
+    ev[jj+1].pb(mp(mp(1ll, ii), i));
+    if(acc.find(ii) == acc.end()){
+        pos.insert(ii);
+        acc[ii] = 0;
+    }
+    if(acc.find(i+1) == acc.end()){
+        pos.insert(i+1);
+        acc[i+1] = 0;
+    }
 }
 
 int main (){
@@ -54,13 +61,14 @@ int main (){
             add(i-1, j-r, i-l, j-1);
             add(i-1, j-l, i-r, j-r-1);
         }
+        sort(pos.begin(), pos.end());
         ll lx = 0;
         ll cnt = 0;
         ll ans = 0;
         for(auto it: ev){
             //printf("de x %d ate %d tem cnt %d\n", lx, it.fst, cnt);
-            assert(it.fst >= 0);
-            assert(cnt >= 0);
+            //assert(it.fst >= 0);
+            //assert(cnt >= 0);
             ans += cnt*(it.fst - lx);
             lx = it.fst;
             //printf("it x %d\n", it.fst);
@@ -70,16 +78,17 @@ int main (){
                 t = tp.fst.fst;
                 l = tp.fst.snd;
                 r = tp.snd;
+                //printf("t %d y %d yy %d\n", t, l, r);
                 auto it = acc.find(l);
                 auto fim = acc.find(r+1);
-                assert(it != acc.end());
-                assert(fim != acc.end());
+                //assert(it != acc.end());
+                //assert(fim != acc.end());
                 if(!t){
                     ll ly = l;
                     ll lstval = 0;
                     while(it != fim){
                         it->snd++; 
-                        assert(it->fst >= ly);
+                        //assert(it->fst >= ly);
                         if(lstval == k)
                             cnt += it->fst - ly;
                         lstval = it->snd;
@@ -94,11 +103,11 @@ int main (){
                     ll lstval = -1;
                     while(it != fim){
                         it->snd--; 
-                        assert(it->fst >= ly);
+                        //assert(it->fst >= ly);
                         if(lstval == k-1)
                             cnt -= it->fst - ly;
                         lstval = it->snd;
-                        assert(lstval >= 0);
+                        //assert(lstval >= 0);
                         ly = it->fst;
                         it++;
                     }
