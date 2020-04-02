@@ -1,5 +1,4 @@
 #include <bits/stdc++.h>
-
 using namespace std;
 #define fst first
 #define snd second
@@ -14,7 +13,7 @@ typedef pair<int, int> pii;
 #define debug(args...)
 #endif //ONLINE_JUDGE
 template<typename T> inline T abs(T t) { return t < 0? -t : t; }
-const ll modn = 1000000007;
+const ll modn = 998244353;
 inline ll mod(ll x) { return x % modn; }
 
 const int MAXN = 212345;
@@ -22,13 +21,17 @@ const int MAXN = 212345;
 int n, m, k;
 int s[MAXN];
 
+ll dp[MAXN];
+
 int main (){
 	scanf("%d", &n);
+    int mx = 0;
 	for(int a=0;a<n;a++){
-        int i, j;
-        scanf("%d %d%d", &i, &j, &k);
-        int snd = min(j, k/2);
-        printf("%d\n", snd*3 + 3*min(i, (j-snd)/2));
+        scanf("%d", s+a);
+        int ori = s[a] + mx;
+        mx = max(ori, mx);
+        printf("%d ", ori);
 	}
+    puts("");
 }
 

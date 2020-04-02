@@ -1,5 +1,4 @@
 #include <bits/stdc++.h>
-
 using namespace std;
 #define fst first
 #define snd second
@@ -23,12 +22,18 @@ int n, m, k;
 int s[MAXN];
 
 int main (){
-	scanf("%d", &n);
-	for(int a=0;a<n;a++){
-        int i, j;
-        scanf("%d %d%d", &i, &j, &k);
-        int snd = min(j, k/2);
-        printf("%d\n", snd*3 + 3*min(i, (j-snd)/2));
-	}
+    for_tests(t, tt){
+        vector<int> v;
+        scanf("%d", &n);
+        for(int a=0;a<n;a++){
+            int x;
+            scanf("%d", &x);
+            v.pb(x);
+
+        }
+        sort(v.begin(), v.end());
+        v.erase(unique(v.begin(), v.end()), v.end());
+        printf("%d\n", v.size());
+    }
 }
 

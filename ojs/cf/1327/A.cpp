@@ -1,5 +1,4 @@
 #include <bits/stdc++.h>
-
 using namespace std;
 #define fst first
 #define snd second
@@ -22,13 +21,30 @@ const int MAXN = 212345;
 int n, m, k;
 int s[MAXN];
 
+ll mn(ll x){
+    return (x*(1ll + 2*x-1))/2ll; 
+}
+
+
 int main (){
-	scanf("%d", &n);
-	for(int a=0;a<n;a++){
-        int i, j;
-        scanf("%d %d%d", &i, &j, &k);
-        int snd = min(j, k/2);
-        printf("%d\n", snd*3 + 3*min(i, (j-snd)/2));
-	}
+    for_tests(t, tt){
+        scanf("%d%d", &n, &k);
+        if(n < mn(k)){
+            puts("NO");
+            continue;
+        }
+        if(n&1){
+           if(k&1)
+               puts("YES");
+           else
+               puts("NO");
+        }
+        else{
+           if(k&1)
+               puts("NO");
+           else
+               puts("YES");
+        }
+    }
 }
 
