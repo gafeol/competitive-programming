@@ -16,7 +16,7 @@ template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 
-const int MAXN = 312;
+const int MAXN = 112;
 
 int n, m, k;
 char M[MAXN][MAXN];
@@ -83,9 +83,9 @@ namespace f {
 }
 
 int main (){
-    for_tests(t, tt){
+    while(scanf("%d", &n) != EOF){
         f::reset_all();
-        scanf("%d%d", &n, &m);
+        m = n;
         for(int a=0;a<n;a++){
             for(int b=0;b<m;b++){
                 scanf(" %c", &M[a][b]);
@@ -97,10 +97,10 @@ int main (){
         bool up = true;
         for(int a=0;a<n;a++){
             for(int b=0;b<m;b++){
-                if(M[a][b] == 'A')
+                if(M[a][b] == 'X'){
                     up = true;
-                if(M[a][b] != 'H')
                     continue;
+                }
                 if(up){
                     deg++;
                     up = false;
@@ -114,10 +114,10 @@ int main (){
         up = true;
         for(int b=0;b<m;b++){
             for(int a=0;a<n;a++){
-                if(M[a][b] == 'A')
-                    up = true; 
-                if(M[a][b] != 'H')
+                if(M[a][b] == 'X'){
+                    up = true;
                     continue;
+                }
                 if(up){
                     deg++;
                     up = false;
