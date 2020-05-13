@@ -88,8 +88,8 @@ int main (){
         ll x;
         char c;
         scanf(" %c", &c);
+        scanf("%lld", &x);
         if(c == 'D'){
-            scanf("%lld", &x);
             int i, j, k;   
             split_val(root, x-1, i, j);
             split_val(j,      x, j, k);
@@ -97,7 +97,6 @@ int main (){
             //print(root);
         }
         else if(c == 'I'){
-            scanf("%lld", &x);
             int i, j, k;   
             split_val(root, x-1, i, j);
             if(j && mn[j] == x){
@@ -110,37 +109,20 @@ int main (){
             }
             //print(root);
         }
-        else if(c == 'N'){
+        else if(c == 'K'){
             int i, j;
-            scanf("%d%d", &i, &j);
-            if(i == j){
-                puts("-1");
-                continue;
-            }
-            int Ri, R, Rj, aux; 
-            split_sz(root, j+1, Rj, aux); // gets j+1 elements on Rj
-            split_sz(Rj, i, Ri, R);   // gets i+ on R
-            if(sz[R] <= 1)
-                puts("-1");
+            split_sz(root, x, i, j);
+            if(sz[i] < x)
+                puts("invalid");
             else
-                printf("%lld\n", mnd[R]);
-            root = merge(merge(Ri, R), aux);
+                printf("%lld\n", mx[i]);
+            root = merge(i, j);
         }
         else{
             int i, j;
-            scanf("%d%d", &i, &j);
-            if(i == j){
-                puts("-1");
-                continue;
-            }
-            int Ri, R, Rj, aux; 
-            split_sz(root, j+1, Rj, aux); // gets <= j on Rj
-            split_sz(Rj, i, Ri, R);   // gets >= i on R
-            if(sz[R] <= 1)
-                puts("-1");
-            else
-                printf("%lld\n", mxd[R]);
-            root = merge(merge(Ri, R), aux);
+            split_val(root, x-1, i, j);
+            printf("%d\n", sz[i]);
+            root = merge(i, j);
         }
 	}
 }
