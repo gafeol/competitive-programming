@@ -1,10 +1,28 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define fst first
+#define snd second
+typedef unsigned long long ull;
+typedef long long ll;
+typedef pair<int, int> pii;
+#define pb push_back
+#define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
+#ifndef ONLINE_JUDGE
+#define debug(args...) fprintf(stderr,args)
+#else
+#define debug(args...)
+#endif //ONLINE_JUDGE
+template<typename T> inline T abs(T t) { return t < 0? -t : t; }
+const ll modn = 1000000007;
+inline ll mod(ll x) { return x % modn; }
 
-/////Header de Geometria/////
+const int MAXN = 212345;
 
-// area de calota 2.pi.R.h (h altura)
-// volume de calota pi.h/6 * (3r^2 + h^2)
+int n, m, k;
+int s[MAXN];
 
-#include <cmath>
+
+double pi = acos(-1.);
 #define temp template<typename num>
 #define ptn point<num>
 temp struct point {
@@ -44,39 +62,43 @@ temp bool inter_seg(ptn a, ptn b, ptn c, ptn d) {
 	return false;
 }
 
-temp struct line {
-	num a, b, c;
-	line() {}
-	line(num aa, num bb, num cc) : a(aa), b(bb), c(cc) {}
-	line(ptn s, ptn e) : a(e.y - s.y), b(s.x - e.x), c(a*s.x + b*s.y) {}
-	line pass(ptn p) { return line(a, b, a*p.x + b*p.y); }
-	bool parallel(const line &o) const { return a * o.b - o.a * b == 0; }
-	point<double> inter(line o) {
-		double d = a * o.b - o.a * b;
-		if(d == 0) return point<double>(0, 0); // fudeu
-		return point<double>((o.b * c - b * o.c)/d, (a * o.c - o.a * c)/d);
-	}
-};
-typedef line<int> lni;
-typedef line<double> lnd;
+vector<ptd> pol;
 
-// convex hull - modifique como necessario
-void convex_hull(pti p[], pti st[], int n) {
-	sort(p, p + n);
-	int sn = 0;
-	for(int i = 0; i < n; i++) {
-		while(sn >= 2 && cross(st[sn - 2], st[sn - 1], p[i]) > 0)
-			sn--;
-		st[sn++] = p[i];
-	}
-	int k = sn;
-	for(int i = n - 2; i >= 0; i--) {
-		while(sn > k && cross(st[sn - 2], st[sn - 1], p[i]) > 0)
-			sn--;
-		st[sn++] = p[i];
-	}
-	sn--;
-	// st[0..sn-1] agora tem o convex hull dos pontos p
+int x;
+
+double go(double ang){
+    ptd mn = {0, 0}, mx = {0, 0};
+    ptd v = {0, 0}, dir = {1, 0};
+    dir = dir.rotate(ang);
+    for(int a=0;a<2*x;a++){
+        mn.x = min(mn.x, v.x); 
+        mn.y = min(mn.y, v.y);
+        mx.x = max(mx.x, v.x);
+        mx.y = max(mx.y, v.y);
+        v = v + dir;
+        dir = dir.rotate(pi/x); 
+    }
+    double ans = max(mx.x - mn.x, mx.y - mn.y);
+    return ans;
 }
 
+
+int main (){
+	scanf("%d", &n);
+    for(int a=0;a<n;a++){
+        pol.clear();
+        scanf("%d", &x);
+        double i = 0, j = pi/x;
+        while(j - i > 1e-7){
+            double l = i + (j - i)/3;
+            double r = j - (j - i)/3;
+            if(go(l) > go(r))
+                i = l;
+            else
+                j = r;
+        }
+        printf("%.10f\n", go((i+j)/2));
+    }
+
+}
 
