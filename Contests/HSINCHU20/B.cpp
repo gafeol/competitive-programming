@@ -24,90 +24,68 @@ int n, m, k;
 int s[MAXN];
 
 vector<int> adj[MAXN];
-int p[MAXN];
+int dp[MAXN][3];
 
-void dfs(int u){
-    for(int nxt: adj[u]){
-        if(nxt == p[u]) continue;
-        p[nxt] = u;
-        dfs(nxt);
-    }
-}
-
-int dp[MAXN][3][3];
-
-int go(int u, int pg, int ppg){
-    //printf("go u %d pg %d ppg %d\n", u, pg, ppg);
-    int &r = dp[u][pg][ppg];
-    if(r != -1)
-        return r;
-    r = INF;
-
+void go(int u, int p){
+    int s0 = 0, s1 = 0;
     int cnt = 0;
-    int s[2][2];
-    memset(s, 0, sizeof(s));
+    for(int i=0;i<adj[u].size();i++){
+        if(adj[u][i] == p){
+            swap(adj[u][i], adj[u][adj[u].size()-1]);
+            adj[u].pop_back();
+            break;
+        }
+    }
     for(int nxt: adj[u]){
-        if(nxt == p[u]) continue;
         cnt++;
+        go(nxt, u);
+        s0 += dp[nxt][0];
+        s1 += dp[nxt][1];
+    }
+    dp[u][0] = 1+s0;
+    dp[u][1] = 1+s0;
+    dp[u][2] = 1+s0;
+    if(cnt <= 1)
+        dp[u][0] = min(dp[u][0], s0);
+    if(cnt == 1){
+        dp[u][1] = min(dp[u][1], dp[adj[u][0]][1]); 
+    }
+    if(cnt >= 1)
+        dp[u][1] = min(dp[u][1], s1);
 
-        for(int t=0;t<2;t++){
-            for(int tt=0;tt<2;tt++){
-                if(t == 1 && tt == 0) continue;
-                s[t][tt] += go(nxt, t, tt);
-            }
+    if(cnt){
+        int bst2 = adj[u][0];
+        for(int nxt: adj[u]){
+            if(dp[nxt][2] - dp[nxt][1] < dp[bst2][2] - dp[bst2][1])
+                bst2 = nxt;
         }
-        //mxpg = max(mxpg, go(nxt, 1));
-        //mxn = max(mxn, go(nxt, 0));
-    }
-    if(cnt == 0){
-        if(pg == 0)
-            return r = 1;
-        else
-            return r = 0;
-    }
-
-    r = min(r, 1 + s[1][1]);
-    //printf("vou calc u %d pg %d ppg %d\n", u, pg, ppg);
-    if(!pg){
-        if(!ppg){
-            r = min(r, s[0][0]); 
+        for(int nxt: adj[u]){
+            dp[u][0] = min(dp[u][0], s1 + dp[nxt][0] - dp[nxt][1]);
+            if(nxt != bst2)
+                dp[u][0] = min(dp[u][0], s1 + dp[bst2][2] - dp[bst2][1] + dp[nxt][0] - dp[nxt][1]); 
         }
-        else{
-            for(int nxt: adj[u]){
-                if(nxt == p[u]) continue;
-                r = min(r, go(nxt, 1, 1) + s[0][0] - go(nxt, 0, 0));
-            } }
-    }
-    else{
-        if(!ppg){
-            // n eh possivel
-            assert(false);
-        }
-        else{
-            for(int nxt: adj[u]){
-                if(nxt == p[u]) continue;
-                r = min(r, go(nxt, 1, 1) + s[0][1] - go(nxt, 0, 1));
-            }
+        for(int nxt: adj[u]){
+            if(nxt != bst2)
+                dp[u][0] = min(dp[u][0], s1 + dp[bst2][0] - dp[bst2][1] + dp[nxt][2] - dp[nxt][1]);
         }
     }
-    return r;
+    dp[u][2] = min(dp[u][2], 1 + min(dp[u][0], dp[u][1]));
+    dp[u][1] = min(dp[u][1], min(1+dp[u][0], dp[u][2]));
+    dp[u][0] = min(dp[u][0], min(dp[u][1], dp[u][2]));
+    printf("go %d dps %d %d %d\n", u, dp[u][0], dp[u][1], dp[u][2]);
 }
 
 
 int main (){
     memset(dp, -1, sizeof(dp));
 	scanf("%d", &n);
-    int mx = 0;
 	for(int a=1;a<n;a++){
         int u, v;
         scanf("%d%d", &u, &v);
         adj[u].pb(v);
         adj[v].pb(u);
-        mx = max(mx, (int)adj[u].size());
-        mx = max(mx, (int)adj[v].size());
 	}
-    p[1] = 1;
-    dfs(1);
-    printf("%d\n", go(1, 0, 1));
+    go(1, 1);
+    printf("%d\n", min(1 + dp[1][0], min(dp[1][1], dp[1][2])));
 }
 
