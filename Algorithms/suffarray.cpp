@@ -5,7 +5,7 @@ vector<int> sa(string s){
     int n = s.size();
     
     if(n == 1) // Tratar caso n = 1
-        exit(0);
+        return vector<int>(1, 0);
 
     vector<int> r(n+1), p(n), aux(n);
     for(int a=0;a<n;a++){
