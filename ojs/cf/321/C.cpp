@@ -17,13 +17,11 @@ const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 #define IOS() ios::sync_with_stdio(0),cin.tie(0)
 
-const int MAXN = 100005, LOGN = 22;
+const int MAXN = 212345;
 
 int n, m, k;
-int s[MAXN];
-
-ll cnt[LOGN];
-int mrk[MAXN];
+char ans[MAXN];
+int sz[MAXN], mrk[MAXN];
 vector<int> adj[MAXN];
 
 int getsz(int u, int p){
@@ -32,32 +30,45 @@ int getsz(int u, int p){
         if(mrk[nxt] || nxt == p) continue;
         sz[u] += getsz(nxt, u);
     }
-}
+    return sz[u];
+} 
 
 int getc(int u, int p, int tot){
     for(int nxt: adj[u]){
         if(mrk[nxt] || nxt == p) continue;
-        if(sz[nxt] > tot/2)
+        if(sz[nxt] > tot/2){
             return getc(nxt, u, tot);
+        }
     }
     return u;
 }
 
-void decomp(int u){
-     getsz(u, u);
-     int c = getc(u, u, sz[u]);
+void decomp(int u, char car){
+    if(car > 'Z'){
+        puts("Impossible!");
+        exit(0);
+    }
+    getsz(u, u);
+    int c = getc(u,u,sz[u]);
+    mrk[c] = true;
+    ans[c] = car;
+    for(int nxt: adj[c]){
+        if(mrk[nxt]) continue;
+        decomp(nxt, car+1);
+    }
 }
 
 int main (){
 	scanf("%d", &n);
-	for(int a=1;a<=n;a++)
-        scanf("%d", s+a);
-    for(int a=1;a<n;a++){
+	for(int a=1;a<n;a++){
         int i, j;
         scanf("%d%d", &i, &j);
         adj[i].pb(j);
         adj[j].pb(i);
+	}
+    decomp(1, 'A');
+    for(int a=1;a<=n;a++){
+        printf("%c%c", ans[a], " \n"[a==n]);
     }
-    decomp(1);
 }
 

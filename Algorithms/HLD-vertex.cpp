@@ -1,12 +1,11 @@
-int pai[MAXN][LOGN], chainNo[MAXN], chainInd[MAXN], sz[MAXN], nchain, degs, inichain[MAXN];
+// testar com https://www.codechef.com/viewsolution/35182871
 
-vector <int> adj[MAXN], pes[MAXN];
 
-int tree[8*MAXN];
+int pai[MAXN][LOGN], chainNo[MAXN], chainInd[MAXN], sz[MAXN], nchain, degs, inichain[MAXN], h[MAXN];
+vector <int> adj[MAXN];
 
-int h[MAXN], custopai[MAXN];
-
-int res;
+typedef int num;
+num tree[8*MAXN], base[MAXN];
 
 void dfs(int v,int ant){
 	pai[v][0] = ant;
@@ -18,7 +17,6 @@ void dfs(int v,int ant){
 	for(int a=0;a<adj[v].size();a++){
 		int nxt = adj[v][a];
 		if(nxt != ant){
-			custopai[nxt] = pes[v][a];
 			dfs(nxt,v);
 			sz[v] += sz[nxt];
 		}
@@ -27,34 +25,25 @@ void dfs(int v,int ant){
 
 void HLD(int v){
 	chainInd[v] = degs;
+    base[degs++] = s[v];
 	chainNo[v] = nchain;
-	int mai=-1, ind=-1, maip = -1;
+    if(inichain[nchain] == -1){
+        inichain[nchain] = v;
+    }
+	int mai=-1, ind=-1;
 	for(int a=0;a<adj[v].size();a++){
 		int nxt = adj[v][a];
-		int cus = pes[v][a];
 		if(nxt == pai[v][0]) continue;
 		if(mai < sz[nxt]){
 			mai = sz[nxt];
-			maip = cus;
 			ind = nxt;
 		}
 	}
 	if(mai != -1){
-		if(inichain[nchain] == -1){
-			inichain[nchain] = v;
-		}
-		s[degs++] = maip;
 		HLD(ind);
 	}
-	else{ // eh uma folha
-		if(inichain[nchain] == -1){
-			inichain[nchain] = v;
-		}
-		s[degs++] = 0; //para que todo no tenha uma valor na seg
-	}
-	for(int a =0;a<adj[v].size();a++){
+	for(int a=0;a<adj[v].size();a++){
 		int nxt = adj[v][a];
-		int cus = pes[v][a];
 		if(nxt == pai[v][0] || nxt == ind) continue;
 		nchain++;
 		HLD(nxt);
@@ -63,7 +52,7 @@ void HLD(int v){
 
 void build(int idx,int i,int j){
 	if(i==j){
-		tree[idx] = s[i];
+		tree[idx] = base[i];
 		return;
 	}
 	int m = (i+j)/2;
@@ -82,9 +71,7 @@ int LCA(int i,int j){
 		}
 		i = pai[i][0];
 	}
-
 	if(i==j) return i;
-
 	for(int a=LOGN-1;a>=0;a--){
 		if(pai[i][a] != pai[j][a]){
 			i = pai[i][a];
@@ -94,32 +81,29 @@ int LCA(int i,int j){
 	return pai[i][0];
 }
 
-void qry(int idx,int i,int j,int l, int r){
-	if(i > r || j < l) return ;
+num qry(int idx,int i,int j,int l, int r){
+	if(i > r || j < l) return /* LLONG_MIN */;
 	if(i>=l && j<=r){
-		res = max(res,tree[idx]);
-		return;
+		return tree[idx];
 	}
 	int m = (i+j)/2;
-	qry(idx*2,i,m,l,r);
-	qry(idx*2+1,m+1,j,l,r);
+    return max(qry(idx*2,i,m,l,r), qry(idx*2+1,m+1,j,l,r));
 }
 
-void qryup(int i,int j){
+num qryup(int i,int j){
+    num ans = /* LLONG_MIN; */
 	while(chainNo[i] != chainNo[j]){
 		int j2 = inichain[chainNo[i]];
 		int ii = chainInd[i], jj = chainInd[j2];
-		if(ii!=jj)
-			qry(1,1,degs-1,jj,ii-1);
-		res = max(res, custopai[j2]);
+        ans = max(ans, qry(1,1,degs-1,jj,ii));
 		i = pai[j2][0];
 	}
 	int ii = chainInd[i], jj = chainInd[j];
-	if(ii==jj) return;
-	qry(1,1,degs-1,jj,ii-1);
+	ans = max(ans, qry(1,1,degs-1,jj,ii));
+    return ans;
 }
 
-void upd(int idx,int i, int j, int l, int val){
+void upd(int idx,int i, int j, int l, num val){
 	if(i>l || j<l) return ;
 	if(i == j){
 		tree[idx] = val;
@@ -136,17 +120,14 @@ void reset(){
 	nchain = 0;
 	memset(inichain,-1,sizeof(inichain));
 	memset(tree,0,sizeof(tree));
-	for(int a=0;a<=n;a++){
+	for(int a=0;a<=n;a++)
 		adj[a].clear();
-		pes[a].clear();
-	}
 }
 
 void buildHLD() {
 	// assumindo 1..n
 	h[1] = -1;
 	dfs(1, 1);
-	nchain = 0;
 	HLD(1);
 	build(1,1,degs-1);
 }

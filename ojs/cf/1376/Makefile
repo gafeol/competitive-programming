@@ -1,0 +1,1 @@
+CXXFLAGS= -fopenmp -O2

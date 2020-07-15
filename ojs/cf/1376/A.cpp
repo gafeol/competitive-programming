@@ -17,47 +17,20 @@ const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 #define IOS() ios::sync_with_stdio(0),cin.tie(0)
 
-const int MAXN = 100005, LOGN = 22;
+const int MAXN = 312345;
 
 int n, m, k;
 int s[MAXN];
 
-ll cnt[LOGN];
-int mrk[MAXN];
-vector<int> adj[MAXN];
-
-int getsz(int u, int p){
-    sz[u] = 1;
-    for(int nxt: adj[u]){
-        if(mrk[nxt] || nxt == p) continue;
-        sz[u] += getsz(nxt, u);
-    }
-}
-
-int getc(int u, int p, int tot){
-    for(int nxt: adj[u]){
-        if(mrk[nxt] || nxt == p) continue;
-        if(sz[nxt] > tot/2)
-            return getc(nxt, u, tot);
-    }
-    return u;
-}
-
-void decomp(int u){
-     getsz(u, u);
-     int c = getc(u, u, sz[u]);
-}
-
 int main (){
 	scanf("%d", &n);
-	for(int a=1;a<=n;a++)
+	for(int a=0;a<n;a++){
         scanf("%d", s+a);
-    for(int a=1;a<n;a++){
-        int i, j;
-        scanf("%d%d", &i, &j);
-        adj[i].pb(j);
-        adj[j].pb(i);
+	}
+    sort(s, s+n);
+    for(int a=0;a<n;a++){
+        printf("%d ", s[a]);
     }
-    decomp(1);
+    puts("");
 }
 

@@ -17,47 +17,55 @@ const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 #define IOS() ios::sync_with_stdio(0),cin.tie(0)
 
-const int MAXN = 100005, LOGN = 22;
+const int MAXN = 212345;
 
 int n, m, k;
 int s[MAXN];
-
-ll cnt[LOGN];
-int mrk[MAXN];
+int p[MAXN];
 vector<int> adj[MAXN];
+int h[MAXN];
 
-int getsz(int u, int p){
-    sz[u] = 1;
+vector<int> ans;
+
+void geth(int u){
     for(int nxt: adj[u]){
-        if(mrk[nxt] || nxt == p) continue;
-        sz[u] += getsz(nxt, u);
+        geth(nxt);
+        h[u] = max(h[u], h[nxt]);
     }
+    sort(adj[u].begin(), adj[u].end(), [&](int a, int b){ return h[a] < h[b]; });
+    h[u]++;
 }
 
-int getc(int u, int p, int tot){
+void go(int u){
+    printf("%d ", u);
+    bool pri = true;
+    int lst = -1;
     for(int nxt: adj[u]){
-        if(mrk[nxt] || nxt == p) continue;
-        if(sz[nxt] > tot/2)
-            return getc(nxt, u, tot);
+        go(nxt);
+        if(pri){
+            pri = false;
+        }
+        else{
+            while(h[lst]--){
+                ans.pb(nxt);
+            }
+        }
+        lst = nxt;
     }
-    return u;
-}
-
-void decomp(int u){
-     getsz(u, u);
-     int c = getc(u, u, sz[u]);
 }
 
 int main (){
 	scanf("%d", &n);
-	for(int a=1;a<=n;a++)
-        scanf("%d", s+a);
-    for(int a=1;a<n;a++){
-        int i, j;
-        scanf("%d%d", &i, &j);
-        adj[i].pb(j);
-        adj[j].pb(i);
-    }
-    decomp(1);
+	for(int a=1;a<n;a++){
+        scanf("%d", p+a);
+        adj[p[a]].pb(a);
+	}
+    geth(0);
+    go(0);
+    puts("");
+    printf("%d\n", (int)ans.size());
+    for(int x: ans)
+        printf("%d ", x);
+    puts("");
 }
 
