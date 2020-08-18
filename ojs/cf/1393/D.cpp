@@ -17,48 +17,85 @@ const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 #define IOS() ios::sync_with_stdio(0),cin.tie(0)
 
-const int EPS = 2000;
-const int MAXN = 4003;
+const int MAXN = 2003;
 
 int n, m, k;
-int s[MAXN];
-char ori[MAXN][MAXN];
 char M[MAXN][MAXN];
-int sq[MAXN][MAXN];
+int dp[4][MAXN][MAXN];
 
-pii toNew(pii old){
-    return {old.fst + old.snd+1, EPS + old.fst - old.snd+1};
-}
+int vi[] = {0, -1, 0, 1};
+int vj[] = {-1, 0, 1, 0};
 
-pii toOld(pii n){
-    int x = (n.fst + n.snd - EPS-2)/2;
-    return {x, n.fst - x-1};
+bool valid(int i, int j){
+    return (i >=0 && j >= 0 && i < n && j < m);
 }
 
 int main (){
 	scanf("%d%d", &n, &m);
-	for(int a=0;a<n;a++){
+    for(int a=0;a<n;a++){
         for(int b=0;b<m;b++){
-            scanf(" %c", &ori[a][b]);
-            pii nCord = toNew({a, b});
-            M[nCord.fst][nCord.snd] = ori[a][b];
+            scanf(" %c", &M[a][b]);
         }
-	}
-    ll ans = 0;
-    for(int a=1;a<MAXN;a++){
-        for(int b=1;b<MAXN;b++){
-            if(M[a][b] == 0) continue;
-            sq[a][b] = 1;
-            if(M[a-1][b-1] == M[a][b]){
-                if(a >= 2 && b >= 2 && M[a-2][b] == M[a][b] && M[a][b-2] == M[a][b])
-                    sq[a][b] = 1 + min(sq[a-1][b-1], min(sq[a-2][b], sq[a][b-2])); 
-                else
-                    sq[a][b] = 2;
+    }
+
+    int t = 0;
+    int tt = (t+1)%4;
+    for(int i=0;i<n;i++){
+        for(int j=0;j<m;j++){
+            int i2 = i+vi[t], j2 = j+vj[t];
+            int i3 = i+vi[tt], j3 = j+vj[tt];
+            dp[t][i][j] = 1; 
+            if(valid(i2, j2) && valid(i3, j3) && M[i][j] == M[i2][j2] && M[i][j] == M[i3][j3]){
+                dp[t][i][j] = 1 + min(dp[t][i2][j2], dp[t][i3][j3]);
             }
-            ans += 1 + (sq[a][b]-1)/2;
-            pii oldc = toOld(make_pair(a, b));
-            //printf("(%d %d) %d %d ans %d\n", a, b, oldc.fst, oldc.snd, 1 + (sq[a][b]-1)/2);
-            //printf("sq %d\n", sq[a][b]);
+        }
+    }
+
+    t = 1;
+    tt = (t+1)%4;
+    for(int i=0;i<n;i++){
+        for(int j=m-1;j>=0;j--){
+            int i2 = i+vi[t], j2 = j+vj[t];
+            int i3 = i+vi[tt], j3 = j+vj[tt];
+            dp[t][i][j] = 1; 
+            if(valid(i2, j2) && valid(i3, j3) && M[i][j] == M[i2][j2] && M[i][j] == M[i3][j3]){
+                dp[t][i][j] = 1 + min(dp[t][i2][j2], dp[t][i3][j3]);
+            }
+        }
+    }
+
+    t = 2;
+    tt = (t+1)%4;
+    for(int i=n-1;i>=0;i--){
+        for(int j=m-1;j>=0;j--){
+            int i2 = i+vi[t], j2 = j+vj[t];
+            int i3 = i+vi[tt], j3 = j+vj[tt];
+            dp[t][i][j] = 1; 
+            if(valid(i2, j2) && valid(i3, j3) && M[i][j] == M[i2][j2] && M[i][j] == M[i3][j3]){
+                dp[t][i][j] = 1 + min(dp[t][i2][j2], dp[t][i3][j3]);
+            }
+        }
+    }
+
+    t = 3;
+    tt = (t+1)%4;
+    for(int i=n-1;i>=0;i--){
+        for(int j=0;j<m;j++){
+            int i2 = i+vi[t], j2 = j+vj[t];
+            int i3 = i+vi[tt], j3 = j+vj[tt];
+            dp[t][i][j] = 1; 
+            if(valid(i2, j2) && valid(i3, j3) && M[i][j] == M[i2][j2] && M[i][j] == M[i3][j3]){
+                dp[t][i][j] = 1 + min(dp[t][i2][j2], dp[t][i3][j3]);
+            }
+        }
+    }
+    ll ans = 0;
+    for(int a=0;a<n;a++){
+        for(int b=0;b<m;b++){
+            int res = dp[0][a][b];
+            for(int t=0;t<4;t++)
+                res = min(res, dp[t][a][b]);
+            ans += res;
         }
     }
     printf("%lld\n", ans);
