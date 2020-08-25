@@ -25,7 +25,7 @@ const int MAXN = 512345;
 int n, m, k;
 char s[MAXN];
 
-int dist(pii p, pii pp){
+ll dist(pii p, pii pp){
     if(p.x > pp.x) swap(p, pp);
     printf("dist %d %d to %d %d is ", p.x, p.y, pp.x, pp.y);
     // p.x <= pp.x
@@ -76,34 +76,46 @@ int main (){
         if(pts[7].y > p.y)
             pts[7] = p;
 	}
-    int mxDist = 0;
-    for(int i=0;i<8;i++){
-        for(int j=i+1;j<8;j++){
-           mxDist = max(mxDist, dist(pts[i], pts[j]));
-        }
-    }
-    printf("%d\n", (mxDist+1)/2);
-    int nb, nn;
-    for(int i=0;i<8;i++){
-        for(int j=i+1;j<8;j++){
-            if(dist(pts[i], pts[j]) == mxDist){
-                nb = (pts[i].x + pts[j].x+1)/2;
-                nn = (pts[i].y + pts[j].y+1)/2;
+
+    pii p = inp[0];
+    ll d = 0;
+    for(pii o: pts)
+        d = max(d, dist(p, o));
+    int vx[] = {0, 1, 1, 0, -1, -1};
+    int vy[] = {1, 1, 0, -1, -1, 0};
+    while(1){
+        bool chg = false;
+        pii bst;
+        ll bstD = LLONG_MAX;
+        for(int dir = 0;dir<6;dir++){
+            pii nxt = {p.x + vx[dir], p.y + vy[dir]};
+            ll mxDist = 0;
+            for(pii o: pts)
+                mxDist = max(mxDist, dist(o, nxt));
+            if(mxDist < bstD){
+                bst = nxt;
+                bstD = mxDist; 
             }
         }
+        if(bstD >= d)
+           break; 
+        d = bstD;
+        p = bst;
     }
-    fim:
-    mxDist = 0;
-    printf("nb %d nn %d\n", nb, nn);
+fim:
+    int nb = p.x;
+    int nn = p.y;
+    ll mxDist = 0;
     for(int a=0;a<n;a++){
         mxDist = max(mxDist, dist({nb, nn}, inp[a]));
     }
-    printf("%d\n", mxDist);
+    printf("%lld\n", mxDist);
     while(nb--)
         printf("B");
     while(nn--)
         printf("N");
     puts("");
+    assert(mxDist == d);
     return 0;
 }
 
