@@ -1,3 +1,6 @@
+#pragma comment(linker, "/stack:200000000")
+#pragma GCC optimize("Ofast")
+#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
 #include <bits/stdc++.h>
 using namespace std;
 #define fst first
@@ -18,41 +21,30 @@ inline ll mod(ll x) { return x % modn; }
 #define IOS() ios::sync_with_stdio(0),cin.tie(0)
 
 const int MAXN = 200005;
+const int PRI =  200003;
+
 int n, m, k;
 int s[MAXN], p[MAXN];
-set<pii> in[MAXN];
+ull pot[MAXN];
 
 int raiz(int u){
     if(p[u] == u) return u;
     return p[u] = raiz(p[u]);
 }
 
-void add(set<pii> &q, pii p){
-    pii res = p;
-    auto it = q.lower_bound(p);
-    if(it != q.end() && it->fst == p.snd + 1){
-        res.snd = it->snd;
-        q.erase(it);
-    }
-
-    it = q.lower_bound(p);
-    if(it != q.begin() && (--it)->snd + 1 == p.fst){
-        res.fst = it->fst;
-        q.erase(it);
-    }
-
-    q.insert(res);
-}
+set<pii> in[MAXN];
 
 inline bool join(int i, int j){
-    i = raiz(i);
+i = raiz(i);
     j = raiz(j);
     if(i == j) return false;
     if(in[i].size() < in[j].size())
         swap(i, j);
 
-    for(auto u: in[j]){
-        add(in[i], u);
+    for(int u: in[j]){
+        upd(1, 1, n, u, i);
+        in[i].pb(u);
+        p[u] = i;
     }
     in[j].clear();
     p[j] = i;
@@ -60,26 +52,32 @@ inline bool join(int i, int j){
 }
 
 int main (){
+    pot[0] = 1;
+    for(int a=1;a<MAXN;a++)
+        pot[a] = pot[a-1]*PRI;
 	scanf("%d%d", &n, &m);
     int res = n;
     for(int a=1;a<=n;a++){
         p[a] = a;
-        in[a].clear();
         in[a].insert({a, a});
     }
+    build(1, 1, n);
 	for(int a=0;a<m;a++){
         int i, j;
         scanf("%d%d", &i, &j);
-        while(i < j){
-            //printf("join i %d j %d\n", i, j);
-            res -= join(i, j);
-            int ri = raiz(i);
-            int rj = raiz(j);
-            int k = 1 + min((--in[ri].upper_bound({i, INT_MAX}))->snd  - i,
-                        j - (--in[rj].upper_bound({j, INT_MAX}))->fst);
-            //printf("k = 1 + min(%d - %d, %d - %d)\n", in[ri].lower_bound({i, -1})->snd, i, j, (--in[rj].upper_bound({j, INT_MAX}))->fst);
-            i += k;
-            j -= k;
+        int de = i, ate = (i + j)/2;
+        while(de <= (i+j)/2){
+            res -= join(de, j - (de - i));
+            ate = (i + j)/2;
+            while(de < ate){
+                int mid = (de+ate+1)/2;
+                int k = mid - i;
+                if(qry(1, 1, n, i, i+k).h == qry(1, 1, n, j-k, j).invh)
+                    de = mid;
+                else
+                    ate = mid-1;
+            }
+            de++;
         }
         printf("%d\n", res);
 	}

@@ -23,9 +23,8 @@ const int MAXN = 212345;
 int n, m, k;
 int s, t;
 vector<pil> adj[MAXN];
-ll dp[MAXN][2];
-bool isInf[MAXN][2];
-
+int deg[MAXN];
+ll s[2][MAXN]; 
 
 int main (){
 	scanf("%d%d%d%d", &n, &m, &s, &t);
@@ -33,14 +32,7 @@ int main (){
         int i, j;
         ll c;
         scanf("%d%d%lld", &i, &j, &c);
-        adj[i].pb({j, c});
+        adj[j].pb({i, c});
 	}
-    for(int a=0;a<n;a++){
-        for(int t=0;t<2;t++){
-            dp[a][t] = -1;
-            isInf[a][t] = false;
-        }
-    }
-    go(s, 
 }
 
