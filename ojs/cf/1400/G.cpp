@@ -21,7 +21,6 @@ const int MAXN = 312345;
 
 int n, m, k;
 pii s[MAXN];
-
 ll fat[MAXN], inv[MAXN];
 
 ll expo(ll base, ll e){
@@ -34,81 +33,73 @@ ll expo(ll base, ll e){
     return ans;
 }
 
-int mrk[MAXN], del[MAXN];
-
 ll ch(ll x, ll y){
     return mod(fat[x]*mod(inv[y]*inv[x-y]));
 }
+int ev[MAXN];
 
-ll go(int l, int r){
-    map<int, int> ev;
-    ll res = 0;
-    for(int a=0;a<n;a++){
-        if(mrk[a] || del[a]) continue;
-        ev[s[a].fst]++;
-        ev[s[a].snd+1]--;
-    }
-    int cnt = 0;
-    for(int np=1;np<=n;np++){
-        int bal = ev[np];
-        cnt += bal;
-        if(np >= l && np <= r){
-            // tem que incluir pivo            
-            if(cnt < np) continue;
-            res = mod(res + ch(cnt-1, np-1));
-        }
-    }
-    return res;
-}
+ll chs[MAXN][42];
+ll acc[MAXN][42];
 
-vector<int> adj[MAXN];
 int main (){
 	scanf("%d%d", &n,&m);
     fat[0] = 1;
-    inv[0] = 1;
-    for(ll a=1;a<=n;a++){
+    for(ll a=1;a<=n;a++)
         fat[a] = mod(fat[a-1]*a);
-        inv[a] = expo(fat[a], modn-2);
-    }
+    inv[n] = expo(fat[n], modn-2);
+    for(ll a=n-1;a>=0;a--)
+        inv[a] = mod(inv[a+1]*(a+1));
+    assert(inv[0] == 1);
 	for(int a=0;a<n;a++)
         scanf("%d%d", &s[a].fst, &s[a].snd);
+    vector<pii> ar(m);
     for(int a=0;a<m;a++){
         int i, j;
         scanf("%d%d", &i, &j);
         i--;j--;
-        adj[i].pb(j);
-        adj[j].pb(i);
+        ar[a] = {i, j};
     }
     ll ans = 0;
+    memset(ev, 0, sizeof(ev));
     for(int a=0;a<n;a++){
-        if(adj[a].empty())
-            continue;
-        // sol com a
-        for(int nxt: adj[a]){
-            mrk[nxt] = true;
-        }
-        ans = mod(ans + go(s[a].fst, s[a].snd));
-        for(int nxt: adj[a]){
-            mrk[nxt] = false;
-        }
-        del[a] = true;
-    }
-    map<int, int> ev;
-    for(int a=0;a<=n;a++)
-        ev[a] = 0;
-    for(int a=0;a<n;a++){
-        if(del[a]) continue;
         ev[s[a].fst]++;
         ev[s[a].snd+1]--;
     }
-    int cnt = 0;
+    int p = 0;
     for(int np=1;np<=n;np++){
-        int bal = ev[np];
-        cnt += bal;
-        if(cnt < np) continue;
-        ans = mod(ans + ch(cnt, np));
-        //printf("livres np %d cnt %d ans += %lld\n", np, cnt, ch(cnt, np));
+        p += ev[np];
+        //printf("p %d np %d\n", p, np);
+        for(int k=0;k<=2*m;k++){
+            if(p < np || np - k < 0)
+                chs[np][k] = 0;
+            else
+                chs[np][k] = ch(p-k, np-k);
+            //printf("chs[%d][%d] %lld\n", np, k, chs[np][k]);
+            acc[np][k] = acc[np-1][k] + chs[np][k];
+        }
     }
+
+    for(int bm=0;bm<(1<<m);bm++){
+        int L = 1, R = n;  
+        set<int> v;
+        for(int i=0;i<m;i++){
+            if((bm>>i)&1){
+                int u = ar[i].fst;
+                int uu = ar[i].snd;
+                L = max(L, max(s[u].fst, s[uu].fst));
+                R = min(R, min(s[uu].snd, s[u].snd));
+                v.insert(u);
+                v.insert(uu);
+            }
+        }
+        if(L > R)
+            continue;
+        int sign = (__builtin_popcount(bm)&1 ? -1 : 1);
+        int sz = v.size();
+        //printf("v sz %d L %d R %d ans + %lld (%d * (%lld - %lld))\n", sz, L, R,  sign*(acc[R][sz] - acc[L-1][sz]), sign, acc[R][sz], acc[L-1][sz]);
+        ans = mod(ans + sign*(acc[R][sz] - acc[L-1][sz]));
+    }
+    ans = mod(ans + modn);
     printf("%lld\n", ans);
 }
 
