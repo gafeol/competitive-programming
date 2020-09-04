@@ -1,0 +1,57 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define fst first
+#define snd second
+typedef unsigned long long ull;
+typedef long long ll;
+typedef pair<int, int> pii;
+#define pb push_back
+#define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
+#ifndef ONLINE_JUDGE
+#define debug(args...) fprintf(stderr,args)
+#else
+#define debug(args...)
+#endif //ONLINE_JUDGE
+template<typename T> inline T abs(T t) { return t < 0? -t : t; }
+const ll modn = 1000000007;
+inline ll mod(ll x) { return x % modn; }
+#define IOS() ios::sync_with_stdio(0),cin.tie(0)
+
+const int MAXN = 212345;
+
+ll n, m, k, e;
+int x[MAXN], y[MAXN];
+int i[MAXN];
+ll w[MAXN];
+
+int main (){
+    for_tests(t, tt){
+        ll A, B, C;
+        scanf("%lld%lld%lld%lld", &n, &m, &e, &k);
+        for(int a=0;a<k;a++)
+            scanf("%d", x+a);
+        scanf("%lld%lld%lld", &A, &B, &C);
+        for(int a=k;a<n;a++)
+            x[a] = (x[a-2]*A + x[a-1]*B  + C)%m;
+
+        for(int a=0;a<k;a++)
+            scanf("%d", y+a);
+        scanf("%lld%lld%lld", &A, &B, &C);
+        for(int a=k;a<n;a++)
+            y[a] = (y[a-2]*A + y[a-1]*B + C)%m;
+
+        for(int a=0;a<k;a++)
+            scanf("%d", i+a);
+        scanf("%lld%lld%lld", &A, &B, &C);
+        for(int a=k;a<n;a++)
+            i[a] = (i[a-2]*A + i[a-1]*B + C)%(n*m + n);
+
+        for(int a=0;a<k;a++)
+            scanf("%lld", w+a);
+        scanf("%lld%lld%lld", &A, &B, &C);
+        for(int a=k;a<n;a++)
+            w[a] = (w[a-2]*A + w[a-1]*B + C)%((ll)1e9);
+
+    }
+}
+

@@ -9,6 +9,7 @@ struct Vertex {
     char pch;
     int link = -1; // Calculado de forma lazy, tem que chamar get_link pra calcular
     int go[K]; // arestas reais + do automato
+    int endLink = -1; // direto pro link que eh leaf mais proximo ou zero
 
     Vertex(int p=-1, char ch='$') : p(p), pch(ch) {
         fill(begin(next), end(next), -1);
@@ -34,13 +35,18 @@ void add_string(string const& s) {
 
 int go(int v, char ch);
 
+// So chamar depois que todas strings estiverem na trie
 int get_link(int v) {
     if (t[v].link == -1) {
-        if (v == 0 || t[v].p == 0)
+        if (v == 0 || t[v].p == 0){
             t[v].link = 0;
+            t[v].endLink = 0;
+        }
         else{
             t[v].link = go(get_link(t[v].p), t[v].pch);
+            get_link(t[v].link); // tem que chamar pra calcular o cntLeaf de la tambem antes
             t[v].cntLeaf += t[t[v].link].cntLeaf;
+            t[v].endLink = (t[t[v].link].leaf ? t[v].link : t[t[v].link].endLink);
         }
     }
     return t[v].link;

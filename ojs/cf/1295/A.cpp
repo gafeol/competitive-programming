@@ -23,11 +23,17 @@ int n, m, k;
 int s[MAXN];
 
 int main (){
-    ll n;
-    char a;
-    char acsalksjlkjasl;
-	scanf("%d", &n);
-	for(int a=0;a<n;a++){
-	}
+    for_tests(t, tt){
+        scanf("%d", &n);
+        if(n&1){
+            printf("7");
+            n -= 3;
+        }
+        while(n){
+            printf("1");
+            n -= 2;
+        }
+        puts("");
+    }
 }
 

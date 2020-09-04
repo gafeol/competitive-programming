@@ -21,10 +21,8 @@ const int MAXN = 312345;
 
 int n, m, k;
 
-int to[MAXN];
 int q[MAXN];
-
-int dp[MAXN][2];
+int dp[MAXN][3];
 
 int S;
 
@@ -34,44 +32,15 @@ int getind(int x){
     else
         return x - (n-S)+1;
 }
-vector<int> adj[MAXN];
 
-int go(int i, int usd){
-    if(i == n) return 0;
-    int &r = dp[i][usd];    
-    if(r != -1) return r;
-    r = go(to[i]+1, usd) + 1;
-    if(!usd){
-        if(adj[i].size() > 0)
-            r = max(r, go(to[i]+1, 1) + (int)adj[adj[i][0]].size() + 2);
-        r = max(r, (int)adj[i].size() + (i == 0 && to[i] == n-1));
-    }
-    return r;
+int go(int i, int t){
+    int &r = dp[i][t];
+    if(r != -1)
+        return r;
+    if(i == n) 
+        r = 0;
+    
 }
-void re(int i, int usd){
-    //printf("Re %d %d\n", i, usd);
-    if(i == n) {
-        //printf("1 1\n");
-        return ;
-    }
-    int r = go(i, usd);    
-    //printf("Valor r %d\n",r);
-    if(r == go(to[i]+1, usd)+1){
-        //puts("entra aqiu");
-        return re(to[i]+1, usd);
-    }
-    if(!usd){
-        if(adj[i].size() > 0 && r == go(to[i]+1, 1) + (int)adj[adj[i][0]].size() + 2){
-            int u = adj[i][0];
-            //puts("entra aqiu 2");
-            printf("%d %d\n", getind(u), getind(to[u]));
-            return ;
-        }
-        printf("%d %d\n", getind(i), getind(to[i]));
-        return ;
-    }
-}
-
 
 int main (){
 	scanf("%d", &n);
@@ -100,28 +69,11 @@ int main (){
             puts("0\n1 1");
             return 0;
         }
+        q[a] = cnt;
     }
     if(cnt > 0){
         puts("0\n1 1");
         return 0;
-    }
-    cnt = 0;
-    map<int, int> freq;
-    for(int i=0;i<s.size();i++){
-        char c = s[i];
-        cnt += (c == '(' ? 1 : -1);
-        if(c == ')'){
-            to[freq[cnt+1]] = i;
-        }
-        else{
-            if(cnt > 1)
-                adj[freq[cnt-1]].pb(i);
-            freq[cnt] = i;
-        }
-    }
-
-    for(int i=0;i<n;i++){
-        sort(adj[i].begin(), adj[i].end(), [&](int a, int b) { return adj[a].size() > adj[b].size();});
     }
     memset(dp, -1, sizeof(dp));
     int ans = go(0, 0);
