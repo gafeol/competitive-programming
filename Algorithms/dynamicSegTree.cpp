@@ -57,3 +57,10 @@ void init(int n){
     }
 }
 
+void clean(arv* u){
+    if(u == NULL) return;
+    clean(u->L);
+    clean(u->R);
+    free(u);
+}
+

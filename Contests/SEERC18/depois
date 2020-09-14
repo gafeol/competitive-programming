@@ -1,0 +1,271 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define fst first
+#define snd second
+typedef unsigned long long ull;
+typedef long long ll;
+typedef pair<int, int> pii;
+#define pb push_back
+#define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
+#ifndef ONLINE_JUDGE
+#define debug(args...) fprintf(stderr,args)
+#else
+#define debug(args...)
+#endif //ONLINE_JUDGE
+template<typename T> inline T abs(T t) { return t < 0? -t : t; }
+const ll modn = 1000000007;
+inline ll mod(ll x) { return x % modn; }
+#define IOS() ios::sync_with_stdio(0),cin.tie(0)
+
+const int MAXX = 2e5 + 10;
+vector<int> X, Y;
+int szx, szy;
+
+struct arv{
+    int nr, np;
+    arv *L, *R;
+    arv() : nr(0), np(0), L(NULL), R(NULL) {}
+    arv* left() { // create if unexistent
+        if(L == NULL){
+            L = new arv();
+        }
+        return L;
+    }
+    arv* right() { // create if unexistent
+        if(R == NULL)
+            R = new arv();
+        return R;
+    }
+};
+
+struct arv2{
+    arv *sub;
+    arv2 *L, *R;
+    arv2() : sub(NULL), L(NULL), R(NULL) {}
+    arv2* left() { // create if unexistent
+        if(L == NULL){
+            L = new arv2();
+        }
+        return L;
+    }
+    arv2* right() { // create if unexistent
+        if(R == NULL)
+            R = new arv2();
+        return R;
+    }
+
+    arv* down() {
+        if(sub == NULL)
+            sub = new arv();
+        return sub;
+    }
+};
+
+arv2* root;
+
+int val(arv *u){
+    if(u == NULL)
+        return 0;
+    return u->np;
+}
+
+void updP(arv* u, int i, int j, int& y){
+    if(i == j){
+        u->np++;
+        return ;
+    }
+    int m = (i + j)/2;
+    if(y <= m)
+        updP(u->left(), i, m, y);
+    else
+        updP(u->right(), m+1, j, y);
+    u->np = val(u->L) + val(u->R);
+}
+
+void upd2P(arv2* u, int i, int j, int& x, int& y){
+    updP(u->down(), 0, szy-1, y);
+    if(i == j)
+        return ;
+    int m = (i + j)/2;
+    if(x <= m)
+        upd2P(u->left(), i, m, x, y);
+    else
+        upd2P(u->right(), m+1, j, x, y);
+}
+
+int qryP(arv *u, int i, int j, int& y, int& yy){
+    if(i > yy || j < y || u == NULL || !u->np)
+        return 0;
+    if(i >= y && j <= yy)
+        return u->np;
+    int m = (i + j)/2;
+    return qryP(u->L, i, m, y, yy) +
+            qryP(u->R, m+1, j, y, yy);
+}
+
+int qry2P(arv2* u, int i, int j, int& x, int& xx, int& y, int& yy){
+    if(i > xx || j < x || u == NULL)
+        return 0;
+    if(i >= x && j <= xx){
+        return qryP(u->sub, 0, szy-1, y, yy);
+    }
+    int m = (i + j)/2;
+    return qry2P(u->L, i, m, x, xx, y, yy) + 
+            qry2P(u->R, m+1, j, x, xx, y, yy);
+}
+
+void updR(arv* u, int i, int j, int& y, int& yy){
+    if(i > yy || j < y) return;    
+    if(i >= y && j <= yy){
+        u->nr++;
+        return ;
+    }
+    int m = (i + j)/2;
+    if(m < y)
+        updR(u->right(), m+1, j, y, yy);
+    else if(m+1 > yy)
+        updR(u->left(), i, m, y, yy);
+    else{
+        updR(u->right(), m+1, j, y, yy);
+        updR(u->left(), i, m, y, yy);
+    }
+}
+
+void upd2R(arv2* u, int i, int j, int& x, int& xx, int& y, int& yy){
+    if(i > xx || j < x) return;    
+    if(i >= x && j <= xx){
+        updR(u->down(), 0, szy-1, y, yy);
+        return ;
+    }
+    int m = (i + j)/2;
+    upd2R(u->left(), i, m, x, xx, y, yy);
+    upd2R(u->right(), m+1, j, x, xx, y, yy);
+}
+
+int qryR(arv *u, int i, int j, int& y){
+    if(i > y || j < y || u == NULL)
+        return 0;
+    if(i == j)
+        return u->nr;
+    int m = (i + j)/2;
+    return u->nr + 
+            qryR(u->L, i, m, y) +
+            qryR(u->R, m+1, j, y);
+}
+
+int qry2R(arv2* u, int i, int j, int& x, int& y){
+    if(i > x || j < x || u == NULL)
+        return 0;
+    int ans = qryR(u->sub, 0, szy-1, y);
+    if(i == j)
+        return ans;
+    int m = (i + j)/2;
+    return ans + qry2R(u->L, i, m, x, y) + 
+            qry2R(u->R, m+1, j, x, y);
+}
+
+inline void clean(arv* u){
+    if(u == NULL) return;
+    clean(u->L);
+    clean(u->R);
+    free(u);
+}
+
+inline void clean(arv2* u){
+    if(u == NULL) return;
+    clean(u->sub);
+    clean(u->L);
+    clean(u->R);
+    free(u);
+}
+
+inline void init(){
+    root = new arv2();
+}
+
+inline int id(vector<int> &v, int &val){
+    return lower_bound(v.begin(), v.end(), val) - v.begin();
+}
+
+vector<int> q[MAXX];
+
+int n, m, k;
+int main (){
+    init();
+	scanf("%d", &n);
+    X.clear();
+    Y.clear();
+    X.pb(0); X.pb(INT_MAX);
+    Y.pb(0); Y.pb(INT_MAX);
+	for(int a=0;a<n;a++){
+        int t;
+        scanf("%d", &t);
+        int x, y, xx, yy;
+        scanf("%d%d", &x, &y);
+        X.pb(x);
+        Y.pb(y);
+        if(t == 1){
+            q[a] = {t, x, y};
+        }
+        else{
+            scanf("%d%d", &xx, &yy);
+            q[a] = {t, x, y, xx, yy};
+            X.pb(xx);
+            Y.pb(yy);
+        }
+	}
+    sort(X.begin(), X.end());
+    X.erase(unique(X.begin(), X.end()), X.end());
+    sort(Y.begin(), Y.end());
+    Y.erase(unique(Y.begin(), Y.end()), Y.end());
+    szx = X.size();
+    szy = Y.size();
+    vector<ll> ans(n);
+    for(int a=0;a<n;a++){
+        int t = q[a][0];
+        q[a][1] = id(X, q[a][1]);
+        q[a][2] = id(Y, q[a][2]);
+        if(t == 2){
+            q[a][3] = id(X, q[a][3]);
+            q[a][4] = id(X, q[a][4]);
+        }
+    }
+    X.clear();
+    Y.clear();
+    for(int a=0;a<n;a++){
+        int t = q[a][0];
+        int x = q[a][1];
+        int y = q[a][2];
+        if(t == 1){
+           // upd2P(root, 0, szx-1, x, y);
+            ans[a] = qry2R(root, 0, szx-1, x, y);
+        }
+        else{
+            int xx = q[a][3];
+            int yy = q[a][4];
+            upd2R(root, 0, szx-1, x, xx, y, yy);
+            //ans += qry2P(root, 0, szx-1, x, xx, y, yy);
+        }
+    }
+    clean(root);
+    init();
+    for(int a=0;a<n;a++){
+        int &t = q[a][0];
+        int &x = q[a][1];
+        int &y = q[a][2];
+        if(t == 1){
+            upd2P(root, 0, szx-1, x, y);
+            //ans += qry2R(root, 0, szx-1, x, y);
+        }
+        else{
+            int &xx = q[a][3];
+            int &yy = q[a][4];
+            //upd2R(root, 0, szx-1, x, xx, y, yy);
+            ans[a] = qry2P(root, 0, szx-1, x, xx, y, yy);
+        }
+        q[a].clear();
+        ans[a] += (a > 0 ? ans[a-1] : 0);
+        printf("%lld\n", ans[a]);
+    }
+}
+
