@@ -14,6 +14,7 @@ const int MAXN = 11234;
 int n, m, k;
 int nxt[MAXN], bef[MAXN];
 vector<int> b[MAXN];
+int freq[MAXN];
 
 inline void enqueue(int i, queue<int> &q){
     //printf("enque %d\n", i);
@@ -29,6 +30,7 @@ int main (){
             nxt[a] = a+1;
             bef[a] = a-1;
             b[a].clear();
+            freq[a] = 0;
         }
         bef[1] = nxt[n] = 0;
         nxt[0] = 1;
@@ -44,19 +46,19 @@ int main (){
         int ans = -1;
         while(!q.empty()){
             int u = q.front();
-            sort(b[u].begin(), b[u].end());
-            b[u].pb(INT_MAX);
-            //printf("u %d\n", u);
+            for(int i=0;i<b[u].size();i++)
+                freq[b[u][i]]++;
             q.pop();
             ans++;
             int ns = nxt[0];
             int ini = 0;
             while(ns != 0){
-                ini = lower_bound(b[u].begin() , b[u].end(), ns) - b[u].begin();
-                if(b[u][ini] > ns)
+                if(!freq[ns])
                     enqueue(ns, q);
                 ns = nxt[ns];
             }
+            for(int i=0;i<b[u].size();i++)
+                freq[b[u][i]]--;
         }
         printf("Case %d: %d\n", tt++, ans);
     }
