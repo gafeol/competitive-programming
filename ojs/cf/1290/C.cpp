@@ -32,6 +32,7 @@ int ans;
 vector<int> vis;
 
 void go(int u, int t){
+    if(!ok) return;
     if(state[u] != -1){
         if(state[u] != t)
             ok = false;
@@ -39,9 +40,21 @@ void go(int u, int t){
     }
 
     state[u] = t;
+    ans += t;
     vis.pb(u);
-
-    
+    for(int i: bt[u]){
+        bool exp = (s[a]^t);
+        int cnt = 0;
+        assert(over[i].size() <= 2);
+        if(over[i].size() == 1 && s[i] == t){
+            ok = false;
+            return ;
+        }
+        for(int ot: over[i]){
+            if(ot == u) continue;
+            go(ot, exp);
+        }
+    }
 }
 
 int main (){
