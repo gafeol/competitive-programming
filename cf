@@ -5,4 +5,4 @@ mkdir "$cf_path/bits"
 cp "stdc++.h" "$cf_path/bits"
 cp Makefile $cf_path
 cd $cf_path
-g++ -std=c++11 bits/stdc++.h
+g++ -std=c++17 bits/stdc++.h
