@@ -1,3 +1,5 @@
+# Precompiled bits
+bits/
 # Mac ugly stuff
 *.DS_Store
 
