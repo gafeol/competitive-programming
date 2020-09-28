@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+cf_path="ojs/cf/$1" 
+mkdir "$cf_path/bits"
+cp "stdc++.h" "$cf_path/bits"
+cp Makefile $cf_path
+cd $cf_path
+g++ -std=c++11 bits/stdc++.h
