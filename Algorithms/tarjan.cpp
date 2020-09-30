@@ -38,6 +38,7 @@ int tarjan(int u){
 
 void scc(){
 	// nodes 0..n-1
+    visc = 0;
 	for(int a=0;a<n;a++)
 		if(!vis[a])
 			tarjan(a);
