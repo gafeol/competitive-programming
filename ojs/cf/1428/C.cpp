@@ -20,11 +20,21 @@ inline ll mod(ll x) { return x % modn; }
 const int MAXN = 212345;
 
 int n, m, k;
-int s[MAXN];
+char s[MAXN];
 
 int main (){
-	scanf("%d", &n);
-	for(int a=0;a<n;a++){
-	}
-    return 0;
+    for_tests(t, tt){
+        scanf(" %s", s);
+        n = strlen(s);
+        stack<char> q;
+        for(int i=0;i<n;i++){
+            if(!q.empty() && s[i] == 'B'){
+                q.pop(); 
+                continue;
+            }
+            q.push(s[i]);
+        }
+        printf("%d\n", (int)q.size());
+    }
 }
+

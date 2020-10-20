@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+path="$1" 
+mkdir $path
+mkdir "$path/bits"
+cp "stdc++.h" "$path/bits"
+cp Makefile $path
+cd $path
+g++ -std=c++17 bits/stdc++.h

@@ -23,8 +23,27 @@ int n, m, k;
 int s[MAXN];
 
 int main (){
-	scanf("%d", &n);
-	for(int a=0;a<n;a++){
-	}
-    return 0;
+    for_tests(t, tt){
+        int ans[3];
+        memset(ans, 0, sizeof(ans));
+        scanf("%d", &n);
+        if(n%3 == 2){
+            if(n == 2){
+                puts("-1");
+                continue;
+            }
+            n -= 5;
+            ans[1]++;
+        }
+        if(n%3 == 1){
+            if(n < 7){
+                puts("-1");
+                continue;
+            }
+            n -= 7;
+            ans[2]++;
+        }
+        printf("%d %d %d\n", n/3, ans[1], ans[2]);
+    }
 }
+

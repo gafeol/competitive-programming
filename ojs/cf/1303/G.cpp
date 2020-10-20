@@ -26,5 +26,5 @@ int main (){
 	scanf("%d", &n);
 	for(int a=0;a<n;a++){
 	}
-    return 0;
 }
+

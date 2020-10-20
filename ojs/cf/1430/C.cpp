@@ -23,8 +23,18 @@ int n, m, k;
 int s[MAXN];
 
 int main (){
-	scanf("%d", &n);
-	for(int a=0;a<n;a++){
-	}
-    return 0;
+    for_tests(t, tt){
+        scanf("%d", &n);
+        int ans = n;
+        vector<pii> res;
+        for(int i=n-1;i>=1;i--){
+            res.pb({i, ans});
+            ans = (ans + i + 1)/2;
+        }
+        printf("%d\n", ans);
+        for(int i=0;i<res.size();i++){
+            printf("%d %d\n", res[i].fst, res[i].snd);
+        }
+    }
 }
+

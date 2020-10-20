@@ -17,14 +17,40 @@ const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
 #define IOS() ios::sync_with_stdio(0),cin.tie(0)
 
-const int MAXN = 212345;
+const int MAXN = 312345;
 
 int n, m, k;
 int s[MAXN];
 
-int main (){
-	scanf("%d", &n);
-	for(int a=0;a<n;a++){
-	}
-    return 0;
+bool go(int k){
+    int ult = 0;
+    for(int a=0;a<n;a++){
+        if(s[a] <= ult){
+            if(ult - s[a] > k)
+                return false;
+        }
+        else{
+            if(ult + m - s[a] > k){
+                ult = s[a];
+            }
+        }
+    }
+    return true;
 }
+
+int main (){
+	scanf("%d%d", &n, &m);
+	for(int a=0;a<n;a++){
+        scanf("%d", s+a);
+	}
+    int i =0, j = m+1;
+    while(i < j){
+        int mid = (i+j)/2;
+        if(go(mid))
+            j = mid;
+        else
+            i = mid+1;
+    }
+    printf("%d\n", i);
+}
+

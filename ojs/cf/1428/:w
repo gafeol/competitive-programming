@@ -21,10 +21,27 @@ const int MAXN = 212345;
 
 int n, m, k;
 int s[MAXN];
+int ok[MAXN];
+
+
 
 int main (){
-	scanf("%d", &n);
-	for(int a=0;a<n;a++){
-	}
-    return 0;
+    for_tests(t, tt){
+        scanf("%d", &n);
+        for(int a=0;a<n;a++){
+            char c;
+            scanf(" %c", &c);
+            if(c == '-' || c == '<'){
+
+            }
+            if(c == '-' || c == '>'){
+
+            }
+            if(c == '-'){
+                ok[a] = 1;
+                ok[(a+1)%n] = 1;
+            }
+        }
+    }
 }
+

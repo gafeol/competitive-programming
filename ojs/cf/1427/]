@@ -21,10 +21,46 @@ const int MAXN = 212345;
 
 int n, m, k;
 int s[MAXN];
+bool inv;
+
+
+void make_swp(vector<int> &swp){
+
+    vector<vector<int>> aux;
+    int i = 0;
+    for(int a=0;a<swp.size();a++){
+        int q = swp[a];
+        vector<int> ele;
+        while(q--){
+            ele.pb(s[i]);
+            i++;
+        }
+        aux.push(ele);
+        
+    }
+
+}
+
+void put(int x){
+    // se inv false entao seq eh ....... x+1 x+2 x+3 ... n
+    //    quero transf em n, n-1, ...., x+1, x, ........
+    if(inv == false){
+        vector<int> swp;
+
+
+        inv = true;
+    }
+}
 
 int main (){
+    inv = false;
 	scanf("%d", &n);
 	for(int a=0;a<n;a++){
+        scanf("%d", s+a);
 	}
-    return 0;
+
+    for(int v=n;v>=1;v--){
+        put(v);
+    }
 }
+

@@ -20,11 +20,23 @@ inline ll mod(ll x) { return x % modn; }
 const int MAXN = 212345;
 
 int n, m, k;
-int s[MAXN];
+ll s[MAXN];
 
 int main (){
-	scanf("%d", &n);
-	for(int a=0;a<n;a++){
-	}
-    return 0;
+    for_tests(t, tt){
+        scanf("%d%d", &n, &k);
+        for(int a=0;a<n;a++){
+            scanf("%lld", s+a);
+        }
+        sort(s, s+n, greater<ll>());
+        ll sum = 0;
+        for(int i=0;i<=k && i < n;i++){
+           sum += s[i]; 
+           if(i > 0)
+               s[i] = 0;
+        }
+        ll mn = *min_element(s, s+n);
+        printf("%lld\n", sum - mn);
+    }
 }
+

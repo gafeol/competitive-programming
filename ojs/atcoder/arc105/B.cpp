@@ -20,11 +20,20 @@ inline ll mod(ll x) { return x % modn; }
 const int MAXN = 212345;
 
 int n, m, k;
-int s[MAXN];
+ll s[MAXN];
+
+ll gcd(ll a, ll b){
+    if(a == 0) return b;
+    return gcd(b%a, a);
+}
 
 int main (){
 	scanf("%d", &n);
+    ll gc = 0;
 	for(int a=0;a<n;a++){
+        scanf("%lld", s+a);
+        gc = gcd(gc, s[a]);
 	}
-    return 0;
+    printf("%lld\n", gc);
 }
+

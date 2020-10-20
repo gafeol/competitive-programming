@@ -23,8 +23,15 @@ int n, m, k;
 int s[MAXN];
 
 int main (){
-	scanf("%d", &n);
-	for(int a=0;a<n;a++){
-	}
-    return 0;
+    for_tests(t, tt){
+        ll x, xx, y, yy;
+        scanf("%lld%lld%lld%lld", &x, &y, &xx, &yy);
+        ll ans = 0;
+        ans = abs(x - xx) + abs(y - yy); 
+        if(x != xx && y != yy){
+            ans += 2;
+        }
+        printf("%lld\n", ans);
+    }
 }
+
