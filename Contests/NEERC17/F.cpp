@@ -1,10 +1,11 @@
-#include <bits/stdc++.h>
+#include "bits/stdc++.h"
 using namespace std;
 #define fst first
 #define snd second
 typedef unsigned long long ull;
 typedef long long ll;
 typedef pair<int, int> pii;
+#define eb emplace_back
 #define pb push_back
 #define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
 #ifndef ONLINE_JUDGE
@@ -15,76 +16,105 @@ typedef pair<int, int> pii;
 template<typename T> inline T abs(T t) { return t < 0? -t : t; }
 const ll modn = 1000000007;
 inline ll mod(ll x) { return x % modn; }
+#define IOS() ios::sync_with_stdio(0),cin.tie(0)
 
 const int MAXN = 212345;
 
 int n, m, k;
-int s[MAXN], lst[MAXN], ini;
+int s[MAXN];
 
-int pos(int i, int v, int l){
-	int ans = 0;
-	for(int a=1;a<=n;a++){
-		if(a == i) continue;
-		if(s[a] > v || (s[a] == v && lst[a] < l)) ans++;
-	}
-	return ans+1;
+vector<tuple<int, int, int, int>> ans;
+int sx, sy;
+//////        |
+//////    -----     
+//////    |
+
+//         VERTICALLLL  HORIZONTALLLL
+void add(int x, int y, int xx, int yy){
+    //printf("add %d %d %d %d\n",x, y, xx, yy);
+    x *= sx;
+    xx *= sx;
+
+    y *= sy;
+    yy *= sy;
+    ans.eb(x, y, xx, yy);
 }
 
-bool cmp(int a, int b){
-	return (s[a] > s[b] || (s[a] == s[b] && lst[a] < lst[b]));
+void add(int x, int y){
+    return add(x, y, x+k, y+k);
 }
 
-int ind[MAXN];
+/*
+ *     |
+ *   --. 
+ */
+
+void add2(int x, int y){
+    return add(x+k, y+k, x, y);
+}
 
 int main (){
-	scanf("%d%d%d%d", &n, &k, &m, &ini);
-	if(n == 1){
-		puts("1");
-		return 0;
-	}
-	for(int a=0;a<ini;a++){
-		int x;
-		scanf("%d", &x);
-		s[x]++;
-		lst[x] = a+1;
-	}
-	for(int a=1;a<=n;a++)
-		ind[a-1] = a;
-	sort(ind, ind+n, cmp);
-	for(int a=1;a<=n;a++){
-		int bst = pos(a, s[a] + m - ini, ((m - ini == 0) ? lst[a]:m+1));	
-		if(bst > k || s[a] + m - ini == 0){
-			printf("3 ");
-			continue;
-		}
-		int soma = (s[a] == 0);
-		int cnt = m - ini - (s[a] == 0);
-		s[a] += soma;
-		int save = lst[a];
-		if(soma) lst[a] = m+1;
-		int posi = 1;
-		for(int jj=0;jj<n;jj++){
-			int j = ind[jj];
-			if(j == a) continue;
-			if(cmp(j, a)) posi++;
-			else{
-				debug("compara %d com o cara %d\n", a, j);
-				cnt -= s[a] - s[j] + 1;
-				if(cnt >=0)
-					posi++;
+    for_tests(t,tt){
+        ans.clear();
+        scanf("%d%d%d", &n, &m, &k);
+        k--;
+        sx = sy = 1;
+        if(n < 0){
+            n *= -1;
+            sx = -1;
+        }
+        if(m < 0){
+            m *= -1;
+            sy = -1;
+        }
 
-			}
-		}
-		if(soma){
-			s[a] -= soma;
-			lst[a] = save;
-		}
-		debug("cara %d posi %d\n", a, posi);
-		if(posi <= k && s[a] != 0)
-			printf("1 ");
-		else
-			printf("2 ");
-	}
-	puts("");
+        int x = 0, y = 0;
+
+        int lstMove = -1;
+        while(max(abs(x - n), abs(y - m)) > k){
+            // x e y posicao livre
+            //printf("X %d y %d\n", x, y);
+            if(abs(x - n) <= k){ // sobe
+                add(x, y);
+                y += k + 1;
+                lstMove = 0;
+            }
+            else if(abs(y - m) <= k){ // direita
+                add2(x, y);
+                x += k + 1;
+                lstMove = 1;
+            }
+            else{
+                add(x, y);
+                x += k; y += k;
+                if(abs(x - n) > abs(y - m)){
+                    x++;
+                    lstMove = 1;
+                }
+                else{
+                    y++;
+                    lstMove = 0;
+                }
+            }
+        }
+        assert(x <= n && y <= m);
+        // se lstMove eh -1 ta tudo liberado
+        //printf("lstmove %d\n", lstMove);
+        if(lstMove != 1){
+            // essa linha y ta livre
+            int difX = n - x;
+            add2(x - (k - difX), y);
+        }
+        else if(lstMove != 0){
+            // essa coluna x ta livre
+            int difY = m - y;
+            add(x, y-(k - difY));
+        }
+        printf("%d\n", (int)ans.size());
+        for(auto [x, y, xx, yy]: ans){
+            printf("%d %d %d %d\n", x, y, xx, yy);
+        }
+    }
+    return 0;
 }
 
