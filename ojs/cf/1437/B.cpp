@@ -21,11 +21,36 @@ inline ll mod(ll x) { return x % modn; }
 const int MAXN = 212345;
 
 int n, m, k;
-int s[MAXN];
+char s[MAXN];
 
 int main (){
-	scanf("%d", &n);
-	for(int a=0;a<n;a++){
-	}
+    for_tests(t, tt){
+        scanf("%d", &n);
+        scanf(" %s", s);
+        int res = 0;
+        int ans = 0;
+        int lstW = -2;
+        for(int a=0;a<n;a++){
+            int w = (a&1);
+            if(w != s[a]-'0'){
+                ans += (lstW < a-1);
+                lstW = a;
+            }
+        }
+        res = ans;
+        ans = 0;
+        lstW = -2;
+        for(int a=0;a<n;a++){
+            int w = !(a&1);
+            if(w != s[a]-'0'){
+                ans += (lstW < a-1);
+                lstW = a;
+            }
+        }
+        res = min(res, ans);
+
+        printf("%d\n", res);
+    }
     return 0;
 }
+

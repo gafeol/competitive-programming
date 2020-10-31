@@ -24,8 +24,28 @@ int n, m, k;
 int s[MAXN];
 
 int main (){
-	scanf("%d", &n);
-	for(int a=0;a<n;a++){
-	}
+    for_tests(t, tt){
+        queue<int> q;
+        int ans = 1;
+        scanf("%d", &n);
+        q.push(0);
+        for(int a=0;a<n;a++){
+            scanf("%d", s+a);
+        }
+        for(int a=1;a<n;a++){
+            int h = q.front();
+            q.pop();
+            q.push(h+1);
+            ans = h+1;
+            int b = a+1;
+            while(b < n && s[b] > s[b-1]){
+                q.push(h+1);
+                b++;
+            }
+            a = b-1;
+        }
+        printf("%d\n", ans);
+    }
     return 0;
 }
+

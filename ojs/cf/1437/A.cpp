@@ -26,6 +26,14 @@ int s[MAXN];
 int main (){
 	scanf("%d", &n);
 	for(int a=0;a<n;a++){
+        ll l, r;
+        scanf("%lld%lld", &l, &r);
+        if(l >= (r+1+1)/2)
+            puts("YES");
+        else
+            puts("NO");
+
 	}
     return 0;
 }
+
