@@ -2,6 +2,9 @@ import java.io.*
 import java.util.*
 import java.math.*
 
+// StringBuilder para usar string com append
+// TLE? Melhor printar resposta inteira no fim do que printar aos poucos
+
 fun main() {
     val t = readLine()!!.toInt()
     for(tt in 1..t){
