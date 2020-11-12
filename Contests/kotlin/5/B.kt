@@ -1,12 +1,30 @@
 import java.io.*
 import java.util.*
-import kotlin.math.*
+import java.math.*
 
 fun main() {
     val t = readLine()!!.toInt()
     for(tt in 1..t){
-        var n = readLine()!!.toInt() 
-        var s :MutableList<Int> = mutableListOf(*readLine()!!.split(' ').map{it.toInt()}.toTypedArray())
+        var s :String = readLine()!!
+
+        var ok: Boolean = false
+        var lstC = 'w'
+        var ans = 0
+        for(c in s){
+            if(c == 'w')
+                ans = ans+1
+            else{
+                if(lstC != 'v' || ok == true){
+                    ok = false
+                }
+                else{
+                    ans = ans + 1
+                    ok = true
+                }
+            }
+            lstC = c;
+        }
+        println(ans); 
     }
 }
 
@@ -17,4 +35,5 @@ fun main() {
 //  - size
 //  - add (no fim) / addLast / addFirst
 //  - removeFirst (removeFirstOrNull) / removeLast (removeLastOrNull)
+
 
