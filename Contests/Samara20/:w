@@ -1,0 +1,123 @@
+#include "bits/stdc++.h"
+using namespace std;
+#define fst first
+#define snd second
+typedef unsigned long long ull;
+typedef long long ll;
+typedef pair<int, int> pii;
+#define eb emplace_back
+#define pb push_back
+#define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
+#ifndef ONLINE_JUDGE
+#define debug(args...) fprintf(stderr,args)
+#else
+#define debug(args...)
+#endif //ONLINE_JUDGE
+template<typename T> inline T abs(T t) { return t < 0? -t : t; }
+const ll modn = 1000000007;
+inline ll mod(ll x) { return x % modn; }
+#define IOS() ios::sync_with_stdio(0),cin.tie(0)
+
+const int MAXN = 212345;
+
+#define M ((ini+fim)/2)
+
+struct node1d{
+    int val;
+    node1d *esq, *dir;
+    node1d(){ val=0; esq=dir=NULL; }
+};
+
+struct node2d{
+    node1d *tree;
+    node2d *esq, *dir;
+    node2d(){ tree=new node1d; esq=dir=NULL; }
+};
+
+//          12345678
+int mn = -200000001;
+int mx =  200000001;
+
+int sum1d(node1d *seg, int a, int b, int ini=mn, int fim=mx){
+    if(a>fim or b<ini) return 0;
+    if(a<=ini and b>=fim) return seg->val;
+    return (seg->esq!=NULL?sum1d(seg->esq,a,b,ini,M):0)+(seg->dir!=NULL?sum1d(seg->dir,a,b,M+1,fim):0);
+}
+
+int sum2d(node2d *seg, int l, int r, int b, int t, int ini=mn, int fim=mx){
+
+    if(b>fim or t<ini) return 0;
+
+    if(b<=ini and fim<=t) return sum1d(seg->tree,l,r);
+
+    return (seg->esq!=NULL?sum2d(seg->esq,l,r,b,t,ini,M):0)+(seg->dir!=NULL?sum2d(seg->dir,l,r,b,t,M+1,fim):0);
+}
+
+void atualiza(node1d *seg, node1d *lseg, node1d *rseg, int p, int ini=mn, int fim=mx){
+    if(lseg==NULL and rseg==NULL) return;
+    seg->val=(lseg!=NULL?lseg->val:0)+(rseg!=NULL?rseg->val:0);
+    if(ini==fim) return;
+    if(p<=M){
+        if(seg->esq==NULL) seg->esq=new node1d;
+        atualiza(seg->esq,lseg!=NULL?lseg->esq:NULL,rseg!=NULL?rseg->esq:NULL,p,ini,M);
+    }
+    else{
+        if(seg->dir==NULL) seg->dir=new node1d;
+        atualiza(seg->dir,lseg!=NULL?lseg->dir:NULL,rseg!=NULL?rseg->dir:NULL,p,M+1,fim);
+    }
+}
+
+void upd1d(node1d *seg, int p, int delta, int ini=mn, int fim=mx){
+    if(p>fim or p<ini) return;
+    if(ini==fim){
+        seg->val+=delta;
+        return;
+    }
+
+    if(p<=M){
+        if(seg->esq==NULL) seg->esq=new node1d;
+        upd1d(seg->esq,p,delta,ini,M);
+    }
+    else{
+
+        if(seg->dir==NULL) seg->dir=new node1d;
+        upd1d(seg->dir,p,delta,M+1,fim);
+    }
+    seg->val=(seg->esq!=NULL?(seg->esq)->val:0)+(seg->dir!=NULL?(seg->dir)->val:0);
+}
+
+void upd2d(node2d *seg, int x, int y, int delta, int ini=mn, int fim=mx){
+    if(y<ini or y>fim) return;
+    if(ini==fim){
+        upd1d(seg->tree,x,delta);
+        return;
+    }
+    if(y<=M){
+        if(seg->esq==NULL) seg->esq=new node2d;
+        upd2d(seg->esq,x,y,delta,ini,M);
+    }
+    else{
+        if(seg->dir==NULL) seg->dir=new node2d;
+        upd2d(seg->dir,x,y,delta,M+1,fim);
+    }
+    atualiza(seg->tree,seg->esq!=NULL?(seg->esq)->tree:0,seg->dir!=NULL?(seg->dir)->tree:0,x);
+}
+
+node2d *seg=new node2d;
+int n, m;
+ll k;
+
+int main (){
+	scanf("%d%lld", &n, &k);
+	for(int a=0;a<n;a++){
+        int x, y;
+        scanf("%d%d", &x, &y);
+        upd2d(seg, x+y, x-y, 1);
+	}
+    int i = 0, j = 200000000;
+    while(i < j){
+        int m = (i + j)/2;
+
+    return 0;
+}
+
