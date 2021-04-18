@@ -1,0 +1,62 @@
+#include "bits/stdc++.h"
+using namespace std;
+#define fst first
+#define snd second
+typedef unsigned long long ull;
+typedef long long ll;
+typedef pair<int, int> pii;
+#define eb emplace_back
+#define pb push_back
+#define for_tests(t, tt) int t; scanf("%d", &t); for(int tt = 1; tt <= t; tt++)
+#ifndef ONLINE_JUDGE
+#define debug(args...) fprintf(stderr,args)
+#else
+#define debug(args...)
+#endif //ONLINE_JUDGE
+template<typename T> inline T abs(T t) { return t < 0? -t : t; }
+const ll modn = 1000000007;
+inline ll mod(ll x) { return x % modn; }
+#define IOS() ios::sync_with_stdio(0),cin.tie(0)
+
+#define int ll
+
+vector<tuple<int, int, int>> pilar;
+
+int x;
+int r;
+
+int dist2(tuple<int, int, int> a, tuple<int, int, int> b);
+
+int bfs(int from = x){
+    queue<int> q;
+    q.push(from);
+
+    const double INF = DBL_MAX;
+    vector<double> dis(pilar.size(), INF);
+    dis[from] = 0;
+    while(!q.empty()){
+        int u = q.front();
+        q.pop();
+        auto [x, y, z] = pilar[u];
+        //dist2(tiii, tiii) devolve distancia ao quadrado
+        for(int v=0;v<pilar.size();v++){
+            auto [vx, vy, vz] = pilar[v];
+            int cus2 = dist2(pilar[u], pilar[v]);
+            double cus = sqrt((double)cus2);
+            if(z <= vz && cus2 < r*r && dis[v] > dis[u] + cus){
+                if(dis[v] >= INF)
+                    q.push(v);
+                dis[v] = dis[u] + cus;
+            }
+        }
+    }
+}
+
+int main (){
+
+    queue<int> q;
+    while(!q.empty()){
+        int u = q.front();
+    }
+}
+
